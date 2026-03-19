@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package users;
+
+// Unary RPC
+message UserRequest {
+    int32 user_id = 1;
+}
+
+message UserResponse {
+    int32 user_id = 1;
+    string name = 2;
+    string email = 3;
+}
+
+// Streaming RPC (Server Streaming)
+message UserListRequest {}
+
+message UserListResponse {
+    int32 user_id = 1;
+    string name = 2;
+}
+
+service UserService {
+    // Unary RPC - Gọi 1-1 lấy thông tin User
+    rpc GetUser (UserRequest) returns (UserResponse);
+    
+    // Server Streaming RPC - Trả về luồng dữ liệu (danh sách user)
+    rpc StreamUsers (UserListRequest) returns (stream UserListResponse);
+}
