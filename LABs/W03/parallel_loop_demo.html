@@ -1,0 +1,336 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Courier New', monospace; }
+  .wrap { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .panel { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 10px; overflow: hidden; }
+  .panel-head { padding: 10px 14px; font-size: 12px; font-weight: 500; font-family: var(--font-sans); border-bottom: 1px solid var(--color-border-tertiary); color: var(--color-text-primary); }
+  .code-area { padding: 12px 14px; font-size: 11px; line-height: 1.7; color: var(--color-text-secondary); white-space: pre; overflow-x: auto; }
+  .kw  { color: #534AB7; }
+  .fn  { color: #0F6E56; }
+  .str { color: #854F0B; }
+  .cm  { color: var(--color-text-tertiary); }
+  .num { color: #993C1D; }
+
+  .console { padding: 10px 14px; min-height: 170px; font-size: 11px; line-height: 1.8; }
+  .log-line { display: flex; gap: 8px; align-items: baseline; opacity: 0; transform: translateX(-6px); transition: opacity .25s, transform .25s; }
+  .log-line.show { opacity: 1; transform: none; }
+  .tid { font-size: 10px; padding: 1px 5px; border-radius: 3px; white-space: nowrap; font-weight: 500; }
+  .msg { color: var(--color-text-primary); }
+
+  .controls { grid-column: 1/-1; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn { padding: 8px 20px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; font-family: var(--font-sans); font-weight: 500; transition: background .15s; }
+  .btn:hover { background: var(--color-background-primary); }
+  .btn.run { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+  .btn.run:hover { background: #3C3489; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  select { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; font-family: var(--font-sans); cursor: pointer; }
+  label { font-size: 12px; color: var(--color-text-secondary); font-family: var(--font-sans); }
+
+  .vis { grid-column: 1/-1; background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 10px; padding: 14px; }
+  .vis-head { font-size: 12px; font-weight: 500; font-family: var(--font-sans); color: var(--color-text-primary); margin-bottom: 10px; }
+  .bars { display: flex; flex-direction: column; gap: 7px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-label { font-size: 11px; color: var(--color-text-secondary); width: 64px; text-align: right; white-space: nowrap; font-family: var(--font-sans); }
+  .bar-track { flex: 1; height: 22px; background: var(--color-background-primary); border-radius: 4px; overflow: hidden; border: 1px solid var(--color-border-tertiary); position: relative; }
+  .bar-fill { height: 100%; width: 0; border-radius: 3px; transition: width .05s linear; display: flex; align-items: center; padding-left: 8px; font-size: 10px; font-weight: 500; white-space: nowrap; overflow: hidden; }
+  .bar-status { font-size: 10px; color: var(--color-text-tertiary); width: 56px; font-family: var(--font-sans); }
+
+  .stat-row { grid-column: 1/-1; display: flex; gap: 12px; }
+  .stat { flex: 1; background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 8px; padding: 10px 14px; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); font-family: var(--font-sans); }
+  .stat-lbl { font-size: 11px; color: var(--color-text-tertiary); font-family: var(--font-sans); margin-top: 2px; }
+</style>
+
+<div class="wrap">
+
+  <!-- controls -->
+  <div class="controls">
+    <button class="btn run" id="btnRun" onclick="runDemo()">▶ Run Parallel</button>
+    <button class="btn" id="btnSeq" onclick="runSeq()">Run Sequential</button>
+    <button class="btn" onclick="reset()">↺ Reset</button>
+    <label>Loop type:</label>
+    <select id="loopType">
+      <option value="for">Parallel.For</option>
+      <option value="foreach">Parallel.ForEach</option>
+      <option value="plinq">PLINQ .AsParallel()</option>
+    </select>
+    <label>Orders:</label>
+    <select id="orderCount">
+      <option value="5">5</option>
+      <option value="8" selected>8</option>
+      <option value="12">12</option>
+    </select>
+  </div>
+
+  <!-- code panel -->
+  <div class="panel">
+    <div class="panel-head" id="codeHead">Parallel.For — C#</div>
+    <div class="code-area" id="codeView">
+<span class="kw">using</span> System;
+<span class="kw">using</span> System.Threading.Tasks;
+
+<span class="kw">class</span> Program
+{
+  <span class="kw">static void</span> <span class="fn">Main</span>()
+  {
+    <span class="cm">// Parallel.For — tự spawn threads</span>
+    Parallel.<span class="fn">For</span>(<span class="num">0</span>, <span class="num">8</span>, i =>
+    {
+      Console.<span class="fn">WriteLine</span>(
+        <span class="str">$"Order {i} on T-{Thread.CurrentThread</span>
+<span class="str">          .ManagedThreadId}"</span>);
+      <span class="cm">// simulate work</span>
+      Thread.<span class="fn">Sleep</span>(<span class="num">200</span>);
+    });
+  }
+}</div>
+  </div>
+
+  <!-- console panel -->
+  <div class="panel">
+    <div class="panel-head">Console output</div>
+    <div class="console" id="console"></div>
+  </div>
+
+  <!-- visualisation -->
+  <div class="vis">
+    <div class="vis-head">Thread timeline — each bar = one order being processed</div>
+    <div class="bars" id="bars"></div>
+  </div>
+
+  <!-- stats -->
+  <div class="stat-row">
+    <div class="stat"><div class="stat-val" id="sTime">—</div><div class="stat-lbl">Elapsed (ms)</div></div>
+    <div class="stat"><div class="stat-val" id="sThreads">—</div><div class="stat-lbl">Threads used</div></div>
+    <div class="stat"><div class="stat-val" id="sOrders">—</div><div class="stat-lbl">Orders done</div></div>
+    <div class="stat"><div class="stat-val" id="sSpeedup">—</div><div class="stat-lbl">Speedup vs sequential</div></div>
+  </div>
+</div>
+
+<script>
+const COLORS = [
+  ['#CECBF6','#3C3489'], ['#9FE1CB','#085041'],
+  ['#FAC775','#633806'], ['#F5C4B3','#712B13'],
+  ['#B5D4F4','#0C447C'], ['#C0DD97','#27500A'],
+  ['#F4C0D1','#72243E'], ['#D3D1C7','#444441'],
+  ['#F0997B','#4A1B0C'], ['#85B7EB','#042C53'],
+  ['#97C459','#173404'], ['#EF9F27','#412402'],
+];
+
+const CODE = {
+  for: `<span class="kw">using</span> System;
+<span class="kw">using</span> System.Threading;
+<span class="kw">using</span> System.Threading.Tasks;
+
+<span class="kw">class</span> Program {
+  <span class="kw">static void</span> <span class="fn">Main</span>() {
+    <span class="cm">// Parallel.For — index i tự chia thread</span>
+    Parallel.<span class="fn">For</span>(<span class="num">0</span>, orders.Length, i => {
+      Console.<span class="fn">WriteLine</span>(
+        <span class="str">$"Order {i} · T-{Thread.CurrentThread</span>
+<span class="str">            .ManagedThreadId}"</span>);
+    });
+  }
+}`,
+  foreach: `<span class="kw">using</span> System;
+<span class="kw">using</span> System.Threading;
+<span class="kw">using</span> System.Threading.Tasks;
+
+<span class="kw">class</span> Program {
+  <span class="kw">static void</span> <span class="fn">Main</span>() {
+    <span class="cm">// Parallel.ForEach — duyệt collection</span>
+    Parallel.<span class="fn">ForEach</span>(orderList, order => {
+      order.<span class="fn">CalculateTotal</span>();
+      Console.<span class="fn">WriteLine</span>(
+        <span class="str">$"Done: Order #{order.Id}"</span>);
+    });
+  }
+}`,
+  plinq: `<span class="kw">using</span> System;
+<span class="kw">using</span> System.Linq;
+
+<span class="kw">class</span> Program {
+  <span class="kw">static void</span> <span class="fn">Main</span>() {
+    <span class="cm">// PLINQ — parallel query</span>
+    <span class="kw">var</span> total = orderList
+      .<span class="fn">AsParallel</span>()
+      .<span class="fn">Where</span>(o => o.Total > <span class="num">100_000</span>)
+      .<span class="fn">Sum</span>(o => o.Total);
+    Console.<span class="fn">WriteLine</span>(<span class="str">$"Revenue: {total:C}"</span>);
+  }
+}`,
+};
+
+const HEAD = { for:'Parallel.For — C#', foreach:'Parallel.ForEach — C#', plinq:'PLINQ .AsParallel() — C#' };
+
+let running = false, seqTime = null, raf = null;
+
+document.getElementById('loopType').onchange = function() {
+  document.getElementById('codeView').innerHTML = CODE[this.value];
+  document.getElementById('codeHead').textContent = HEAD[this.value];
+};
+
+function reset() {
+  if (running) return;
+  document.getElementById('console').innerHTML = '';
+  document.getElementById('bars').innerHTML = '';
+  ['sTime','sThreads','sOrders','sSpeedup'].forEach(id => document.getElementById(id).textContent = '—');
+  cancelAnimationFrame(raf);
+}
+
+function log(msg, tid, color) {
+  const con = document.getElementById('console');
+  const line = document.createElement('div');
+  line.className = 'log-line';
+  const badge = `<span class="tid" style="background:${color[0]};color:${color[1]}">T-${tid}</span>`;
+  line.innerHTML = badge + `<span class="msg">${msg}</span>`;
+  con.appendChild(line);
+  requestAnimationFrame(() => line.classList.add('show'));
+  con.scrollTop = con.scrollHeight;
+}
+
+async function runDemo() {
+  if (running) return;
+  reset();
+  running = true;
+  document.getElementById('btnRun').disabled = true;
+  document.getElementById('btnSeq').disabled = true;
+
+  const n = +document.getElementById('orderCount').value;
+  const workMs = 300;
+  const maxThreads = Math.min(n, 4);
+  const threadIds = Array.from({length: maxThreads}, (_,i) => i+1);
+
+  // build bars
+  const barsEl = document.getElementById('bars');
+  const barFills = [];
+  const barStats = [];
+  for (let i = 0; i < n; i++) {
+    const row = document.createElement('div'); row.className = 'bar-row';
+    const lbl = document.createElement('div'); lbl.className = 'bar-label';
+    lbl.textContent = `Order #${i+1}`;
+    const track = document.createElement('div'); track.className = 'bar-track';
+    const fill = document.createElement('div'); fill.className = 'bar-fill';
+    const [bg, fg] = COLORS[i % COLORS.length];
+    fill.style.background = bg; fill.style.color = fg;
+    track.appendChild(fill);
+    const stat = document.createElement('div'); stat.className = 'bar-status';
+    stat.textContent = 'waiting';
+    row.appendChild(lbl); row.appendChild(track); row.appendChild(stat);
+    barsEl.appendChild(row);
+    barFills.push(fill); barStats.push(stat);
+  }
+
+  const start = performance.now();
+  const threadSet = new Set();
+  let done = 0;
+
+  // simulate parallel: stagger starts by thread slot
+  const promises = Array.from({length: n}, (_, i) => {
+    const tid = threadIds[i % maxThreads];
+    const delay = Math.floor(i / maxThreads) * 60;
+    return new Promise(res => {
+      setTimeout(async () => {
+        threadSet.add(tid);
+        const [bg, fg] = COLORS[i % COLORS.length];
+        barStats[i].textContent = `T-${tid} ▶`;
+        log(`Processing Order #${i+1} — CalculateTotal()`, tid, COLORS[i % COLORS.length]);
+
+        // animate bar
+        let pct = 0;
+        const step = 100 / (workMs / 16);
+        await new Promise(r => {
+          function tick() {
+            pct = Math.min(pct + step, 100);
+            barFills[i].style.width = pct + '%';
+            barFills[i].textContent = pct < 40 ? '' : `Order #${i+1} done`;
+            if (pct < 100) raf = requestAnimationFrame(tick);
+            else r();
+          }
+          tick();
+        });
+
+        done++;
+        barStats[i].textContent = '✓ done';
+        log(`Order #${i+1} saved — Total: ${(Math.random()*5e6+1e6).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')} ₫`, tid, COLORS[i % COLORS.length]);
+        const elapsed = performance.now() - start;
+        document.getElementById('sTime').textContent = elapsed.toFixed(0);
+        document.getElementById('sThreads').textContent = threadSet.size;
+        document.getElementById('sOrders').textContent = done;
+        if (seqTime) document.getElementById('sSpeedup').textContent = (seqTime / elapsed).toFixed(2) + '×';
+        res();
+      }, delay);
+    });
+  });
+
+  await Promise.all(promises);
+  const elapsed = performance.now() - start;
+  if (!seqTime) seqTime = elapsed * maxThreads;
+  document.getElementById('sTime').textContent = elapsed.toFixed(0);
+  document.getElementById('sSpeedup').textContent = seqTime ? (seqTime/elapsed).toFixed(2)+'×' : '—';
+  log(`✓ All ${n} orders processed in ${elapsed.toFixed(0)} ms`, 0, ['var(--color-background-secondary)','var(--color-text-primary)']);
+
+  running = false;
+  document.getElementById('btnRun').disabled = false;
+  document.getElementById('btnSeq').disabled = false;
+}
+
+async function runSeq() {
+  if (running) return;
+  reset();
+  running = true;
+  document.getElementById('btnRun').disabled = true;
+  document.getElementById('btnSeq').disabled = true;
+
+  const n = +document.getElementById('orderCount').value;
+  const workMs = 300;
+  const barsEl = document.getElementById('bars');
+  const barFills = [], barStats = [];
+
+  for (let i = 0; i < n; i++) {
+    const row = document.createElement('div'); row.className = 'bar-row';
+    const lbl = document.createElement('div'); lbl.className = 'bar-label';
+    lbl.textContent = `Order #${i+1}`;
+    const track = document.createElement('div'); track.className = 'bar-track';
+    const fill = document.createElement('div'); fill.className = 'bar-fill';
+    fill.style.background = '#D3D1C7'; fill.style.color = '#444441';
+    track.appendChild(fill);
+    const stat = document.createElement('div'); stat.className = 'bar-status'; stat.textContent = 'waiting';
+    row.appendChild(lbl); row.appendChild(track); row.appendChild(stat);
+    barsEl.appendChild(row);
+    barFills.push(fill); barStats.push(stat);
+  }
+
+  const start = performance.now();
+  let done = 0;
+  for (let i = 0; i < n; i++) {
+    barStats[i].textContent = 'T-1 ▶';
+    log(`[Sequential] Processing Order #${i+1}`, 1, ['#D3D1C7','#444441']);
+    let pct = 0;
+    const step = 100 / (workMs / 16);
+    await new Promise(r => {
+      function tick() {
+        pct = Math.min(pct + step, 100);
+        barFills[i].style.width = pct + '%';
+        barFills[i].textContent = pct < 40 ? '' : `Order #${i+1}`;
+        if (pct < 100) requestAnimationFrame(tick); else r();
+      }
+      tick();
+    });
+    done++;
+    barStats[i].textContent = '✓';
+    const elapsed = performance.now() - start;
+    document.getElementById('sTime').textContent = elapsed.toFixed(0);
+    document.getElementById('sThreads').textContent = 1;
+    document.getElementById('sOrders').textContent = done;
+  }
+  seqTime = performance.now() - start;
+  document.getElementById('sSpeedup').textContent = '1×  (baseline)';
+  log(`Sequential done in ${seqTime.toFixed(0)} ms — run Parallel to compare!`, 1, ['#D3D1C7','#2C2C2A']);
+
+  running = false;
+  document.getElementById('btnRun').disabled = false;
+  document.getElementById('btnSeq').disabled = false;
+}
+</script>

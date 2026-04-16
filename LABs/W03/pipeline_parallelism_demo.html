@@ -1,0 +1,322 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.panel { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 10px; overflow: hidden; }
+.panel-head { padding: 9px 14px; font-size: 12px; font-weight: 500; font-family: var(--font-sans); border-bottom: 1px solid var(--color-border-tertiary); color: var(--color-text-primary); display: flex; justify-content: space-between; align-items: center; }
+.code-area { padding: 12px 14px; font-size: 11px; line-height: 1.75; color: var(--color-text-secondary); white-space: pre; overflow-x: auto; font-family: 'Courier New', monospace; }
+.kw{color:#534AB7} .fn{color:#0F6E56} .str{color:#854F0B} .cm{color:var(--color-text-tertiary)} .num{color:#993C1D}
+
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; font-family: var(--font-sans); font-weight: 500; transition: background .15s; }
+.btn:hover { background: var(--color-background-primary); }
+.btn.run { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+.btn.run:hover { background: #3C3489; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+select { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; font-family: var(--font-sans); cursor: pointer; }
+label { font-size: 12px; color: var(--color-text-secondary); font-family: var(--font-sans); }
+
+/* ── pipeline diagram ── */
+.pipe-diagram { display: flex; align-items: center; gap: 0; padding: 16px 14px 10px; overflow-x: auto; }
+.stage-box { flex-shrink: 0; width: 130px; border-radius: 8px; border: 2px solid transparent; text-align: center; padding: 10px 8px; font-family: var(--font-sans); transition: border-color .2s, box-shadow .2s; }
+.stage-box.active { box-shadow: 0 0 0 3px rgba(83,74,183,.25); }
+.stage-title { font-size: 13px; font-weight: 500; }
+.stage-sub   { font-size: 10px; margin-top: 3px; opacity: .75; }
+.stage-count { font-size: 18px; font-weight: 500; margin-top: 6px; }
+.arrow-svg   { flex-shrink: 0; width: 36px; }
+
+/* ── grid ── */
+.grid-wrap { padding: 14px; overflow-x: auto; }
+.grid-head { display: flex; gap: 2px; margin-bottom: 4px; padding-left: 72px; }
+.grid-head-cell { width: 38px; text-align: center; font-size: 10px; color: var(--color-text-tertiary); font-family: var(--font-sans); flex-shrink: 0; }
+.grid-row { display: flex; align-items: center; gap: 2px; margin-bottom: 3px; }
+.grid-label { width: 68px; font-size: 11px; color: var(--color-text-secondary); font-family: var(--font-sans); text-align: right; padding-right: 6px; flex-shrink: 0; }
+.grid-cell { width: 38px; height: 22px; border-radius: 3px; flex-shrink: 0; transition: background .15s; position: relative; }
+.grid-cell .cell-tip { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; opacity: 0; transition: opacity .2s; }
+.grid-cell:hover .cell-tip { opacity: 1; }
+
+/* ── console ── */
+.console { padding: 10px 14px; min-height: 130px; max-height: 160px; overflow-y: auto; font-size: 11px; line-height: 1.75; font-family: 'Courier New', monospace; }
+.log-line { display: flex; gap: 8px; align-items: baseline; opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .2s; }
+.log-line.show { opacity: 1; transform: none; }
+.tid { font-size: 10px; padding: 1px 5px; border-radius: 3px; white-space: nowrap; font-weight: 500; flex-shrink: 0; }
+.stage-badge { font-size: 10px; padding: 1px 5px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; }
+.msg { color: var(--color-text-primary); }
+
+/* ── stats ── */
+.stat-row { display: flex; gap: 10px; }
+.stat { flex: 1; background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 8px; padding: 10px; text-align: center; }
+.stat-val { font-size: 20px; font-weight: 500; color: var(--color-text-primary); font-family: var(--font-sans); }
+.stat-lbl { font-size: 10px; color: var(--color-text-tertiary); font-family: var(--font-sans); margin-top: 2px; }
+</style>
+
+<div class="wrap">
+
+<!-- controls -->
+<div class="controls">
+  <button class="btn run" id="btnRun" onclick="runPipeline()">▶ Run Pipeline</button>
+  <button class="btn" onclick="resetAll()">↺ Reset</button>
+  <label>Orders:</label>
+  <select id="orderCount">
+    <option value="4">4</option>
+    <option value="6" selected>6</option>
+    <option value="8">8</option>
+  </select>
+  <label>Speed:</label>
+  <select id="speed">
+    <option value="400">Slow</option>
+    <option value="220" selected>Normal</option>
+    <option value="100">Fast</option>
+  </select>
+</div>
+
+<!-- code -->
+<div class="panel">
+  <div class="panel-head">Pipeline Parallelism — C# code</div>
+  <div class="code-area"><span class="kw">using</span> System;
+<span class="kw">using</span> System.Collections.Concurrent;
+<span class="kw">using</span> System.Threading.Tasks;
+
+<span class="cm">// 3 stages: Validate → Calculate → Save</span>
+<span class="kw">static void</span> <span class="fn">RunPipeline</span>(List&lt;Order&gt; orders)
+{
+  <span class="kw">var</span> validated = <span class="kw">new</span> BlockingCollection&lt;Order&gt;();
+  <span class="kw">var</span> calculated = <span class="kw">new</span> BlockingCollection&lt;Order&gt;();
+
+  <span class="kw">var</span> t1 = Task.<span class="fn">Run</span>(() => {                <span class="cm">// Stage 1</span>
+    Parallel.<span class="fn">ForEach</span>(orders, o => {
+      <span class="fn">Validate</span>(o); validated.<span class="fn">Add</span>(o);
+    });
+    validated.<span class="fn">CompleteAdding</span>();
+  });
+
+  <span class="kw">var</span> t2 = Task.<span class="fn">Run</span>(() => {                <span class="cm">// Stage 2</span>
+    Parallel.<span class="fn">ForEach</span>(validated.<span class="fn">GetConsumingEnumerable</span>(), o => {
+      o.<span class="fn">CalculateTotal</span>(); calculated.<span class="fn">Add</span>(o);
+    });
+    calculated.<span class="fn">CompleteAdding</span>();
+  });
+
+  <span class="kw">var</span> t3 = Task.<span class="fn">Run</span>(() => {                <span class="cm">// Stage 3</span>
+    Parallel.<span class="fn">ForEach</span>(calculated.<span class="fn">GetConsumingEnumerable</span>(), o => {
+      <span class="fn">Save</span>(o);
+    });
+  });
+
+  Task.<span class="fn">WaitAll</span>(t1, t2, t3);
+}</div>
+</div>
+
+<!-- pipeline stage diagram -->
+<div class="panel">
+  <div class="panel-head">
+    <span>Stage status — live</span>
+    <span style="font-size:10px;color:var(--color-text-tertiary)" id="elapsed"></span>
+  </div>
+  <div class="pipe-diagram">
+    <div class="stage-box" id="s0" style="background:#E6F1FB;border-color:#185FA5;color:#0C447C">
+      <div class="stage-title">① Validate</div>
+      <div class="stage-sub">user · stock · price</div>
+      <div class="stage-count" id="c0">0</div>
+    </div>
+    <svg class="arrow-svg" viewBox="0 0 36 24"><path d="M2 12h26M22 5l8 7-8 7" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="stage-box" id="s1" style="background:#E1F5EE;border-color:#0F6E56;color:#085041">
+      <div class="stage-title">② Calculate</div>
+      <div class="stage-sub">total · discount · tax</div>
+      <div class="stage-count" id="c1">0</div>
+    </div>
+    <svg class="arrow-svg" viewBox="0 0 36 24"><path d="M2 12h26M22 5l8 7-8 7" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="stage-box" id="s2" style="background:#FAEEDA;border-color:#854F0B;color:#633806">
+      <div class="stage-title">③ Save</div>
+      <div class="stage-sub">DB · notify · log</div>
+      <div class="stage-count" id="c2">0</div>
+    </div>
+    <svg class="arrow-svg" viewBox="0 0 36 24"><path d="M2 12h26M22 5l8 7-8 7" fill="none" stroke="#854F0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="stage-box" id="s3" style="background:#EAF3DE;border-color:#3B6D11;color:#27500A">
+      <div class="stage-title">✓ Done</div>
+      <div class="stage-sub">order complete</div>
+      <div class="stage-count" id="c3">0</div>
+    </div>
+  </div>
+</div>
+
+<!-- timeline grid -->
+<div class="panel">
+  <div class="panel-head">Pipeline timeline — each column = 1 time slot</div>
+  <div class="grid-wrap">
+    <div class="grid-head" id="gridHead"></div>
+    <div id="gridRows"></div>
+    <div style="display:flex;gap:16px;padding-top:10px;flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-sans);color:var(--color-text-secondary)"><span style="width:16px;height:14px;background:#B5D4F4;border-radius:3px;display:inline-block"></span>Validate</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-sans);color:var(--color-text-secondary)"><span style="width:16px;height:14px;background:#9FE1CB;border-radius:3px;display:inline-block"></span>Calculate</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-sans);color:var(--color-text-secondary)"><span style="width:16px;height:14px;background:#FAC775;border-radius:3px;display:inline-block"></span>Save</span>
+    </div>
+  </div>
+</div>
+
+<!-- console -->
+<div class="panel">
+  <div class="panel-head">Console output</div>
+  <div class="console" id="console"></div>
+</div>
+
+<!-- stats -->
+<div class="stat-row">
+  <div class="stat"><div class="stat-val" id="sTime">—</div><div class="stat-lbl">Elapsed (ms)</div></div>
+  <div class="stat"><div class="stat-val" id="sThru">—</div><div class="stat-lbl">Throughput (ord/s)</div></div>
+  <div class="stat"><div class="stat-val" id="sDone">—</div><div class="stat-lbl">Orders done</div></div>
+  <div class="stat"><div class="stat-val" id="sOver">—</div><div class="stat-lbl">Pipeline overlap</div></div>
+</div>
+</div>
+
+<script>
+const STAGE_COLORS = ['#B5D4F4','#9FE1CB','#FAC775'];
+const STAGE_NAMES  = ['Validate','Calculate','Save'];
+const STAGE_TEXT   = ['#0C447C','#085041','#633806'];
+
+let running = false, startTime = 0, timerRaf = null;
+
+function resetAll() {
+  if (running) return;
+  ['c0','c1','c2','c3'].forEach(id => document.getElementById(id).textContent = '0');
+  ['s0','s1','s2','s3'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById('console').innerHTML = '';
+  document.getElementById('gridHead').innerHTML = '';
+  document.getElementById('gridRows').innerHTML = '';
+  ['sTime','sThru','sDone','sOver'].forEach(id => document.getElementById(id).textContent = '—');
+  document.getElementById('elapsed').textContent = '';
+  cancelAnimationFrame(timerRaf);
+}
+
+function log(msg, stageIdx, orderId) {
+  const con = document.getElementById('console');
+  const line = document.createElement('div'); line.className = 'log-line';
+  const tbadge = `<span class="tid" style="background:#CECBF6;color:#3C3489">T-${(orderId%4)+1}</span>`;
+  const sbadge = stageIdx >= 0
+    ? `<span class="stage-badge" style="background:${STAGE_COLORS[stageIdx]};color:${STAGE_TEXT[stageIdx]}">${STAGE_NAMES[stageIdx]}</span>`
+    : `<span class="stage-badge" style="background:#C0DD97;color:#27500A">Done</span>`;
+  line.innerHTML = tbadge + sbadge + `<span class="msg">${msg}</span>`;
+  con.appendChild(line);
+  requestAnimationFrame(() => line.classList.add('show'));
+  con.scrollTop = con.scrollHeight;
+}
+
+function buildGrid(n, slots) {
+  const head = document.getElementById('gridHead');
+  const rows = document.getElementById('gridRows');
+  head.innerHTML = '';
+  rows.innerHTML = '';
+  for (let s = 0; s < slots; s++) {
+    const c = document.createElement('div'); c.className = 'grid-head-cell'; c.textContent = `T${s+1}`;
+    head.appendChild(c);
+  }
+  const cells = [];
+  for (let i = 0; i < n; i++) {
+    const row = document.createElement('div'); row.className = 'grid-row';
+    const lbl = document.createElement('div'); lbl.className = 'grid-label'; lbl.textContent = `Order #${i+1}`;
+    row.appendChild(lbl);
+    const rowCells = [];
+    for (let s = 0; s < slots; s++) {
+      const cell = document.createElement('div'); cell.className = 'grid-cell';
+      cell.style.background = 'var(--color-background-primary)';
+      row.appendChild(cell);
+      rowCells.push(cell);
+    }
+    rows.appendChild(row);
+    cells.push(rowCells);
+  }
+  return cells;
+}
+
+async function runPipeline() {
+  if (running) return;
+  resetAll();
+  running = true;
+  document.getElementById('btnRun').disabled = true;
+
+  const n     = +document.getElementById('orderCount').value;
+  const speed = +document.getElementById('speed').value;
+  const SLOTS = n + 2;
+
+  const cells = buildGrid(n, SLOTS);
+  const counts = [0, 0, 0, 0];
+
+  // timer
+  startTime = performance.now();
+  function tick() {
+    const ms = (performance.now() - startTime).toFixed(0);
+    document.getElementById('elapsed').textContent = ms + ' ms';
+    document.getElementById('sTime').textContent = ms;
+    timerRaf = requestAnimationFrame(tick);
+  }
+  timerRaf = requestAnimationFrame(tick);
+
+  // simulate pipeline: order i enters validate at slot i,
+  //                    calculate at slot i+1, save at slot i+2
+  const setCell = (order, slot, stage) => {
+    if (slot < SLOTS && cells[order] && cells[order][slot]) {
+      const cell = cells[order][slot];
+      cell.style.background = STAGE_COLORS[stage];
+      const tip = document.createElement('div'); tip.className = 'cell-tip';
+      tip.style.color = STAGE_TEXT[stage];
+      tip.textContent = STAGE_NAMES[stage][0];
+      cell.appendChild(tip);
+    }
+  };
+
+  const promises = [];
+  for (let i = 0; i < n; i++) {
+    const p = (async () => {
+      await new Promise(r => setTimeout(r, i * speed));
+
+      // Stage 1: Validate
+      document.getElementById('s0').classList.add('active');
+      setCell(i, i, 0);
+      log(`Order #${i+1} → Validate(user, stock, price)`, 0, i);
+      await new Promise(r => setTimeout(r, speed));
+      counts[0]++; document.getElementById('c0').textContent = counts[0];
+      document.getElementById('s0').classList.remove('active');
+
+      // Stage 2: Calculate
+      document.getElementById('s1').classList.add('active');
+      setCell(i, i+1, 1);
+      log(`Order #${i+1} → CalculateTotal() = ${(Math.random()*5e6+5e5).toLocaleString('vi-VN')} ₫`, 1, i);
+      await new Promise(r => setTimeout(r, speed));
+      counts[1]++; document.getElementById('c1').textContent = counts[1];
+      document.getElementById('s1').classList.remove('active');
+
+      // Stage 3: Save
+      document.getElementById('s2').classList.add('active');
+      setCell(i, i+2, 2);
+      log(`Order #${i+1} → Save(DB) — status: Confirmed`, 2, i);
+      await new Promise(r => setTimeout(r, speed));
+      counts[2]++; document.getElementById('c2').textContent = counts[2];
+      document.getElementById('s2').classList.remove('active');
+
+      // Done
+      counts[3]++; document.getElementById('c3').textContent = counts[3];
+      log(`✓ Order #${i+1} complete`, -1, i);
+
+      const elapsed = performance.now() - startTime;
+      document.getElementById('sDone').textContent = counts[3];
+      document.getElementById('sThru').textContent = (counts[3] / (elapsed/1000)).toFixed(1);
+    })();
+    promises.push(p);
+  }
+
+  await Promise.all(promises);
+  cancelAnimationFrame(timerRaf);
+
+  const total = performance.now() - startTime;
+  const seq   = n * speed * 3;
+  const pct   = ((1 - total/seq)*100).toFixed(0);
+  document.getElementById('sTime').textContent  = total.toFixed(0);
+  document.getElementById('sThru').textContent  = (n/(total/1000)).toFixed(1);
+  document.getElementById('sOver').textContent  = pct + '%';
+  document.getElementById('elapsed').textContent = total.toFixed(0) + ' ms  ✓';
+  log(`Pipeline done in ${total.toFixed(0)} ms — sequential would take ${seq} ms`, -1, 99);
+
+  running = false;
+  document.getElementById('btnRun').disabled = false;
+}
+</script>
