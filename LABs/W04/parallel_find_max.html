@@ -1,0 +1,450 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; font-family: var(--font-sans); }
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; font-weight: 500; transition: background .15s; }
+.btn:hover { background: var(--color-background-primary); }
+.btn.primary { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+.btn.primary:hover { background: #3C3489; }
+.btn.green { background: #0F6E56; color: #E1F5EE; border-color: #0F6E56; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+select { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; }
+label { font-size: 12px; color: var(--color-text-secondary); }
+input[type=text] { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; width: 280px; font-family: 'Courier New', monospace; }
+
+.panel { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 10px; overflow: hidden; }
+.ph { padding: 9px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid var(--color-border-tertiary); color: var(--color-text-primary); display:flex; justify-content:space-between; align-items:center; }
+.code-area { padding: 12px 14px; font-size: 11px; line-height: 1.75; color: var(--color-text-secondary); white-space: pre; overflow-x: auto; font-family: 'Courier New', monospace; }
+.kw{color:#534AB7} .fn{color:#0F6E56} .cm{color:var(--color-text-tertiary)} .num{color:#993C1D} .type{color:#185FA5}
+
+/* array display */
+.arr-wrap { padding: 14px; }
+.arr-title { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 8px; }
+.arr-cells { display: flex; flex-wrap: wrap; gap: 5px; }
+.arr-cell { width: 46px; height: 46px; border-radius: 6px; border: 1.5px solid var(--color-border-secondary); display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--color-background-primary); transition: background .25s, border-color .25s, transform .2s; }
+.arr-cell .val { font-size: 13px; font-weight: 500; font-family: 'Courier New', monospace; color: var(--color-text-primary); }
+.arr-cell .idx { font-size: 9px; color: var(--color-text-tertiary); }
+.arr-cell.checking { background: #FAEEDA; border-color: #854F0B; transform: scale(1.08); }
+.arr-cell.local-max { background: #E1F5EE; border-color: #0F6E56; }
+.arr-cell.global-max { background: #EEEDFE; border-color: #534AB7; transform: scale(1.12); }
+
+/* thread lanes */
+.threads-wrap { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.t-lane { display: flex; align-items: center; gap: 10px; }
+.t-name { width: 72px; font-size: 11px; color: var(--color-text-secondary); text-align: right; flex-shrink: 0; }
+.t-track { flex: 1; height: 28px; background: var(--color-background-primary); border-radius: 5px; border: 1px solid var(--color-border-tertiary); position: relative; overflow: hidden; }
+.t-fill { height: 100%; width: 0; border-radius: 4px; transition: width .12s linear; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 500; white-space: nowrap; }
+.t-local { width: 72px; font-size: 11px; font-family: 'Courier New', monospace; font-weight: 500; text-align: center; flex-shrink: 0; }
+.t-status { width: 58px; font-size: 10px; color: var(--color-text-tertiary); flex-shrink: 0; }
+
+/* merge step */
+.merge-wrap { padding: 14px; }
+.merge-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.merge-cell { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; font-family: 'Courier New', monospace; border: 1.5px solid transparent; opacity: 0; transition: opacity .3s; }
+.merge-cell.show { opacity: 1; }
+.arrow-merge { font-size: 16px; color: var(--color-text-tertiary); }
+.result-box { padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; font-family: 'Courier New', monospace; display: inline-flex; align-items: center; gap: 10px; border: 2px solid #534AB7; background: #EEEDFE; color: #26215C; opacity: 0; transition: opacity .4s; }
+.result-box.show { opacity: 1; }
+
+/* comparison */
+.cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px; }
+.cmp-card { border-radius: 8px; border: 1px solid var(--color-border-secondary); overflow: hidden; }
+.cmp-head { padding: 7px 12px; font-size: 11px; font-weight: 500; border-bottom: 1px solid var(--color-border-tertiary); }
+.cmp-body { padding: 10px 12px; font-size: 11px; line-height: 1.9; color: var(--color-text-secondary); }
+.good { color: #0F6E56; font-weight: 500; }
+.bad  { color: #A32D2D; font-weight: 500; }
+
+/* stats */
+.stat-row { display: flex; gap: 10px; }
+.stat { flex: 1; background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 8px; padding: 10px; text-align: center; }
+.stat-val { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+.stat-lbl { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
+</style>
+
+<div class="wrap">
+
+<!-- controls -->
+<div class="controls">
+  <button class="btn primary" id="btnRun" onclick="runDemo()">▶ Run Parallel.ForEach</button>
+  <button class="btn green" id="btnOpt" onclick="runOptimal()">▶ Run Optimal (local agg)</button>
+  <button class="btn" onclick="resetAll()">↺ Reset</button>
+</div>
+<div class="controls">
+  <label>Custom array:</label>
+  <input type="text" id="customArr" value="5, 8, 2, 10, 3, 99, 23, 44" placeholder="comma-separated integers"/>
+  <label>Threads:</label>
+  <select id="nThreads"><option value="2">2</option><option value="4" selected>4</option></select>
+</div>
+
+<!-- array visualisation -->
+<div class="panel">
+  <div class="ph"><span>Array</span><span id="arrInfo" style="font-size:10px;color:var(--color-text-tertiary)"></span></div>
+  <div class="arr-wrap">
+    <div class="arr-title">Click "Run" to watch each element being checked</div>
+    <div class="arr-cells" id="arrCells"></div>
+  </div>
+</div>
+
+<!-- thread lanes -->
+<div class="panel">
+  <div class="ph">Thread lanes — localMax per thread</div>
+  <div class="threads-wrap" id="threadLanes"></div>
+</div>
+
+<!-- merge step -->
+<div class="panel">
+  <div class="ph">Merge step — combine localMax values</div>
+  <div class="merge-wrap">
+    <div class="merge-row" id="mergeRow"></div>
+    <div id="resultBox" class="result-box">Max = <span id="resultVal">?</span></div>
+  </div>
+</div>
+
+<!-- comparison -->
+<div class="panel">
+  <div class="ph">Sequential vs Parallel — approach comparison</div>
+  <div class="cmp-grid">
+    <div class="cmp-card">
+      <div class="cmp-head" style="background:#D3D1C7;color:#2C2C2A">Sequential foreach</div>
+      <div class="cmp-body">
+        <div>1 thread xử lý toàn bộ array</div>
+        <div>Không cần lock</div>
+        <div>Code đơn giản, dễ debug</div>
+        <div>Thời gian: <span id="seqTime" class="good">—</span></div>
+        <div>Result: <span id="seqResult" class="good">—</span></div>
+      </div>
+    </div>
+    <div class="cmp-card">
+      <div class="cmp-head" style="background:#9FE1CB;color:#085041">Parallel.ForEach</div>
+      <div class="cmp-body">
+        <div>N threads chia nhau array</div>
+        <div>Cần <span id="lockNote">lock</span> (version này)</div>
+        <div>Nhanh hơn với array lớn</div>
+        <div>Thời gian: <span id="parTime" class="good">—</span></div>
+        <div>Result: <span id="parResult" class="good">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- code -->
+<div class="panel">
+  <div class="ph" id="codeHead">Code — Parallel.ForEach with lock</div>
+  <div class="code-area" id="codeView"><span class="cm">// ✓ Version 1: Parallel.ForEach + lock (from lecture)</span>
+<span class="kw">int</span>[] arr = { <span class="num">5</span>, <span class="num">8</span>, <span class="num">2</span>, <span class="num">10</span>, <span class="num">3</span>, <span class="num">99</span>, <span class="num">23</span>, <span class="num">44</span> };
+<span class="kw">int</span> max = <span class="type">int</span>.MinValue;
+<span class="kw">object</span> lockObj = <span class="kw">new</span> <span class="type">object</span>();
+
+Parallel.<span class="fn">ForEach</span>(arr, num =>
+{
+    <span class="kw">lock</span> (lockObj)            <span class="cm">// thread-safe ✓</span>
+    {
+        <span class="kw">if</span> (num > max)
+            max = num;
+    }
+});
+
+Console.<span class="fn">WriteLine</span>(<span class="num">"Max = " + max</span>); <span class="cm">// Max = 99</span></div>
+</div>
+
+<!-- code v2 -->
+<div class="panel">
+  <div class="ph" style="background:#E1F5EE;color:#085041">Code — Optimal: local aggregation (no lock in loop)</div>
+  <div class="code-area"><span class="cm">// ✓ Version 2: localInit + localFinally (better performance)</span>
+<span class="cm">// lock chỉ gọi 1 lần/thread, không phải 1 lần/phần tử</span>
+<span class="kw">int</span> max = <span class="type">int</span>.MinValue;
+<span class="kw">object</span> lockObj = <span class="kw">new</span> <span class="type">object</span>();
+
+Parallel.<span class="fn">For</span>(<span class="num">0</span>, arr.Length,
+    () => <span class="type">int</span>.MinValue,           <span class="cm">// localInit: mỗi thread bắt đầu MinValue</span>
+    (i, state, localMax) =>
+    {
+        <span class="kw">return</span> arr[i] > localMax ? arr[i] : localMax;
+        <span class="cm">// không lock — chỉ đọc/ghi biến local ✓</span>
+    },
+    localMax =>                    <span class="cm">// localFinally: merge 1 lần/thread</span>
+    {
+        <span class="kw">lock</span> (lockObj)
+        {
+            <span class="kw">if</span> (localMax > max) max = localMax;
+        }
+    }
+);
+Console.<span class="fn">WriteLine</span>(<span class="num">"Max = " + max</span>); <span class="cm">// Max = 99</span></div>
+</div>
+
+<!-- stats -->
+<div class="stat-row">
+  <div class="stat"><div class="stat-val" id="sMax">—</div><div class="stat-lbl">Max found</div></div>
+  <div class="stat"><div class="stat-val" id="sLen">—</div><div class="stat-lbl">Array length</div></div>
+  <div class="stat"><div class="stat-val" id="sThr">—</div><div class="stat-lbl">Threads</div></div>
+  <div class="stat"><div class="stat-val" id="sLock">—</div><div class="stat-lbl">Lock calls</div></div>
+</div>
+
+</div>
+
+<script>
+const T_COLORS = [
+  ['#B5D4F4','#0C447C'],['#9FE1CB','#085041'],
+  ['#FAC775','#633806'],['#F5C4B3','#712B13'],
+];
+
+let running = false;
+
+function parseArr() {
+  const raw = document.getElementById('customArr').value;
+  return raw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+}
+
+function buildArrCells(arr) {
+  const wrap = document.getElementById('arrCells');
+  wrap.innerHTML = '';
+  document.getElementById('arrInfo').textContent = `length = ${arr.length}`;
+  arr.forEach((v, i) => {
+    const cell = document.createElement('div'); cell.className = 'arr-cell'; cell.id = `cell-${i}`;
+    cell.innerHTML = `<span class="val">${v}</span><span class="idx">[${i}]</span>`;
+    wrap.appendChild(cell);
+  });
+}
+
+function buildLanes(T, arr) {
+  const wrap = document.getElementById('threadLanes');
+  wrap.innerHTML = '';
+  const chunkSize = Math.ceil(arr.length / T);
+  for (let t = 0; t < T; t++) {
+    const start = t * chunkSize;
+    const end   = Math.min(start + chunkSize, arr.length);
+    const [bg, fg] = T_COLORS[t % T_COLORS.length];
+    const lane = document.createElement('div'); lane.className = 't-lane';
+    lane.innerHTML = `
+      <div class="t-name">Thread ${t+1}</div>
+      <div class="t-track"><div class="t-fill" id="tf-${t}" style="background:${bg};color:${fg}">scanning...</div></div>
+      <div class="t-local" id="tl-${t}" style="color:${fg}">—</div>
+      <div class="t-status" id="ts-${t}">waiting</div>`;
+    wrap.appendChild(lane);
+    const small = document.createElement('div');
+    small.style.cssText = 'font-size:10px;color:var(--color-text-tertiary);padding-left:82px;margin-top:-4px;';
+    small.textContent = `indices [${start}..${end-1}]`;
+    wrap.appendChild(small);
+  }
+}
+
+function resetAll() {
+  if (running) return;
+  buildArrCells(parseArr());
+  document.getElementById('threadLanes').innerHTML = '';
+  document.getElementById('mergeRow').innerHTML = '';
+  document.getElementById('resultBox').classList.remove('show');
+  document.getElementById('resultVal').textContent = '?';
+  ['seqTime','seqResult','parTime','parResult'].forEach(id => document.getElementById(id).textContent = '—');
+  ['sMax','sLen','sThr','sLock'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runDemo() {
+  if (running) return;
+  resetAll();
+  running = true;
+  document.getElementById('btnRun').disabled = true;
+  document.getElementById('btnOpt').disabled = true;
+  document.getElementById('lockNote').textContent = 'lock (per element)';
+  document.getElementById('codeHead').textContent = 'Code — Parallel.ForEach with lock';
+
+  const arr = parseArr();
+  const T   = +document.getElementById('nThreads').value;
+  buildArrCells(arr);
+  buildLanes(T, arr);
+
+  const chunkSize = Math.ceil(arr.length / T);
+  const DELAY = Math.max(80, 500 / arr.length * 4);
+
+  // sequential (instant)
+  let seqMax = arr[0];
+  arr.forEach(v => { if (v > seqMax) seqMax = v; });
+  document.getElementById('seqResult').textContent = seqMax;
+  document.getElementById('seqTime').textContent = '<1 ms';
+
+  // parallel simulation
+  const localMaxes = new Array(T).fill(Number.NEGATIVE_INFINITY);
+  let lockCount = 0;
+  const start = performance.now();
+
+  const threadProms = Array.from({length: T}, async (_, t) => {
+    const from = t * chunkSize;
+    const to   = Math.min(from + chunkSize, arr.length);
+    const fill = document.getElementById(`tf-${t}`);
+    const locEl = document.getElementById(`tl-${t}`);
+    const stEl  = document.getElementById(`ts-${t}`);
+    const [bg, fg] = T_COLORS[t % T_COLORS.length];
+
+    stEl.textContent = 'running';
+    stEl.style.color = fg;
+
+    for (let i = from; i < to; i++) {
+      // highlight cell
+      document.querySelectorAll('.arr-cell').forEach(c => c.classList.remove('checking'));
+      const cell = document.getElementById(`cell-${i}`);
+      if (cell) cell.classList.add('checking');
+
+      // update progress
+      fill.style.width = ((i - from + 1) / (to - from) * 100) + '%';
+      fill.textContent = `arr[${i}]=${arr[i]}`;
+
+      if (arr[i] > localMaxes[t]) {
+        localMaxes[t] = arr[i];
+        if (cell) { cell.classList.remove('checking'); cell.classList.add('local-max'); }
+      }
+      locEl.textContent = localMaxes[t];
+      lockCount++;
+      await sleep(DELAY);
+    }
+    stEl.textContent = '✓ done';
+    fill.style.width = '100%';
+    fill.textContent = `localMax = ${localMaxes[t]}`;
+  });
+
+  await Promise.all(threadProms);
+
+  // clear checking highlight
+  document.querySelectorAll('.arr-cell').forEach(c => c.classList.remove('checking'));
+
+  // merge
+  const mergeRow = document.getElementById('mergeRow');
+  for (let t = 0; t < T; t++) {
+    const [bg, fg] = T_COLORS[t % T_COLORS.length];
+    const cell = document.createElement('span');
+    cell.className = 'merge-cell';
+    cell.style.background = bg; cell.style.color = fg; cell.style.borderColor = fg;
+    cell.textContent = `T${t+1}: ${localMaxes[t]}`;
+    mergeRow.appendChild(cell);
+    if (t < T-1) {
+      const arr2 = document.createElement('span');
+      arr2.className = 'arrow-merge'; arr2.textContent = ' → ';
+      mergeRow.appendChild(arr2);
+    }
+    await sleep(180);
+    cell.classList.add('show');
+  }
+
+  // final max
+  const globalMax = Math.max(...localMaxes);
+  const elapsed = performance.now() - start;
+
+  await sleep(200);
+  const rb = document.getElementById('resultBox');
+  document.getElementById('resultVal').textContent = globalMax;
+  rb.classList.add('show');
+
+  // highlight max cell
+  document.querySelectorAll('.arr-cell').forEach(c => {
+    c.classList.remove('local-max');
+    if (parseInt(c.querySelector('.val').textContent) === globalMax)
+      c.classList.add('global-max');
+  });
+
+  document.getElementById('parResult').textContent = globalMax;
+  document.getElementById('parTime').textContent = elapsed.toFixed(1) + ' ms';
+  document.getElementById('sMax').textContent = globalMax;
+  document.getElementById('sLen').textContent = arr.length;
+  document.getElementById('sThr').textContent = T;
+  document.getElementById('sLock').textContent = lockCount + ' (per element)';
+
+  running = false;
+  document.getElementById('btnRun').disabled = false;
+  document.getElementById('btnOpt').disabled = false;
+}
+
+async function runOptimal() {
+  if (running) return;
+  resetAll();
+  running = true;
+  document.getElementById('btnRun').disabled = true;
+  document.getElementById('btnOpt').disabled = true;
+  document.getElementById('lockNote').textContent = 'lock (per thread only)';
+  document.getElementById('codeHead').textContent = 'Code — Optimal: local aggregation';
+
+  const arr = parseArr();
+  const T   = +document.getElementById('nThreads').value;
+  buildArrCells(arr);
+  buildLanes(T, arr);
+
+  const chunkSize = Math.ceil(arr.length / T);
+  const DELAY = Math.max(80, 500 / arr.length * 4);
+  const localMaxes = new Array(T).fill(Number.NEGATIVE_INFINITY);
+  const start = performance.now();
+
+  const threadProms = Array.from({length: T}, async (_, t) => {
+    const from = t * chunkSize;
+    const to   = Math.min(from + chunkSize, arr.length);
+    const fill = document.getElementById(`tf-${t}`);
+    const locEl = document.getElementById(`tl-${t}`);
+    const stEl  = document.getElementById(`ts-${t}`);
+    const [bg, fg] = T_COLORS[t % T_COLORS.length];
+    stEl.textContent = 'running'; stEl.style.color = fg;
+
+    for (let i = from; i < to; i++) {
+      document.querySelectorAll('.arr-cell').forEach(c => c.classList.remove('checking'));
+      const cell = document.getElementById(`cell-${i}`);
+      if (cell) cell.classList.add('checking');
+      fill.style.width = ((i - from + 1) / (to - from) * 100) + '%';
+      fill.textContent = `arr[${i}]=${arr[i]}`;
+      if (arr[i] > localMaxes[t]) {
+        localMaxes[t] = arr[i];
+        if (cell) { cell.classList.remove('checking'); cell.classList.add('local-max'); }
+      }
+      locEl.textContent = localMaxes[t];
+      await sleep(DELAY);
+    }
+    stEl.textContent = '✓ done';
+    fill.style.width = '100%';
+    fill.textContent = `localMax = ${localMaxes[t]}`;
+  });
+
+  await Promise.all(threadProms);
+  document.querySelectorAll('.arr-cell').forEach(c => c.classList.remove('checking'));
+
+  const mergeRow = document.getElementById('mergeRow');
+  for (let t = 0; t < T; t++) {
+    const [bg, fg] = T_COLORS[t % T_COLORS.length];
+    const cell = document.createElement('span');
+    cell.className = 'merge-cell';
+    cell.style.background = bg; cell.style.color = fg; cell.style.borderColor = fg;
+    cell.textContent = `T${t+1}: ${localMaxes[t]}`;
+    mergeRow.appendChild(cell);
+    if (t < T-1) { const a = document.createElement('span'); a.className='arrow-merge'; a.textContent=' → '; mergeRow.appendChild(a); }
+    await sleep(180); cell.classList.add('show');
+  }
+
+  const globalMax = Math.max(...localMaxes);
+  const elapsed = performance.now() - start;
+  await sleep(200);
+  const rb = document.getElementById('resultBox');
+  document.getElementById('resultVal').textContent = globalMax;
+  rb.classList.add('show');
+
+  document.querySelectorAll('.arr-cell').forEach(c => {
+    c.classList.remove('local-max');
+    if (parseInt(c.querySelector('.val').textContent) === globalMax) c.classList.add('global-max');
+  });
+
+  let seqMax = arr[0]; arr.forEach(v => { if (v > seqMax) seqMax = v; });
+  document.getElementById('seqResult').textContent = seqMax;
+  document.getElementById('seqTime').textContent = '<1 ms';
+  document.getElementById('parResult').textContent = globalMax;
+  document.getElementById('parTime').textContent = elapsed.toFixed(1) + ' ms';
+  document.getElementById('sMax').textContent = globalMax;
+  document.getElementById('sLen').textContent = arr.length;
+  document.getElementById('sThr').textContent = T;
+  document.getElementById('sLock').textContent = T + ' (per thread only ✓)';
+
+  running = false;
+  document.getElementById('btnRun').disabled = false;
+  document.getElementById('btnOpt').disabled = false;
+}
+
+// init
+buildArrCells(parseArr());
+document.getElementById('customArr').oninput = () => { if (!running) buildArrCells(parseArr()); };
+</script>

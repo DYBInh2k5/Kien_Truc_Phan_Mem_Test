@@ -1,0 +1,329 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; font-family: var(--font-sans); }
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; font-weight: 500; transition: background .15s; }
+.btn:hover { background: var(--color-background-primary); }
+.btn.primary { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+.btn.primary:hover { background: #3C3489; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+input[type=text] { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; width: 240px; font-family: 'Courier New', monospace; }
+select { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; }
+label { font-size: 12px; color: var(--color-text-secondary); }
+
+.panel { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 10px; overflow: hidden; }
+.ph { padding: 9px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid var(--color-border-tertiary); color: var(--color-text-primary); display:flex; justify-content:space-between; align-items:center; }
+
+/* array + dp rows */
+.grid-wrap { padding: 16px 14px; display: flex; flex-direction: column; gap: 10px; }
+.row-label { font-size: 11px; color: var(--color-text-tertiary); width: 56px; text-align: right; flex-shrink: 0; }
+.cells-row { display: flex; gap: 5px; align-items: center; }
+.cell { width: 56px; height: 52px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid var(--color-border-secondary); background: var(--color-background-primary); transition: all .25s; flex-shrink: 0; }
+.cell .cval { font-size: 17px; font-weight: 500; font-family: 'Courier New', monospace; }
+.cell .cidx { font-size: 9px; color: var(--color-text-tertiary); margin-top: 1px; }
+.cell.anchor  { background: #E6F1FB; border-color: #185FA5; }
+.cell.anchor .cval { color: #0C447C; }
+.cell.cmp     { background: #FAEEDA; border-color: #854F0B; transform: scale(1.08); }
+.cell.cmp .cval { color: #633806; }
+.cell.updated { background: #E1F5EE; border-color: #0F6E56; }
+.cell.updated .cval { color: #085041; }
+.cell.lis-path { background: #EEEDFE; border-color: #534AB7; }
+.cell.lis-path .cval { color: #26215C; }
+
+/* dp cell (smaller, just dp value) */
+.dp-cell { width: 56px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--color-border-secondary); background: var(--color-background-primary); font-size: 15px; font-weight: 500; font-family: 'Courier New', monospace; color: var(--color-text-primary); transition: all .25s; flex-shrink: 0; }
+.dp-cell.one { background: var(--color-background-secondary); }
+.dp-cell.growing { background: #E1F5EE; border-color: #0F6E56; color: #085041; }
+.dp-cell.max-dp  { background: #EEEDFE; border-color: #534AB7; color: #26215C; transform: scale(1.1); }
+
+/* arrow canvas */
+.arrow-canvas { width: 100%; overflow-x: auto; }
+
+/* dp table */
+.table-wrap { padding: 14px; overflow-x: auto; }
+table { border-collapse: collapse; font-size: 11px; font-family: 'Courier New', monospace; }
+th, td { padding: 6px 10px; border: 1px solid var(--color-border-secondary); text-align: center; min-width: 44px; }
+th { background: var(--color-background-secondary); font-weight: 500; color: var(--color-text-primary); }
+td { color: var(--color-text-secondary); }
+td.active-i { background: #E6F1FB; color: #0C447C; }
+td.active-j { background: #FAEEDA; color: #633806; }
+td.dp-upd   { background: #E1F5EE; color: #085041; font-weight: 500; }
+td.dp-max   { background: #EEEDFE; color: #26215C; font-weight: 500; }
+
+/* log */
+.log-wrap { padding: 10px 14px; max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; }
+.log-line { font-size: 11px; font-family: 'Courier New', monospace; color: var(--color-text-secondary); opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .2s; }
+.log-line.show { opacity: 1; transform: none; }
+.log-line .tag { padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 500; margin-right: 6px; }
+
+/* result banner */
+.banner { margin: 0 14px 14px; padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; gap: 14px; font-family: var(--font-sans); opacity: 0; transition: opacity .4s; }
+.banner.show { opacity: 1; }
+.banner-big { font-size: 28px; font-weight: 500; font-family: 'Courier New', monospace; }
+
+/* stats */
+.stat-row { display: flex; gap: 10px; }
+.stat { flex: 1; background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 8px; padding: 10px; text-align: center; }
+.stat-val { font-size: 20px; font-weight: 500; color: var(--color-text-primary); font-family: 'Courier New', monospace; }
+.stat-lbl { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
+
+/* code */
+.code-area { padding: 12px 14px; font-size: 11px; line-height: 1.8; white-space: pre; overflow-x: auto; font-family: 'Courier New', monospace; color: var(--color-text-secondary); }
+.kw{color:#534AB7} .fn{color:#0F6E56} .cm{color:var(--color-text-tertiary)} .num{color:#993C1D} .type{color:#185FA5}
+</style>
+
+<div class="wrap">
+
+<div class="controls">
+  <button class="btn primary" id="btnRun" onclick="runDemo()">▶ Run LIS (step by step)</button>
+  <button class="btn" onclick="resetAll()">↺ Reset</button>
+  <label>Array:</label>
+  <input type="text" id="arrInput" value="1, 3, 2, 4, 5"/>
+  <label>Speed:</label>
+  <select id="speed">
+    <option value="700">Slow</option>
+    <option value="350" selected>Normal</option>
+    <option value="120">Fast</option>
+  </select>
+</div>
+
+<!-- array + dp visual -->
+<div class="panel">
+  <div class="ph"><span>Array & dp[] — live update</span><span id="stepInfo" style="font-size:10px;color:var(--color-text-tertiary)"></span></div>
+  <div class="grid-wrap">
+    <div class="cells-row">
+      <div class="row-label">arr[]</div>
+      <div id="arrRow" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+    </div>
+    <div class="cells-row">
+      <div class="row-label">dp[]</div>
+      <div id="dpRow" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- dp table (step history) -->
+<div class="panel">
+  <div class="ph">dp[] state after each outer loop iteration</div>
+  <div class="table-wrap"><table id="dpTable"></table></div>
+</div>
+
+<!-- result banner -->
+<div class="banner" id="banner" style="background:#EEEDFE;border:2px solid #534AB7;color:#26215C;">
+  <div class="banner-big" id="bannerLen">—</div>
+  <div>
+    <div style="font-size:13px;font-weight:500;">LIS Length</div>
+    <div id="bannerSeq" style="font-size:12px;font-family:'Courier New',monospace;margin-top:3px;color:#534AB7;"></div>
+  </div>
+</div>
+
+<!-- log -->
+<div class="panel">
+  <div class="ph"><span>Execution log</span></div>
+  <div class="log-wrap" id="logWrap"></div>
+</div>
+
+<!-- stats -->
+<div class="stat-row">
+  <div class="stat"><div class="stat-val" id="sLen">—</div><div class="stat-lbl">LIS length</div></div>
+  <div class="stat"><div class="stat-val" id="sSeq">—</div><div class="stat-lbl">One LIS sequence</div></div>
+  <div class="stat"><div class="stat-val" id="sComp">—</div><div class="stat-lbl">Comparisons</div></div>
+  <div class="stat"><div class="stat-val" id="sTime">—</div><div class="stat-lbl">Time (ms)</div></div>
+</div>
+
+<!-- code -->
+<div class="panel">
+  <div class="ph">C# — DP O(n²) with backtracking to find sequence</div>
+  <div class="code-area"><span class="kw">static int</span> <span class="fn">LIS</span>(<span class="kw">int</span>[] arr) {
+    <span class="kw">int</span> n = arr.Length;
+    <span class="kw">int</span>[] dp   = <span class="kw">new int</span>[n];  <span class="cm">// dp[i] = LIS length ending at i</span>
+    <span class="kw">int</span>[] prev = <span class="kw">new int</span>[n];  <span class="cm">// prev[i] = predecessor index (backtrack)</span>
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < n; i++) { dp[i] = <span class="num">1</span>; prev[i] = -<span class="num">1</span>; }
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i < n; i++)
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j < i; j++)
+            <span class="kw">if</span> (arr[i] > arr[j] && dp[i] < dp[j] + <span class="num">1</span>) {
+                dp[i]   = dp[j] + <span class="num">1</span>;  <span class="cm">// extend LIS from j</span>
+                prev[i] = j;              <span class="cm">// remember where we came from</span>
+            }
+
+    <span class="kw">int</span> maxIdx = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < n; i++)
+        <span class="kw">if</span> (dp[i] > dp[maxIdx]) maxIdx = i;
+
+    <span class="cm">// backtrack to reconstruct sequence</span>
+    <span class="kw">var</span> seq = <span class="kw">new</span> List&lt;<span class="kw">int</span>&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> k = maxIdx; k >= <span class="num">0</span>; k = prev[k]) {
+        seq.<span class="fn">Insert</span>(<span class="num">0</span>, arr[k]);
+        <span class="kw">if</span> (prev[k] == -<span class="num">1</span>) <span class="kw">break</span>;
+    }
+    <span class="kw">return</span> dp[maxIdx]; <span class="cm">// also return seq</span>
+}</div>
+</div>
+
+</div>
+
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let running = false;
+
+function parseArr() {
+  return document.getElementById('arrInput').value
+    .split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+}
+
+function buildUI(arr) {
+  const n = arr.length;
+  // arr cells
+  const ar = document.getElementById('arrRow'); ar.innerHTML = '';
+  arr.forEach((v,i) => {
+    const c = document.createElement('div'); c.className='cell'; c.id=`ac-${i}`;
+    c.innerHTML=`<span class="cval">${v}</span><span class="cidx">[${i}]</span>`;
+    ar.appendChild(c);
+  });
+  // dp cells
+  const dr = document.getElementById('dpRow'); dr.innerHTML = '';
+  arr.forEach((_,i) => {
+    const c = document.createElement('div'); c.className='dp-cell one'; c.id=`dc-${i}`;
+    c.textContent='1'; dr.appendChild(c);
+  });
+  // table header
+  const tbl = document.getElementById('dpTable'); tbl.innerHTML = '';
+  const htr = document.createElement('tr');
+  htr.innerHTML = '<th>iter i</th>' + arr.map((_,j)=>`<th>[${j}]=${arr[j]}</th>`).join('');
+  tbl.appendChild(htr);
+  // init row
+  const itr = document.createElement('tr');
+  itr.innerHTML = '<td>init</td>' + arr.map(()=>'<td>1</td>').join('');
+  tbl.appendChild(itr);
+}
+
+function log(msg, tag, tagBg, tagFg) {
+  const wrap = document.getElementById('logWrap');
+  const line = document.createElement('div'); line.className='log-line';
+  const t = tag ? `<span class="tag" style="background:${tagBg};color:${tagFg}">${tag}</span>` : '';
+  line.innerHTML = t + msg;
+  wrap.appendChild(line);
+  requestAnimationFrame(() => line.classList.add('show'));
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function resetAll() {
+  if (running) return;
+  const arr = parseArr();
+  buildUI(arr);
+  document.getElementById('logWrap').innerHTML = '';
+  document.getElementById('banner').classList.remove('show');
+  document.getElementById('bannerLen').textContent = '—';
+  document.getElementById('bannerSeq').textContent = '';
+  ['sLen','sSeq','sComp','sTime'].forEach(id => document.getElementById(id).textContent='—');
+  document.getElementById('stepInfo').textContent = '';
+}
+
+async function runDemo() {
+  if (running) return;
+  resetAll();
+  running = true;
+  document.getElementById('btnRun').disabled = true;
+
+  const arr = parseArr();
+  const n = arr.length;
+  const DELAY = +document.getElementById('speed').value;
+  const dp   = new Array(n).fill(1);
+  const prev = new Array(n).fill(-1);
+  let comparisons = 0;
+  const start = performance.now();
+
+  log(`Init: dp[] = [${dp.join(', ')}]`, 'INIT', '#D3D1C7', '#2C2C2A');
+
+  for (let i = 1; i < n; i++) {
+    document.getElementById('stepInfo').textContent = `i = ${i}`;
+    document.getElementById(`ac-${i}`).className = 'cell anchor';
+    log(`── outer i=${i}  arr[${i}]=${arr[i]} ──`, `i=${i}`, '#E6F1FB', '#0C447C');
+
+    for (let j = 0; j < i; j++) {
+      comparisons++;
+      document.getElementById(`ac-${j}`).className = 'cell cmp';
+      const gt = arr[i] > arr[j];
+      const better = gt && dp[i] < dp[j] + 1;
+      log(
+        `  j=${j} arr[${j}]=${arr[j]}  ${arr[i]} > ${arr[j]}? ${gt?'✓':'✗'}${better?' → dp['+i+']='+( dp[j]+1)+' ✓':''}`,
+        `j=${j}`, '#FAEEDA', '#633806'
+      );
+      if (better) {
+        dp[i] = dp[j] + 1;
+        prev[i] = j;
+        const dc = document.getElementById(`dc-${i}`);
+        dc.className = 'dp-cell growing'; dc.textContent = dp[i];
+      }
+      await sleep(DELAY * 0.6);
+      document.getElementById(`ac-${j}`).className = 'cell';
+    }
+    // mark dp[i] settled
+    const dc = document.getElementById(`dc-${i}`);
+    if (dp[i] > 1) { dc.className = 'dp-cell growing'; }
+    document.getElementById(`ac-${i}`).className = 'cell';
+
+    // add table row
+    const tbl = document.getElementById('dpTable');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="active-i">i=${i}</td>` +
+      dp.map((v,k) => {
+        let cls = '';
+        if (k === i && v > 1) cls = 'dp-upd';
+        return `<td class="${cls}">${v}</td>`;
+      }).join('');
+    tbl.appendChild(tr);
+
+    document.getElementById('sComp').textContent = comparisons;
+    await sleep(DELAY * 0.4);
+  }
+
+  // find max
+  let maxIdx = 0;
+  for (let i = 0; i < n; i++) if (dp[i] > dp[maxIdx]) maxIdx = i;
+  const lisLen = dp[maxIdx];
+
+  // mark max dp
+  document.getElementById(`dc-${maxIdx}`).className = 'dp-cell max-dp';
+
+  // backtrack sequence
+  const seqIdx = [];
+  for (let k = maxIdx; k >= 0; k = prev[k]) {
+    seqIdx.unshift(k);
+    if (prev[k] === -1) break;
+  }
+  seqIdx.forEach(i => document.getElementById(`ac-${i}`).className = 'cell lis-path');
+
+  const seqVals = seqIdx.map(i => arr[i]);
+  const elapsed = performance.now() - start;
+
+  log(`LIS length = ${lisLen}`, 'RESULT', '#EEEDFE', '#3C3489');
+  log(`LIS sequence = [ ${seqVals.join(' → ')} ]`, 'SEQ', '#E1F5EE', '#085041');
+
+  document.getElementById('bannerLen').textContent = lisLen;
+  document.getElementById('bannerSeq').textContent = seqVals.join(' → ');
+  document.getElementById('banner').classList.add('show');
+
+  document.getElementById('sLen').textContent = lisLen;
+  document.getElementById('sSeq').textContent = seqVals.join(' ');
+  document.getElementById('sComp').textContent = comparisons;
+  document.getElementById('sTime').textContent = elapsed.toFixed(1);
+  document.getElementById('stepInfo').textContent = `✓ Done — LIS = ${lisLen}`;
+
+  // final table row
+  const tbl = document.getElementById('dpTable');
+  const fr = document.createElement('tr');
+  fr.innerHTML = `<td style="font-weight:500">max</td>` +
+    dp.map((v,k) => `<td class="${k===maxIdx?'dp-max':''}">${v}</td>`).join('');
+  tbl.appendChild(fr);
+
+  running = false;
+  document.getElementById('btnRun').disabled = false;
+}
+
+resetAll();
+document.getElementById('arrInput').oninput = () => { if (!running) resetAll(); };
+</script>

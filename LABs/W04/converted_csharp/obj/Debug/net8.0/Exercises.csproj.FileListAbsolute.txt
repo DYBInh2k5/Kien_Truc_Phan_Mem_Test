@@ -1,0 +1,14 @@
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\bin\Debug\net8.0\Exercises.exe
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\bin\Debug\net8.0\Exercises.deps.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\bin\Debug\net8.0\Exercises.runtimeconfig.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\bin\Debug\net8.0\Exercises.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\bin\Debug\net8.0\Exercises.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\obj\Debug\net8.0\Exercises.GeneratedMSBuildEditorConfig.editorconfig
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\obj\Debug\net8.0\Exercises.AssemblyInfoInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\obj\Debug\net8.0\Exercises.AssemblyInfo.cs
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\obj\Debug\net8.0\Exercises.csproj.CoreCompileInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\obj\Debug\net8.0\Exercises.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\obj\Debug\net8.0\refint\Exercises.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\obj\Debug\net8.0\Exercises.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\obj\Debug\net8.0\Exercises.genruntimeconfig.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W04\converted_csharp\obj\Debug\net8.0\ref\Exercises.dll

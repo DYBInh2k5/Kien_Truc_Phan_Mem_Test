@@ -1,0 +1,343 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; font-family: var(--font-sans); }
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; font-weight: 500; transition: background .15s; }
+.btn:hover { background: var(--color-background-primary); }
+.btn.primary { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+.btn.primary:hover { background: #3C3489; }
+.btn:disabled { opacity:.4; cursor:not-allowed; }
+input[type=text] { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; width: 260px; font-family: 'Courier New', monospace; }
+select { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; }
+label { font-size: 12px; color: var(--color-text-secondary); }
+
+.panel { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 10px; overflow: hidden; }
+.ph { padding: 9px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid var(--color-border-tertiary); color: var(--color-text-primary); display:flex; justify-content:space-between; align-items:center; }
+
+/* array + hashset */
+.cells-area { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.cells-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.row-lbl { font-size: 11px; color: var(--color-text-tertiary); width: 72px; text-align: right; flex-shrink: 0; }
+.cell { width: 52px; height: 52px; border-radius: 8px; border: 2px solid var(--color-border-secondary); background: var(--color-background-primary); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; transition: all .25s; }
+.cell .cv { font-size: 17px; font-weight: 500; font-family: 'Courier New', monospace; color: var(--color-text-primary); }
+.cell .ci { font-size: 9px; color: var(--color-text-tertiary); margin-top: 1px; }
+.cell.scanning  { background: #FAEEDA; border-color: #854F0B; transform: scale(1.1); }
+.cell.scanning .cv { color: #633806; }
+.cell.no-prev   { background: #E6F1FB; border-color: #185FA5; }
+.cell.no-prev .cv { color: #0C447C; }
+.cell.in-seq    { background: #E1F5EE; border-color: #0F6E56; }
+.cell.in-seq .cv { color: #085041; }
+.cell.best-seq  { background: #EEEDFE; border-color: #534AB7; }
+.cell.best-seq .cv { color: #26215C; }
+.cell.skipped   { opacity: .35; }
+
+/* hashset buckets */
+.hs-wrap { padding: 14px; }
+.hs-title { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 8px; }
+.hs-cells { display: flex; gap: 5px; flex-wrap: wrap; }
+.hs-cell { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-family: 'Courier New', monospace; font-weight: 500; border: 1.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); transition: all .2s; }
+.hs-cell.hit  { background: #E1F5EE; border-color: #0F6E56; color: #085041; transform: scale(1.1); }
+.hs-cell.miss { background: #FCEBEB; border-color: #A32D2D; color: #791F1F; opacity: .5; }
+.hs-cell.seq  { background: #EEEDFE; border-color: #534AB7; color: #26215C; }
+
+/* chains vis */
+.chains-wrap { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.chain-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.chain-lbl { font-size: 11px; color: var(--color-text-tertiary); width: 72px; text-align: right; flex-shrink: 0; }
+.chain-cell { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-family: 'Courier New', monospace; font-weight: 500; border: 1.5px solid; opacity: 0; transform: scale(.8); transition: opacity .2s, transform .2s; }
+.chain-cell.show { opacity: 1; transform: none; }
+.chain-arrow { font-size: 14px; color: var(--color-text-tertiary); }
+.chain-len { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-family: var(--font-sans); }
+
+/* log */
+.log-wrap { padding: 10px 14px; max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; }
+.log-line { font-size: 11px; font-family: 'Courier New', monospace; opacity: 0; transform: translateX(-4px); transition: opacity .18s, transform .18s; color: var(--color-text-secondary); }
+.log-line.show { opacity: 1; transform: none; }
+.tag { padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 500; margin-right: 6px; }
+
+/* result */
+.banner { margin: 0 14px 14px; padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; gap: 16px; opacity: 0; transition: opacity .4s; border: 2px solid #534AB7; background: #EEEDFE; }
+.banner.show { opacity: 1; }
+.banner-len { font-size: 32px; font-weight: 500; font-family: 'Courier New', monospace; color: #26215C; }
+.banner-seq { font-size: 14px; font-family: 'Courier New', monospace; color: #534AB7; margin-top: 4px; }
+
+.stat-row { display: flex; gap: 10px; }
+.stat { flex: 1; background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 8px; padding: 10px; text-align: center; }
+.stat-val { font-size: 20px; font-weight: 500; font-family: 'Courier New', monospace; color: var(--color-text-primary); }
+.stat-lbl { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
+
+.code-area { padding: 12px 14px; font-size: 11px; line-height: 1.8; white-space: pre; overflow-x: auto; font-family: 'Courier New', monospace; color: var(--color-text-secondary); }
+.kw{color:#534AB7} .fn{color:#0F6E56} .cm{color:var(--color-text-tertiary)} .num{color:#993C1D} .type{color:#185FA5}
+</style>
+
+<div class="wrap">
+
+<div class="controls">
+  <button class="btn primary" id="btnRun" onclick="runDemo()">▶ Run (step by step)</button>
+  <button class="btn" onclick="resetAll()">↺ Reset</button>
+  <label>Array:</label>
+  <input type="text" id="arrInput" value="1, 9, 3, 10, 4, 20, 2"/>
+  <label>Speed:</label>
+  <select id="speed">
+    <option value="700">Slow</option>
+    <option value="350" selected>Normal</option>
+    <option value="120">Fast</option>
+  </select>
+</div>
+
+<!-- input array -->
+<div class="panel">
+  <div class="ph"><span>Input array & HashSet</span><span id="stepInfo" style="font-size:10px;color:var(--color-text-tertiary)"></span></div>
+  <div class="cells-area">
+    <div class="cells-row">
+      <div class="row-lbl">arr[]</div>
+      <div id="arrRow" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+  <div class="hs-wrap">
+    <div class="hs-title">HashSet&lt;int&gt; — O(1) lookup</div>
+    <div class="hs-cells" id="hsRow"></div>
+  </div>
+</div>
+
+<!-- chain building -->
+<div class="panel">
+  <div class="ph"><span>Chains found — starts where (num−1) ∉ set</span></div>
+  <div class="chains-wrap" id="chainsWrap">
+    <div style="font-size:11px;color:var(--color-text-tertiary);padding:4px 0">Run to see chains...</div>
+  </div>
+</div>
+
+<!-- result banner -->
+<div class="banner" id="banner">
+  <div class="banner-len" id="bannerLen">—</div>
+  <div>
+    <div style="font-size:13px;font-weight:500;font-family:var(--font-sans);color:#3C3489">Longest consecutive sequence</div>
+    <div class="banner-seq" id="bannerSeq"></div>
+  </div>
+</div>
+
+<!-- log -->
+<div class="panel">
+  <div class="ph">Execution log</div>
+  <div class="log-wrap" id="logWrap"></div>
+</div>
+
+<!-- stats -->
+<div class="stat-row">
+  <div class="stat"><div class="stat-val" id="sLen">—</div><div class="stat-lbl">Longest length</div></div>
+  <div class="stat"><div class="stat-val" id="sSeq">—</div><div class="stat-lbl">Sequence</div></div>
+  <div class="stat"><div class="stat-val" id="sChains">—</div><div class="stat-lbl">Chains found</div></div>
+  <div class="stat"><div class="stat-val" id="sTime">—</div><div class="stat-lbl">Time (ms)</div></div>
+</div>
+
+<!-- code -->
+<div class="panel">
+  <div class="ph">C# — HashSet O(n) algorithm</div>
+  <div class="code-area"><span class="kw">int</span>[] arr = { <span class="num">1</span>,<span class="num">9</span>,<span class="num">3</span>,<span class="num">10</span>,<span class="num">4</span>,<span class="num">20</span>,<span class="num">2</span> };
+HashSet&lt;<span class="kw">int</span>&gt; set = <span class="kw">new</span> HashSet&lt;<span class="kw">int</span>&gt;(arr); <span class="cm">// O(n) build</span>
+
+<span class="kw">int</span> longest = <span class="num">0</span>;
+
+<span class="kw">foreach</span> (<span class="kw">int</span> num <span class="kw">in</span> arr)
+{
+    <span class="cm">// only start chain at the BEGINNING of a sequence</span>
+    <span class="kw">if</span> (!set.<span class="fn">Contains</span>(num - <span class="num">1</span>))     <span class="cm">// num-1 not in set → start here</span>
+    {
+        <span class="kw">int</span> current = num, count = <span class="num">1</span>;
+
+        <span class="kw">while</span> (set.<span class="fn">Contains</span>(current + <span class="num">1</span>)) <span class="cm">// extend as far as possible</span>
+        {
+            current++;
+            count++;
+        }
+
+        longest = Math.<span class="fn">Max</span>(longest, count);
+    }
+}
+<span class="cm">// Time: O(n)  Space: O(n)</span>
+Console.<span class="fn">WriteLine</span>(<span class="num">"Longest = " + longest</span>);</div>
+</div>
+
+</div>
+
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let running = false;
+
+const CHAIN_COLORS = [
+  ['#E1F5EE','#085041','#0F6E56'],
+  ['#EEEDFE','#26215C','#534AB7'],
+  ['#FAEEDA','#412402','#854F0B'],
+  ['#FAECE7','#4A1B0C','#993C1D'],
+  ['#E6F1FB','#042C53','#185FA5'],
+];
+
+function parseArr() {
+  return document.getElementById('arrInput').value
+    .split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+}
+
+function buildUI(arr) {
+  // arr cells
+  const ar = document.getElementById('arrRow'); ar.innerHTML = '';
+  arr.forEach((v,i) => {
+    const c = document.createElement('div'); c.className='cell'; c.id=`ac-${i}`;
+    c.innerHTML=`<span class="cv">${v}</span><span class="ci">[${i}]</span>`;
+    ar.appendChild(c);
+  });
+  // hashset
+  const hs = document.getElementById('hsRow'); hs.innerHTML = '';
+  const sorted = [...new Set(arr)].sort((a,b)=>a-b);
+  sorted.forEach(v => {
+    const c = document.createElement('div'); c.className='hs-cell'; c.id=`hc-${v}`;
+    c.textContent = v; hs.appendChild(c);
+  });
+  document.getElementById('chainsWrap').innerHTML =
+    '<div style="font-size:11px;color:var(--color-text-tertiary);padding:4px 0">Run to see chains...</div>';
+  document.getElementById('banner').classList.remove('show');
+  document.getElementById('logWrap').innerHTML = '';
+  ['sLen','sSeq','sChains','sTime'].forEach(id => document.getElementById(id).textContent='—');
+  document.getElementById('stepInfo').textContent = '';
+  document.getElementById('bannerLen').textContent = '—';
+  document.getElementById('bannerSeq').textContent = '';
+}
+
+function addLog(msg, tag, tbg, tfg) {
+  const wrap = document.getElementById('logWrap');
+  const line = document.createElement('div'); line.className='log-line';
+  const t = tag ? `<span class="tag" style="background:${tbg};color:${tfg}">${tag}</span>` : '';
+  line.innerHTML = t + msg;
+  wrap.appendChild(line);
+  requestAnimationFrame(() => line.classList.add('show'));
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function resetAll() {
+  if (running) return;
+  buildUI(parseArr());
+}
+
+async function runDemo() {
+  if (running) return;
+  resetAll();
+  running = true;
+  document.getElementById('btnRun').disabled = true;
+
+  const arr = parseArr();
+  const set = new Set(arr);
+  const n = arr.length;
+  const DELAY = +document.getElementById('speed').value;
+  const start = performance.now();
+
+  addLog(`Build HashSet: { ${[...set].sort((a,b)=>a-b).join(', ')} }`, 'INIT', '#D3D1C7', '#2C2C2A');
+
+  const chains = [];
+  let longest = 0, bestChain = [];
+  const chainsWrap = document.getElementById('chainsWrap');
+  chainsWrap.innerHTML = '';
+  let chainIdx = 0;
+
+  for (let idx = 0; idx < n; idx++) {
+    const num = arr[idx];
+    document.getElementById(`ac-${idx}`).className = 'cell scanning';
+    document.getElementById('stepInfo').textContent = `checking num=${num}`;
+
+    // check num-1
+    const hasPrev = set.has(num - 1);
+    const hcPrev = document.getElementById(`hc-${num-1}`);
+    if (hcPrev) { hcPrev.className = 'hs-cell ' + (hasPrev ? 'hit' : 'miss'); }
+    addLog(
+      `num=${num}: Contains(${num}-1=${num-1})? ${hasPrev ? '✓ YES → skip (not start)' : '✗ NO → start chain here'}`,
+      hasPrev ? 'SKIP' : 'START',
+      hasPrev ? '#D3D1C7' : '#E6F1FB',
+      hasPrev ? '#2C2C2A' : '#0C447C'
+    );
+
+    await sleep(DELAY * 0.7);
+
+    if (!hasPrev) {
+      // start chain
+      let current = num, count = 1;
+      const chain = [num];
+      document.getElementById(`ac-${idx}`).className = 'cell no-prev';
+
+      // build chain row in UI
+      const [cbg, cfg, cborder] = CHAIN_COLORS[chainIdx % CHAIN_COLORS.length];
+      const crow = document.createElement('div'); crow.className = 'chain-row';
+      const clbl = document.createElement('div'); clbl.className = 'chain-lbl';
+      clbl.textContent = `chain ${chainIdx+1}`;
+      crow.appendChild(clbl);
+
+      const addChainCell = (v, isFirst) => {
+        if (!isFirst) { const arr2 = document.createElement('span'); arr2.className='chain-arrow'; arr2.textContent='→'; crow.appendChild(arr2); }
+        const cc = document.createElement('div'); cc.className='chain-cell';
+        cc.style.background=cbg; cc.style.color=cfg; cc.style.borderColor=cborder;
+        cc.textContent = v; crow.appendChild(cc);
+        setTimeout(() => cc.classList.add('show'), 50);
+        // highlight hs cell
+        const hc = document.getElementById(`hc-${v}`);
+        if (hc) hc.className = 'hs-cell seq';
+      };
+      addChainCell(num, true);
+      chainsWrap.appendChild(crow);
+
+      while (set.has(current + 1)) {
+        current++; count++; chain.push(current);
+        addLog(`  extend: ${current} ∈ set ✓  count=${count}`, 'EXTEND', '#E1F5EE', '#085041');
+        addChainCell(current, false);
+
+        // highlight arr cells that match
+        arr.forEach((v,i) => { if (v === current) document.getElementById(`ac-${i}`).className = 'cell in-seq'; });
+
+        await sleep(DELAY * 0.5);
+      }
+      // check next+1 miss
+      addLog(`  next ${current+1} ∉ set ✗ → chain ends. length=${count}`, 'END', '#FAEEDA', '#633806');
+
+      const lenBadge = document.createElement('div'); lenBadge.className='chain-len';
+      lenBadge.style.background=cbg; lenBadge.style.color=cfg; lenBadge.style.border=`1px solid ${cborder}`;
+      lenBadge.textContent = `len=${count}`; crow.appendChild(lenBadge);
+
+      chains.push({ chain, count });
+      if (count > longest) { longest = count; bestChain = chain; }
+      chainIdx++;
+      document.getElementById('sChains').textContent = chains.length;
+    } else {
+      document.getElementById(`ac-${idx}`).className = 'cell skipped';
+    }
+
+    // reset hs highlights
+    setTimeout(() => {
+      if (hcPrev) hcPrev.className = 'hs-cell';
+    }, DELAY * 0.4);
+
+    await sleep(DELAY * 0.3);
+  }
+
+  // highlight best chain cells
+  arr.forEach((v,i) => {
+    if (bestChain.includes(v)) document.getElementById(`ac-${i}`).className = 'cell best-seq';
+    else document.getElementById(`ac-${i}`).className = 'cell skipped';
+  });
+  bestChain.forEach(v => { const hc = document.getElementById(`hc-${v}`); if (hc) hc.className='hs-cell seq'; });
+
+  const elapsed = performance.now() - start;
+  addLog(`Longest = ${longest}  sequence: [ ${bestChain.join(' → ')} ]`, 'RESULT', '#EEEDFE', '#3C3489');
+
+  document.getElementById('bannerLen').textContent = longest;
+  document.getElementById('bannerSeq').textContent = bestChain.join(' → ');
+  document.getElementById('banner').classList.add('show');
+  document.getElementById('sLen').textContent = longest;
+  document.getElementById('sSeq').textContent = bestChain.join(' ');
+  document.getElementById('sTime').textContent = elapsed.toFixed(1);
+  document.getElementById('stepInfo').textContent = `✓ Done`;
+
+  running = false;
+  document.getElementById('btnRun').disabled = false;
+}
+
+resetAll();
+document.getElementById('arrInput').oninput = () => { if (!running) resetAll(); };
+</script>

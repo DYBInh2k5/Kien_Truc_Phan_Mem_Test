@@ -1,0 +1,326 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; font-family: var(--font-sans); }
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; font-weight: 500; transition: background .15s; }
+.btn:hover { background: var(--color-background-primary); }
+.btn.primary { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+.btn.primary:hover { background: #3C3489; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+input[type=text] { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; width: 240px; font-family: 'Courier New', monospace; }
+label { font-size: 12px; color: var(--color-text-secondary); }
+select { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; }
+
+.panel { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 10px; overflow: hidden; }
+.ph { padding: 9px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid var(--color-border-tertiary); color: var(--color-text-primary); display:flex; justify-content:space-between; align-items:center; }
+
+/* array cells */
+.arr-wrap { padding: 14px; }
+.arr-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.a-cell { width: 52px; height: 52px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid var(--color-border-secondary); background: var(--color-background-primary); transition: all .2s; flex-shrink: 0; }
+.a-cell .val { font-size: 18px; font-weight: 500; font-family: 'Courier New', monospace; color: var(--color-text-primary); }
+.a-cell .idx { font-size: 9px; color: var(--color-text-tertiary); margin-top: 1px; }
+.a-cell.anchor { background: #E6F1FB; border-color: #185FA5; }
+.a-cell.anchor .val { color: #0C447C; }
+.a-cell.comparing { background: #FAEEDA; border-color: #854F0B; transform: scale(1.1); }
+.a-cell.comparing .val { color: #633806; }
+.a-cell.found { background: #E1F5EE; border-color: #0F6E56; }
+.a-cell.found .val { color: #085041; }
+.a-cell.notfound { background: #FCEBEB; border-color: #A32D2D; opacity: .5; }
+
+/* matrix grid */
+.matrix-wrap { padding: 14px; overflow-x: auto; }
+.matrix { display: inline-flex; flex-direction: column; gap: 2px; }
+.m-row { display: flex; gap: 2px; align-items: center; }
+.m-header-cell { width: 36px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--color-text-tertiary); font-family: 'Courier New', monospace; }
+.m-cell { width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; font-family: 'Courier New', monospace; border: 1px solid var(--color-border-tertiary); background: var(--color-background-primary); transition: background .2s, border-color .2s; }
+.m-cell.skip { opacity: .2; }
+.m-cell.checking { background: #FAEEDA; border-color: #854F0B; color: #633806; }
+.m-cell.yes { background: #E1F5EE; border-color: #0F6E56; color: #085041; }
+.m-cell.no  { background: #FCEBEB; border-color: #A32D2D; color: #791F1F; opacity: .6; }
+
+/* thread lanes */
+.lanes-wrap { padding: 14px; display: flex; flex-direction: column; gap: 7px; }
+.lane { display: flex; align-items: center; gap: 10px; }
+.lane-lbl { width: 72px; font-size: 11px; text-align: right; color: var(--color-text-secondary); flex-shrink: 0; }
+.lane-track { flex: 1; height: 26px; background: var(--color-background-primary); border-radius: 5px; border: 1px solid var(--color-border-tertiary); overflow: hidden; }
+.lane-fill { height: 100%; width: 0; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 500; white-space: nowrap; transition: width .1s linear; }
+.lane-found { width: 48px; font-size: 11px; font-family: 'Courier New', monospace; text-align: center; flex-shrink: 0; color: var(--color-text-primary); }
+
+/* results list */
+.results-wrap { padding: 14px; display: flex; flex-wrap: wrap; gap: 8px; min-height: 50px; }
+.res-chip { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-family: 'Courier New', monospace; font-weight: 500; opacity: 0; transform: scale(.8); transition: opacity .2s, transform .2s; }
+.res-chip.show { opacity: 1; transform: none; }
+
+/* code */
+.code-area { padding: 12px 14px; font-size: 11px; line-height: 1.8; white-space: pre; overflow-x: auto; font-family: 'Courier New', monospace; color: var(--color-text-secondary); }
+.kw{color:#534AB7} .fn{color:#0F6E56} .cm{color:var(--color-text-tertiary)} .num{color:#993C1D} .type{color:#185FA5}
+
+/* stats */
+.stat-row { display: flex; gap: 10px; }
+.stat { flex: 1; background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 8px; padding: 10px; text-align: center; }
+.stat-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); font-family: 'Courier New', monospace; }
+.stat-lbl { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
+</style>
+
+<div class="wrap">
+
+<div class="controls">
+  <button class="btn primary" id="btnRun" onclick="runDemo()">▶ Run Parallel.For</button>
+  <button class="btn" onclick="resetAll()">↺ Reset</button>
+  <label>Array:</label>
+  <input type="text" id="arrInput" value="1, 3, 2, 4"/>
+  <label>Speed:</label>
+  <select id="speed">
+    <option value="600">Slow</option>
+    <option value="300" selected>Normal</option>
+    <option value="120">Fast</option>
+  </select>
+</div>
+
+<!-- array display -->
+<div class="panel">
+  <div class="ph"><span>Input array</span><span id="arrInfo" style="font-size:10px;color:var(--color-text-tertiary)"></span></div>
+  <div class="arr-wrap">
+    <div class="arr-row" id="arrRow"></div>
+  </div>
+</div>
+
+<!-- matrix -->
+<div class="panel">
+  <div class="ph"><span>Comparison matrix — arr[j] > arr[i]?</span><span id="matStatus" style="font-size:10px;color:var(--color-text-tertiary)"></span></div>
+  <div class="matrix-wrap"><div class="matrix" id="matrix"></div></div>
+</div>
+
+<!-- thread lanes -->
+<div class="panel">
+  <div class="ph">Parallel.For — each i runs on own thread</div>
+  <div class="lanes-wrap" id="lanesWrap"></div>
+</div>
+
+<!-- results -->
+<div class="panel">
+  <div class="ph"><span>Ascending subsequences found</span><span id="resCount" style="font-size:10px;color:var(--color-text-tertiary)"></span></div>
+  <div class="results-wrap" id="results">
+    <span style="font-size:11px;color:var(--color-text-tertiary)">Run to see results...</span>
+  </div>
+</div>
+
+<!-- stats -->
+<div class="stat-row">
+  <div class="stat"><div class="stat-val" id="sTotal">—</div><div class="stat-lbl">Pairs found</div></div>
+  <div class="stat"><div class="stat-val" id="sChecked">—</div><div class="stat-lbl">Pairs checked</div></div>
+  <div class="stat"><div class="stat-val" id="sThreads">—</div><div class="stat-lbl">Threads (= n)</div></div>
+  <div class="stat"><div class="stat-val" id="sTime">—</div><div class="stat-lbl">Time (ms)</div></div>
+</div>
+
+<!-- code -->
+<div class="panel">
+  <div class="ph">C# — Parallel.For + nested loop</div>
+  <div class="code-area"><span class="kw">int</span>[] arr = { <span class="num">1</span>, <span class="num">3</span>, <span class="num">2</span>, <span class="num">4</span> };
+
+<span class="cm">// Parallel.For chia mỗi i cho 1 thread</span>
+<span class="cm">// Thread 0 → i=0: so sánh với j=1,2,3</span>
+<span class="cm">// Thread 1 → i=1: so sánh với j=2,3</span>
+<span class="cm">// Thread 2 → i=2: so sánh với j=3</span>
+Parallel.<span class="fn">For</span>(<span class="num">0</span>, arr.Length, i =>
+{
+    <span class="kw">for</span> (<span class="kw">int</span> j = i + <span class="num">1</span>; j < arr.Length; j++)
+    {
+        <span class="kw">if</span> (arr[j] > arr[i])
+        {
+            Console.<span class="fn">WriteLine</span>(<span class="num">$"{arr[i]} {arr[j]}"</span>);
+        }
+    }
+});
+
+<span class="cm">// Output (thứ tự có thể khác nhau mỗi lần chạy):</span>
+<span class="cm">// 1 3   (i=0, j=1)  ← Thread 0</span>
+<span class="cm">// 2 4   (i=2, j=3)  ← Thread 2</span>
+<span class="cm">// 1 4   (i=0, j=3)  ← Thread 0</span>
+<span class="cm">// 3 4   (i=1, j=3)  ← Thread 1 (nếu arr=[1,3,2,4])</span></div>
+</div>
+
+</div>
+
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let running = false;
+
+const T_COLORS = [
+  ['#CECBF6','#3C3489'],['#9FE1CB','#085041'],
+  ['#FAC775','#633806'],['#F5C4B3','#712B13'],
+  ['#B5D4F4','#0C447C'],['#C0DD97','#27500A'],
+];
+const CHIP_COLORS = [
+  ['#E1F5EE','#085041','#5DCAA5'],
+  ['#EEEDFE','#3C3489','#7F77DD'],
+  ['#FAEEDA','#633806','#EF9F27'],
+  ['#FAECE7','#4A1B0C','#D85A30'],
+  ['#E6F1FB','#0C447C','#378ADD'],
+  ['#EAF3DE','#173404','#639922'],
+];
+
+function parseArr() {
+  return document.getElementById('arrInput').value
+    .split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+}
+
+function buildArrCells(arr) {
+  const row = document.getElementById('arrRow');
+  row.innerHTML = '';
+  document.getElementById('arrInfo').textContent = `n = ${arr.length}`;
+  arr.forEach((v, i) => {
+    const cell = document.createElement('div'); cell.className = 'a-cell'; cell.id = `ac-${i}`;
+    cell.innerHTML = `<span class="val">${v}</span><span class="idx">[${i}]</span>`;
+    row.appendChild(cell);
+  });
+}
+
+function buildMatrix(arr) {
+  const mat = document.getElementById('matrix');
+  mat.innerHTML = '';
+  const n = arr.length;
+
+  // header row
+  const hRow = document.createElement('div'); hRow.className = 'm-row';
+  hRow.appendChild(Object.assign(document.createElement('div'), {className:'m-header-cell', textContent:'i\\j'}));
+  arr.forEach((v,j) => {
+    const c = document.createElement('div'); c.className = 'm-header-cell';
+    c.textContent = `[${j}]=${v}`; hRow.appendChild(c);
+  });
+  mat.appendChild(hRow);
+
+  for (let i = 0; i < n; i++) {
+    const row = document.createElement('div'); row.className = 'm-row';
+    const lbl = document.createElement('div'); lbl.className = 'm-header-cell';
+    lbl.textContent = `[${i}]=${arr[i]}`; row.appendChild(lbl);
+    for (let j = 0; j < n; j++) {
+      const cell = document.createElement('div'); cell.className = 'm-cell'; cell.id = `mc-${i}-${j}`;
+      if (j <= i) { cell.classList.add('skip'); cell.textContent = '—'; }
+      else cell.textContent = '?';
+      row.appendChild(cell);
+    }
+    mat.appendChild(row);
+  }
+}
+
+function buildLanes(arr) {
+  const wrap = document.getElementById('lanesWrap');
+  wrap.innerHTML = '';
+  arr.forEach((v, i) => {
+    const [bg, fg] = T_COLORS[i % T_COLORS.length];
+    const lane = document.createElement('div'); lane.className = 'lane';
+    lane.innerHTML = `
+      <div class="lane-lbl" style="color:${fg}">i=${i} (${v})</div>
+      <div class="lane-track"><div class="lane-fill" id="lf-${i}" style="background:${bg};color:${fg}">scanning j...</div></div>
+      <div class="lane-found" id="ll-${i}">—</div>`;
+    wrap.appendChild(lane);
+  });
+}
+
+function resetAll() {
+  if (running) return;
+  const arr = parseArr();
+  buildArrCells(arr);
+  buildMatrix(arr);
+  buildLanes(arr);
+  document.getElementById('results').innerHTML = '<span style="font-size:11px;color:var(--color-text-tertiary)">Run to see results...</span>';
+  document.getElementById('resCount').textContent = '';
+  document.getElementById('matStatus').textContent = '';
+  ['sTotal','sChecked','sThreads','sTime'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+async function runDemo() {
+  if (running) return;
+  resetAll();
+  running = true;
+  document.getElementById('btnRun').disabled = true;
+
+  const arr = parseArr();
+  const n = arr.length;
+  const DELAY = +document.getElementById('speed').value;
+  const resWrap = document.getElementById('results');
+  resWrap.innerHTML = '';
+
+  let totalFound = 0, totalChecked = 0;
+  const start = performance.now();
+
+  document.getElementById('sThreads').textContent = n;
+
+  // simulate parallel — all i-threads run "concurrently" (staggered for visibility)
+  const allPairs = [];
+
+  const threadProms = arr.map(async (vi, i) => {
+    const [bg, fg] = T_COLORS[i % T_COLORS.length];
+    const fill = document.getElementById(`lf-${i}`);
+    const lbl  = document.getElementById(`ll-${i}`);
+    let localFound = 0;
+
+    // highlight anchor
+    document.getElementById(`ac-${i}`).className = 'a-cell anchor';
+
+    for (let j = i + 1; j < n; j++) {
+      const vj = arr[j];
+      totalChecked++;
+
+      // highlight comparing cell
+      document.getElementById(`ac-${j}`).className = 'a-cell comparing';
+      const mc = document.getElementById(`mc-${i}-${j}`);
+      mc.classList.add('checking');
+      fill.style.width = ((j - i) / (n - i) * 100) + '%';
+      fill.textContent = `checking j=${j} (${vj})`;
+      document.getElementById('matStatus').textContent = `i=${i} j=${j}`;
+
+      await sleep(DELAY);
+
+      if (vj > vi) {
+        mc.classList.remove('checking'); mc.classList.add('yes'); mc.textContent = '✓';
+        document.getElementById(`ac-${j}`).className = 'a-cell found';
+        localFound++;
+        totalFound++;
+
+        // add result chip
+        const [cbg, cfg, cborder] = CHIP_COLORS[(totalFound-1) % CHIP_COLORS.length];
+        const chip = document.createElement('div'); chip.className = 'res-chip';
+        chip.style.background = cbg; chip.style.color = cfg;
+        chip.style.border = `1.5px solid ${cborder}`;
+        chip.textContent = `${vi} ${vj}`;
+        resWrap.appendChild(chip);
+        requestAnimationFrame(() => chip.classList.add('show'));
+
+        document.getElementById('sTotal').textContent = totalFound;
+      } else {
+        mc.classList.remove('checking'); mc.classList.add('no'); mc.textContent = '✗';
+        document.getElementById(`ac-${j}`).className = 'a-cell notfound';
+      }
+      document.getElementById('sChecked').textContent = totalChecked;
+    }
+
+    fill.style.width = '100%';
+    fill.textContent = `done — ${localFound} found`;
+    lbl.textContent = `${localFound} ↑`;
+    document.getElementById(`ac-${i}`).className = 'a-cell';
+  });
+
+  // interleave threads with slight stagger
+  for (let i = 0; i < n; i++) { await sleep(60); }
+  await Promise.all(threadProms);
+
+  // reset all cell highlights
+  arr.forEach((_, i) => document.getElementById(`ac-${i}`).className = 'a-cell');
+
+  const elapsed = performance.now() - start;
+  document.getElementById('sTime').textContent = elapsed.toFixed(0);
+  document.getElementById('resCount').textContent = `${totalFound} pairs`;
+  document.getElementById('matStatus').textContent = `✓ Done — ${totalFound} pairs`;
+
+  running = false;
+  document.getElementById('btnRun').disabled = false;
+}
+
+// init
+resetAll();
+document.getElementById('arrInput').oninput = () => { if (!running) resetAll(); };
+</script>

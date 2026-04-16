@@ -1,0 +1,279 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; font-family: var(--font-sans); }
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; font-weight: 500; transition: background .15s; }
+.btn:hover { background: var(--color-background-primary); }
+.btn.primary { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+.btn.primary:hover { background: #3C3489; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+input[type=text] { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; width: 300px; font-family: 'Courier New', monospace; }
+label { font-size: 12px; color: var(--color-text-secondary); }
+
+.panel { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 10px; overflow: hidden; }
+.ph { padding: 9px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid var(--color-border-tertiary); color: var(--color-text-primary); display:flex; justify-content:space-between; align-items:center; }
+
+/* pipeline steps */
+.steps-wrap { display: flex; gap: 0; overflow-x: auto; padding: 16px 14px; align-items: flex-start; }
+.step { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; width: 160px; }
+.step-head { font-size: 11px; font-weight: 500; padding: 5px 10px; border-radius: 5px; margin-bottom: 8px; text-align: center; width: 100%; }
+.step-cells { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+.s-cell { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: 'Courier New', monospace; font-weight: 500; text-align: center; border: 1.5px solid transparent; opacity: 0; transform: translateY(4px); transition: opacity .25s, transform .25s, background .25s; }
+.s-cell.show { opacity: 1; transform: none; }
+.s-cell.dup  { opacity: .3; text-decoration: line-through; }
+.s-cell.top  { border-width: 2px; }
+.arrow-step { display: flex; align-items: center; justify-content: center; width: 36px; padding-top: 28px; flex-shrink: 0; }
+
+/* podium */
+.podium-wrap { display: flex; justify-content: center; align-items: flex-end; gap: 12px; padding: 20px 14px 14px; }
+.podium-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.podium-num { font-size: 22px; font-weight: 500; font-family: 'Courier New', monospace; }
+.podium-rank { font-size: 11px; color: var(--color-text-tertiary); }
+.podium-bar { width: 64px; border-radius: 6px 6px 0 0; }
+.podium-col.hidden { opacity: 0; }
+.podium-col.show { opacity: 1; transition: opacity .4s; }
+
+/* code */
+.code-area { padding: 12px 14px; font-size: 11px; line-height: 1.75; color: var(--color-text-secondary); white-space: pre; overflow-x: auto; font-family: 'Courier New', monospace; }
+.kw{color:#534AB7} .fn{color:#0F6E56} .cm{color:var(--color-text-tertiary)} .num{color:#993C1D} .type{color:#185FA5} .ch{color:#993C1D}
+
+/* stats */
+.stat-row { display: flex; gap: 10px; }
+.stat { flex: 1; background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 8px; padding: 10px; text-align: center; }
+.stat-val { font-size: 20px; font-weight: 500; color: var(--color-text-primary); font-family: 'Courier New', monospace; }
+.stat-lbl { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
+
+/* comparison table */
+.cmp { padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.cmp-row { display: flex; gap: 0; }
+.cmp-cell { flex: 1; padding: 6px 10px; font-size: 11px; border: 1px solid var(--color-border-tertiary); }
+.cmp-cell:first-child { font-weight: 500; background: var(--color-background-primary); }
+.cmp-hd { font-weight: 500; background: var(--color-background-secondary); }
+</style>
+
+<div class="wrap">
+
+<!-- controls -->
+<div class="controls">
+  <button class="btn primary" id="btnRun" onclick="runDemo()">▶ Run PLINQ Pipeline</button>
+  <button class="btn" onclick="resetAll()">↺ Reset</button>
+</div>
+<div class="controls">
+  <label>Array:</label>
+  <input type="text" id="arrInput" value="10, 4, 3, 50, 23, 90, 90, 50"/>
+</div>
+
+<!-- pipeline visualisation -->
+<div class="panel">
+  <div class="ph"><span>PLINQ pipeline — step by step</span><span id="pipeStatus" style="font-size:10px;color:var(--color-text-tertiary)"></span></div>
+  <div class="steps-wrap" id="stepsWrap">
+    <div style="padding:20px;font-size:11px;color:var(--color-text-tertiary)">Press ▶ Run to start</div>
+  </div>
+</div>
+
+<!-- podium result -->
+<div class="panel">
+  <div class="ph">Top 3 distinct values</div>
+  <div class="podium-wrap" id="podium">
+    <div class="podium-col hidden" id="pod1">
+      <div class="podium-num" id="podV1">—</div>
+      <div class="podium-bar" style="height:60px;background:#9FE1CB"></div>
+      <div class="podium-rank">#2</div>
+    </div>
+    <div class="podium-col hidden" id="pod0">
+      <div class="podium-num" id="podV0">—</div>
+      <div class="podium-bar" style="height:90px;background:#CECBF6"></div>
+      <div class="podium-rank">#1 🏆</div>
+    </div>
+    <div class="podium-col hidden" id="pod2">
+      <div class="podium-num" id="podV2">—</div>
+      <div class="podium-bar" style="height:40px;background:#FAC775"></div>
+      <div class="podium-rank">#3</div>
+    </div>
+  </div>
+</div>
+
+<!-- stats -->
+<div class="stat-row">
+  <div class="stat"><div class="stat-val" id="s1">—</div><div class="stat-lbl">1st largest</div></div>
+  <div class="stat"><div class="stat-val" id="s2">—</div><div class="stat-lbl">2nd largest</div></div>
+  <div class="stat"><div class="stat-val" id="s3">—</div><div class="stat-lbl">3rd largest</div></div>
+  <div class="stat"><div class="stat-val" id="sDup">—</div><div class="stat-lbl">Duplicates removed</div></div>
+</div>
+
+<!-- code -->
+<div class="panel">
+  <div class="ph">PLINQ — AsParallel().Distinct().OrderByDescending().Take(3)</div>
+  <div class="code-area"><span class="kw">using</span> System;
+<span class="kw">using</span> System.Linq;
+<span class="kw">using</span> System.Threading.Tasks;
+
+<span class="kw">int</span>[] arr = { <span class="num">10</span>, <span class="num">4</span>, <span class="num">3</span>, <span class="num">50</span>, <span class="num">23</span>, <span class="num">90</span>, <span class="num">90</span>, <span class="num">50</span> };
+
+<span class="kw">var</span> result = arr
+    .<span class="fn">AsParallel</span>()             <span class="cm">// ① bật parallel mode</span>
+    .<span class="fn">Distinct</span>()              <span class="cm">// ② loại phần tử trùng</span>
+    .<span class="fn">OrderByDescending</span>(x => x) <span class="cm">// ③ sort giảm dần</span>
+    .<span class="fn">Take</span>(<span class="num">3</span>);               <span class="cm">// ④ lấy 3 đầu</span>
+
+Console.<span class="fn">WriteLine</span>(<span class="ch">"Top 3:"</span>);
+<span class="kw">foreach</span> (<span class="kw">var</span> x <span class="kw">in</span> result)
+    Console.<span class="fn">WriteLine</span>(x);
+<span class="cm">// Output: 90  50  23</span></div>
+</div>
+
+<!-- comparison -->
+<div class="panel">
+  <div class="ph">Sequential vs PLINQ — comparison</div>
+  <div class="cmp">
+    <div class="cmp-row">
+      <div class="cmp-cell cmp-hd" style="flex:.9"></div>
+      <div class="cmp-cell cmp-hd">Sequential LINQ</div>
+      <div class="cmp-cell cmp-hd">PLINQ (AsParallel)</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-cell">Distinct()</div>
+      <div class="cmp-cell">1 thread, HashSet</div>
+      <div class="cmp-cell">N threads, partition</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-cell">OrderByDescending()</div>
+      <div class="cmp-cell">Sort 1 lần</div>
+      <div class="cmp-cell">Parallel sort + merge</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-cell">Thread-safe?</div>
+      <div class="cmp-cell" style="color:#0F6E56">✓ (single thread)</div>
+      <div class="cmp-cell" style="color:#0F6E56">✓ (PLINQ tự xử lý)</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-cell">Kết quả</div>
+      <div class="cmp-cell" style="color:#0F6E56">✓ Đúng</div>
+      <div class="cmp-cell" style="color:#0F6E56">✓ Đúng</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-cell">Khi nào nhanh hơn?</div>
+      <div class="cmp-cell">Array nhỏ (&lt;10k)</div>
+      <div class="cmp-cell">Array lớn (&gt;100k)</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+let running = false;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const STEP_STYLES = [
+  { bg:'#E6F1FB', fg:'#0C447C', border:'#185FA5', label:'① AsParallel()' },
+  { bg:'#FAEEDA', fg:'#633806', border:'#854F0B', label:'② Distinct()' },
+  { bg:'#E1F5EE', fg:'#085041', border:'#0F6E56', label:'③ OrderByDescending()' },
+  { bg:'#EEEDFE', fg:'#3C3489', border:'#534AB7', label:'④ Take(3)' },
+];
+
+function parseArr() {
+  return document.getElementById('arrInput').value
+    .split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+}
+
+function resetAll() {
+  if (running) return;
+  document.getElementById('stepsWrap').innerHTML =
+    '<div style="padding:20px;font-size:11px;color:var(--color-text-tertiary)">Press ▶ Run to start</div>';
+  document.getElementById('pipeStatus').textContent = '';
+  ['pod0','pod1','pod2'].forEach(id => document.getElementById(id).className = 'podium-col hidden');
+  ['podV0','podV1','podV2'].forEach(id => document.getElementById(id).textContent = '—');
+  ['s1','s2','s3','sDup'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+async function runDemo() {
+  if (running) return;
+  resetAll();
+  running = true;
+  document.getElementById('btnRun').disabled = true;
+
+  const arr = parseArr();
+  if (arr.length < 3) { alert('Need at least 3 numbers'); running=false; document.getElementById('btnRun').disabled=false; return; }
+
+  const wrap = document.getElementById('stepsWrap');
+  wrap.innerHTML = '';
+
+  const stages = [
+    arr,
+    arr,                                          // AsParallel — same data, just mode change
+    [...new Set(arr)],                            // Distinct
+    [...new Set(arr)].sort((a,b) => b-a),        // OrderByDesc
+    [...new Set(arr)].sort((a,b) => b-a).slice(0,3), // Take(3)
+  ];
+
+  const dupCount = arr.length - new Set(arr).size;
+  const distinct = [...new Set(arr)];
+  const sorted   = [...distinct].sort((a,b) => b-a);
+  const top3     = sorted.slice(0,3);
+
+  // build step columns
+  const stepData = [
+    { style: STEP_STYLES[0], values: arr.map(v => ({ v, state:'normal' })) },
+    { style: STEP_STYLES[1], values: arr.map(v => ({ v, state: arr.indexOf(v) !== arr.lastIndexOf(v) && distinct.indexOf(v) !== arr.indexOf(v) ? 'dup' : 'normal' })) },
+    { style: STEP_STYLES[2], values: sorted.map(v => ({ v, state:'normal' })) },
+    { style: STEP_STYLES[3], values: top3.map((v,i) => ({ v, state:'top', rank: i+1 })) },
+  ];
+
+  for (let s = 0; s < stepData.length; s++) {
+    const step = stepData[s];
+
+    if (s > 0) {
+      const arrowWrap = document.createElement('div'); arrowWrap.className = 'arrow-step';
+      arrowWrap.innerHTML = `<svg width="28" height="24" viewBox="0 0 28 24"><path d="M2 12h18M14 5l8 7-8 7" fill="none" stroke="var(--color-border-primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      wrap.appendChild(arrowWrap);
+    }
+
+    const col = document.createElement('div'); col.className = 'step';
+    const head = document.createElement('div'); head.className = 'step-head';
+    head.style.background = step.style.bg; head.style.color = step.style.fg;
+    head.textContent = step.style.label;
+    col.appendChild(head);
+
+    const cells = document.createElement('div'); cells.className = 'step-cells';
+    step.values.forEach(({ v, state, rank }) => {
+      const cell = document.createElement('div'); cell.className = 's-cell';
+      cell.style.background = step.style.bg;
+      cell.style.borderColor = step.style.border;
+      cell.style.color = step.style.fg;
+      if (state === 'dup') cell.classList.add('dup');
+      if (state === 'top') { cell.classList.add('top'); cell.textContent = `#${rank}  ${v}`; }
+      else cell.textContent = v;
+      cells.appendChild(cell);
+    });
+    col.appendChild(cells);
+    wrap.appendChild(col);
+
+    document.getElementById('pipeStatus').textContent = `Step ${s+1}/4`;
+    await sleep(300);
+    cells.querySelectorAll('.s-cell').forEach((c, i) => {
+      setTimeout(() => c.classList.add('show'), i * 60);
+    });
+    await sleep(step.values.length * 60 + 200);
+  }
+
+  // podium reveal
+  await sleep(300);
+  if (top3[1] !== undefined) { document.getElementById('podV1').textContent = top3[1]; document.getElementById('pod1').className = 'podium-col show'; }
+  await sleep(150);
+  if (top3[0] !== undefined) { document.getElementById('podV0').textContent = top3[0]; document.getElementById('pod0').className = 'podium-col show'; }
+  await sleep(150);
+  if (top3[2] !== undefined) { document.getElementById('podV2').textContent = top3[2]; document.getElementById('pod2').className = 'podium-col show'; }
+
+  // stats
+  document.getElementById('s1').textContent = top3[0] ?? '—';
+  document.getElementById('s2').textContent = top3[1] ?? '—';
+  document.getElementById('s3').textContent = top3[2] ?? '—';
+  document.getElementById('sDup').textContent = dupCount;
+  document.getElementById('pipeStatus').textContent = '✓ Done';
+
+  running = false;
+  document.getElementById('btnRun').disabled = false;
+}
+</script>

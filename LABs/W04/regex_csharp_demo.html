@@ -1,0 +1,278 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; font-family: var(--font-sans); }
+.btn { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; font-weight: 500; transition: background .15s; }
+.btn:hover { background: var(--color-background-primary); }
+.btn.run { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+.btn.run:hover { background: #3C3489; }
+.panel { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 10px; overflow: hidden; }
+.ph { padding: 9px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid var(--color-border-tertiary); color: var(--color-text-primary); display:flex; justify-content:space-between; align-items:center; }
+
+/* editor */
+.editor-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.editor-pane { display: flex; flex-direction: column; }
+.editor-pane:first-child { border-right: 1px solid var(--color-border-tertiary); }
+.editor-ph { padding: 7px 12px; font-size: 11px; font-weight: 500; color: var(--color-text-secondary); border-bottom: 1px solid var(--color-border-tertiary); background: var(--color-background-primary); }
+.code-block { padding: 12px 14px; font-size: 11px; line-height: 1.8; font-family: 'Courier New', monospace; white-space: pre; overflow-x: auto; color: var(--color-text-secondary); flex: 1; }
+.kw{color:#534AB7} .fn{color:#0F6E56} .cm{color:var(--color-text-tertiary)} .str{color:#854F0B} .type{color:#185FA5} .num{color:#993C1D}
+
+/* console sim */
+.console-wrap { padding: 0; }
+.console-line { display: flex; align-items: baseline; gap: 8px; padding: 7px 14px; border-bottom: 1px solid var(--color-border-tertiary); opacity: 0; transform: translateX(-6px); transition: opacity .25s, transform .25s; }
+.console-line:last-child { border-bottom: none; }
+.console-line.show { opacity: 1; transform: none; }
+.cl-prompt { font-size: 11px; color: var(--color-text-tertiary); font-family: 'Courier New', monospace; flex-shrink: 0; }
+.cl-code { font-size: 11px; font-family: 'Courier New', monospace; color: var(--color-text-secondary); flex: 1; }
+.cl-result { font-size: 12px; font-family: 'Courier New', monospace; font-weight: 500; flex-shrink: 0; padding: 2px 10px; border-radius: 4px; }
+.cl-result.true  { background: #E1F5EE; color: #085041; border: 1px solid #5DCAA5; }
+.cl-result.false { background: #FCEBEB; color: #791F1F; border: 1px solid #F09595; }
+
+/* breakdown cards */
+.breakdown { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.bk-card { border-radius: 8px; border: 1.5px solid var(--color-border-secondary); overflow: hidden; }
+.bk-head { padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--color-border-tertiary); }
+.bk-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+.bk-title { font-size: 12px; font-weight: 500; }
+.bk-input { font-size: 11px; font-family: 'Courier New', monospace; color: var(--color-text-tertiary); margin-left: auto; }
+.bk-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.bk-pattern { font-size: 11px; font-family: 'Courier New', monospace; background: var(--color-background-primary); border: 1px solid var(--color-border-secondary); border-radius: 4px; padding: 4px 8px; color: var(--color-text-secondary); word-break: break-all; }
+.bk-parts { display: flex; flex-wrap: wrap; gap: 4px; }
+.bk-part { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-family: 'Courier New', monospace; font-weight: 500; }
+.bk-result { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; padding-top: 4px; border-top: 1px solid var(--color-border-tertiary); margin-top: 2px; }
+
+/* editable inputs row */
+.inputs-row { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.input-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.il-label { font-size: 11px; color: var(--color-text-secondary); width: 56px; text-align: right; flex-shrink: 0; }
+.il-input { flex: 1; min-width: 160px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 12px; font-family: 'Courier New', monospace; outline: none; transition: border-color .2s, background .2s; }
+.il-input:focus { border-color: #534AB7; }
+.il-input.ok  { border-color: #0F6E56; background: #E1F5EE; }
+.il-input.err { border-color: #A32D2D; background: #FCEBEB; }
+.il-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.il-badge.ok   { background: #E1F5EE; color: #085041; border: 1px solid #5DCAA5; }
+.il-badge.err  { background: #FCEBEB; color: #791F1F; border: 1px solid #F09595; }
+.il-badge.idle { background: var(--color-background-secondary); color: var(--color-text-tertiary); border: 1px solid var(--color-border-tertiary); }
+</style>
+
+<div class="wrap">
+
+<!-- run button -->
+<div style="display:flex;gap:10px;align-items:center">
+  <button class="btn run" id="btnRun" onclick="runSim()">▶ Run Program</button>
+  <button class="btn" onclick="resetSim()">↺ Reset</button>
+  <span style="font-size:11px;color:var(--color-text-tertiary)" id="simStatus"></span>
+</div>
+
+<!-- side-by-side code + console -->
+<div class="panel">
+  <div class="ph">Program.cs</div>
+  <div class="editor-wrap">
+    <div class="editor-pane">
+      <div class="editor-ph">Source code</div>
+      <div class="code-block"><span class="kw">using</span> System;
+<span class="kw">using</span> System.Text.RegularExpressions;
+
+<span class="kw">class</span> Program
+{
+  <span class="kw">static void</span> <span class="fn">Main</span>()
+  {
+    <span class="kw">string</span> email = <span class="str" id="src-email">"test@gmail.com"</span>;
+    <span class="kw">string</span> cccd  = <span class="str" id="src-cccd">"079123456789"</span>;
+    <span class="kw">string</span> name  = <span class="str" id="src-name">"Nguyen Van A"</span>;
+
+    Console.<span class="fn">WriteLine</span>(<span class="str">"Email: "</span> +
+      Regex.<span class="fn">IsMatch</span>(email,
+        <span class="str">@"^[\w.-]+@[\w.-]+\.\w+$"</span>));
+
+    Console.<span class="fn">WriteLine</span>(<span class="str">"CCCD: "</span> +
+      Regex.<span class="fn">IsMatch</span>(cccd,
+        <span class="str">@"^\d{12}$"</span>));
+
+    Console.<span class="fn">WriteLine</span>(<span class="str">"Name: "</span> +
+      Regex.<span class="fn">IsMatch</span>(name,
+        <span class="str">@"^[A-ZÀ-Ỹ][a-zà-ỹ]+(\s[A-ZÀ-Ỹ][a-zà-ỹ]+)+$"</span>));
+  }
+}</div>
+    </div>
+    <div class="editor-pane">
+      <div class="editor-ph">Console output</div>
+      <div class="console-wrap" id="consoleOut">
+        <div style="padding:20px;font-size:11px;color:var(--color-text-tertiary)">Press ▶ Run to execute...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- regex breakdown -->
+<div class="panel">
+  <div class="ph">Regex breakdown — each match explained</div>
+  <div class="breakdown" id="breakdown">
+    <div style="font-size:11px;color:var(--color-text-tertiary)">Run program to see breakdown...</div>
+  </div>
+</div>
+
+<!-- try your own -->
+<div class="panel">
+  <div class="ph"><span>Try your own values</span><span style="font-size:10px;color:var(--color-text-tertiary)">live validation</span></div>
+  <div class="inputs-row">
+    <div class="input-line">
+      <div class="il-label">Email</div>
+      <input class="il-input" id="try-email" placeholder="your@email.com" oninput="tryVal('email',this)"/>
+      <span class="il-badge idle" id="try-bd-email">—</span>
+    </div>
+    <div class="input-line">
+      <div class="il-label">CCCD</div>
+      <input class="il-input" id="try-cccd" placeholder="12 chữ số" oninput="tryVal('cccd',this)" maxlength="15"/>
+      <span class="il-badge idle" id="try-bd-cccd">—</span>
+    </div>
+    <div class="input-line">
+      <div class="il-label">Họ tên</div>
+      <input class="il-input" id="try-name" placeholder="Nguyen Van An" oninput="tryVal('name',this)"/>
+      <span class="il-badge idle" id="try-bd-name">—</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const PATTERNS = {
+  email: /^[\w.-]+@[\w.-]+\.\w+$/,
+  cccd:  /^\d{12}$/,
+  name:  /^[A-ZÀ-Ỹ\u00C0-\u1EF9][a-zà-ỹ\u00C0-\u1EF9]+(\s[A-ZÀ-Ỹ\u00C0-\u1EF9][a-zà-ỹ\u00C0-\u1EF9]+)+$/u,
+};
+
+const PARTS_INFO = {
+  email: [
+    { part:'^[\\w.-]+', bg:'#E6F1FB', fg:'#0C447C', desc:'local: chữ/số/.-' },
+    { part:'@',         bg:'#FAEEDA', fg:'#633806', desc:'bắt buộc @' },
+    { part:'[\\w.-]+',  bg:'#E1F5EE', fg:'#085041', desc:'domain name' },
+    { part:'\\.',        bg:'#EEEDFE', fg:'#26215C', desc:'dấu chấm literal' },
+    { part:'\\w+$',     bg:'#EAF3DE', fg:'#27500A', desc:'TLD: com/vn/...' },
+  ],
+  cccd: [
+    { part:'^',      bg:'#FAEEDA', fg:'#633806', desc:'bắt đầu chuỗi' },
+    { part:'\\d',    bg:'#E1F5EE', fg:'#085041', desc:'digit 0–9' },
+    { part:'{12}',   bg:'#EEEDFE', fg:'#26215C', desc:'đúng 12 lần' },
+    { part:'$',      bg:'#FAEEDA', fg:'#633806', desc:'kết thúc chuỗi' },
+  ],
+  name: [
+    { part:'[A-ZÀ-Ỹ]',  bg:'#E6F1FB', fg:'#0C447C', desc:'HOA đầu từ (kể cả Unicode)' },
+    { part:'[a-zà-ỹ]+', bg:'#E1F5EE', fg:'#085041', desc:'thường tiếp theo ≥1' },
+    { part:'(\\s...)+',  bg:'#EEEDFE', fg:'#26215C', desc:'1+ từ tiếp theo' },
+  ],
+};
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+let values = { email:'test@gmail.com', cccd:'079123456789', name:'Nguyen Van A' };
+
+function resetSim() {
+  document.getElementById('consoleOut').innerHTML =
+    '<div style="padding:20px;font-size:11px;color:var(--color-text-tertiary)">Press ▶ Run to execute...</div>';
+  document.getElementById('breakdown').innerHTML =
+    '<div style="font-size:11px;color:var(--color-text-tertiary)">Run program to see breakdown...</div>';
+  document.getElementById('simStatus').textContent = '';
+  document.getElementById('btnRun').disabled = false;
+}
+
+async function runSim() {
+  document.getElementById('btnRun').disabled = true;
+  document.getElementById('simStatus').textContent = 'running...';
+
+  // update src display
+  const ev = document.getElementById('try-email'); if (ev && ev.value) values.email = ev.value;
+  const cv = document.getElementById('try-cccd');  if (cv && cv.value) values.cccd  = cv.value;
+  const nv = document.getElementById('try-name');  if (nv && nv.value) values.name  = nv.value;
+
+  document.getElementById('src-email').textContent = `"${values.email}"`;
+  document.getElementById('src-cccd').textContent  = `"${values.cccd}"`;
+  document.getElementById('src-name').textContent  = `"${values.name}"`;
+
+  const con = document.getElementById('consoleOut');
+  con.innerHTML = '';
+
+  const results = {
+    email: PATTERNS.email.test(values.email),
+    cccd:  PATTERNS.cccd.test(values.cccd),
+    name:  PATTERNS.name.test(values.name),
+  };
+
+  const lines = [
+    { label:'Email: ', val: results.email, call:`Regex.IsMatch("${values.email}", @"^[\\w.-]+@[\\w.-]+\\.\\w+$")` },
+    { label:'CCCD: ',  val: results.cccd,  call:`Regex.IsMatch("${values.cccd}", @"^\\d{12}$")` },
+    { label:'Name: ',  val: results.name,  call:`Regex.IsMatch("${values.name}", @"^[A-ZÀ-Ỹ]...")` },
+  ];
+
+  for (const l of lines) {
+    const line = document.createElement('div'); line.className='console-line';
+    line.innerHTML = `
+      <span class="cl-prompt">&gt;</span>
+      <span class="cl-code">${l.label}<span style="opacity:.6">${l.call}</span></span>
+      <span class="cl-result ${l.val}">${l.val}</span>`;
+    con.appendChild(line);
+    await sleep(180);
+    requestAnimationFrame(() => line.classList.add('show'));
+    await sleep(300);
+  }
+
+  // breakdown
+  await sleep(200);
+  buildBreakdown(results);
+  document.getElementById('simStatus').textContent = '✓ Done';
+  document.getElementById('btnRun').disabled = false;
+}
+
+function buildBreakdown(results) {
+  const wrap = document.getElementById('breakdown');
+  wrap.innerHTML = '';
+
+  const configs = [
+    { key:'email', label:'Email', input: values.email, icon:'@', iconBg:'#185FA5', iconFg:'#E6F1FB' },
+    { key:'cccd',  label:'CCCD',  input: values.cccd,  icon:'ID', iconBg:'#854F0B', iconFg:'#FAEEDA' },
+    { key:'name',  label:'Họ tên',input: values.name,  icon:'N',  iconBg:'#0F6E56', iconFg:'#E1F5EE' },
+  ];
+
+  configs.forEach(({ key, label, input, icon, iconBg, iconFg }) => {
+    const ok = results[key];
+    const card = document.createElement('div'); card.className='bk-card';
+    card.style.borderColor = ok ? '#0F6E56' : '#A32D2D';
+
+    const headBg = ok ? '#E1F5EE' : '#FCEBEB';
+    const headFg = ok ? '#085041' : '#791F1F';
+
+    const partsHtml = (PARTS_INFO[key]||[]).map(p =>
+      `<span class="bk-part" style="background:${p.bg};color:${p.fg}">${p.part} <span style="opacity:.7">${p.desc}</span></span>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="bk-head" style="background:${headBg}">
+        <div class="bk-icon" style="background:${iconBg};color:${iconFg}">${icon}</div>
+        <div class="bk-title" style="color:${headFg}">${label}</div>
+        <div class="bk-input">"${input}"</div>
+      </div>
+      <div class="bk-body">
+        <div class="bk-pattern">${PATTERNS[key]}</div>
+        <div class="bk-parts">${partsHtml}</div>
+        <div class="bk-result" style="color:${ok?'#085041':'#791F1F'}">
+          Regex.IsMatch() → <span style="padding:2px 10px;border-radius:4px;background:${ok?'#E1F5EE':'#FCEBEB'};border:1px solid ${ok?'#5DCAA5':'#F09595'};font-family:monospace">${ok}</span>
+          ${!ok && key==='name' ? '<span style="font-size:10px;color:var(--color-text-tertiary);font-weight:400">⚠ "Nguyen Van A" — chữ "A" cần ít nhất 2 chars</span>' : ''}
+        </div>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function tryVal(key, inp) {
+  const v = inp.value;
+  const ok = v.length > 0 && PATTERNS[key].test(v);
+  const empty = v.length === 0;
+  inp.className = 'il-input' + (empty ? '' : ok ? ' ok' : ' err');
+  const bd = document.getElementById(`try-bd-${key}`);
+  bd.className = 'il-badge ' + (empty ? 'idle' : ok ? 'ok' : 'err');
+  bd.textContent = empty ? '—' : ok ? '✓ True' : '✗ False';
+  values[key] = v || values[key];
+  document.getElementById(`src-${key}`).textContent = `"${v || values[key]}"`;
+}
+</script>
