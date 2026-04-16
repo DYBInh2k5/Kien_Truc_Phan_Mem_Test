@@ -1,3 +1,6 @@
+Link Slide tiếng việt https://app.agnes-ai.com/share/1776300981172309?sender=0bad9116-c870-47e6-9126-cc06a9750ad9
+
+
 # 🎤 KỊCH BẢN THUYẾT TRÌNH SEMINAR (Py01. Python FastAPI Microservices)
 
 *Tài liệu này là nội dung (thoại thuyết trình) và gợi ý thiết kế cho từng trang Slide (PPTx). Bạn có thể bám sát sườn này để trình bày tự tin trên bục giảng.*
