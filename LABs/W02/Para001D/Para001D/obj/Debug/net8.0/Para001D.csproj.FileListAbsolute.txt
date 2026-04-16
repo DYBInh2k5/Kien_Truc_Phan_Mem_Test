@@ -1,0 +1,14 @@
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\bin\Debug\net8.0\Para001D.exe
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\bin\Debug\net8.0\Para001D.deps.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\bin\Debug\net8.0\Para001D.runtimeconfig.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\bin\Debug\net8.0\Para001D.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\bin\Debug\net8.0\Para001D.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\obj\Debug\net8.0\Para001D.GeneratedMSBuildEditorConfig.editorconfig
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\obj\Debug\net8.0\Para001D.AssemblyInfoInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\obj\Debug\net8.0\Para001D.AssemblyInfo.cs
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\obj\Debug\net8.0\Para001D.csproj.CoreCompileInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\obj\Debug\net8.0\Para001D.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\obj\Debug\net8.0\refint\Para001D.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\obj\Debug\net8.0\Para001D.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\obj\Debug\net8.0\Para001D.genruntimeconfig.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\Para001D\Para001D\obj\Debug\net8.0\ref\Para001D.dll
