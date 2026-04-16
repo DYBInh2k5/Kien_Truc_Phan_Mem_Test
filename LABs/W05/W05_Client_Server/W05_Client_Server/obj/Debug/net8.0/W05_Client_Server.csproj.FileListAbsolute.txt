@@ -1,0 +1,14 @@
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\bin\Debug\net8.0\W05_Client_Server.exe
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\bin\Debug\net8.0\W05_Client_Server.deps.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\bin\Debug\net8.0\W05_Client_Server.runtimeconfig.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\bin\Debug\net8.0\W05_Client_Server.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\bin\Debug\net8.0\W05_Client_Server.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\obj\Debug\net8.0\W05_Client_Server.GeneratedMSBuildEditorConfig.editorconfig
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\obj\Debug\net8.0\W05_Client_Server.AssemblyInfoInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\obj\Debug\net8.0\W05_Client_Server.AssemblyInfo.cs
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\obj\Debug\net8.0\W05_Client_Server.csproj.CoreCompileInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\obj\Debug\net8.0\W05_Client_Server.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\obj\Debug\net8.0\refint\W05_Client_Server.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\obj\Debug\net8.0\W05_Client_Server.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\obj\Debug\net8.0\W05_Client_Server.genruntimeconfig.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W02\W05_Client_Server\W05_Client_Server\obj\Debug\net8.0\ref\W05_Client_Server.dll

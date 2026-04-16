@@ -1,0 +1,14 @@
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\bin\Debug\net8.0\Mini_System.exe
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\bin\Debug\net8.0\Mini_System.deps.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\bin\Debug\net8.0\Mini_System.runtimeconfig.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\bin\Debug\net8.0\Mini_System.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\bin\Debug\net8.0\Mini_System.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\obj\Debug\net8.0\Mini_System.GeneratedMSBuildEditorConfig.editorconfig
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\obj\Debug\net8.0\Mini_System.AssemblyInfoInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\obj\Debug\net8.0\Mini_System.AssemblyInfo.cs
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\obj\Debug\net8.0\Mini_System.csproj.CoreCompileInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\obj\Debug\net8.0\Mini_System.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\obj\Debug\net8.0\refint\Mini_System.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\obj\Debug\net8.0\Mini_System.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\obj\Debug\net8.0\Mini_System.genruntimeconfig.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\LABs\W05\Mini_System\Mini_System\obj\Debug\net8.0\ref\Mini_System.dll
