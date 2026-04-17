@@ -1,29 +1,43 @@
 version: '3.8'
 
 services:
-  # Microservice 1: User Service
+  # BONUS: API GATEWAY (Nhận mọi Request từ ngoài Internet)
+  gateway-service:
+    build:
+      context: .
+      dockerfile: ./service3_gateway/Dockerfile
+    container_name: python_gateway_service
+    ports:
+      - "8000:8000"   # Mở duy nhất cổng 8000 ra thế giới (Client gọi API)
+    networks:
+      - micro-network
+    depends_on:
+      - order-service
+    restart: always
+
+  # Microservice 1: User Service (Nằm ẩn dưới lòng đất, KHÔNG public internet)
   user-service:
     build:
       context: .
       dockerfile: ./service1_user/Dockerfile
     container_name: python_user_service
-    ports:
-      - "50051:50051" # Expose gRPC cho bên ngoài (nếu test tool)
-      - "8001:8001" # Expose FastAPI
+    expose: 
+      - "50051" # Chỉ báo cho mạng Docker biết cổng này mở nội bộ
+      - "8001"
     networks:
       - micro-network
     restart: always
 
-  # Microservice 2: Order Service (sử dụng User Service)
+  # Microservice 2: Order Service (Nằm ẩn dưới lòng đất)
   order-service:
     build:
       context: .
       dockerfile: ./service2_order/Dockerfile
     container_name: python_order_service
-    ports:
-      - "8002:8002" # Expose FastAPI 
+    expose:
+      - "8002"
     environment:
-      # Truyền URL nội bộ của Docker. `user-service` là tên của Service ở trên cùng network
+      # Truyền URL nội bộ của Docker cho giao tiếp ngầm (Proxy & gRPC)
       - USER_SERVICE_URL=user-service:50051
     networks:
       - micro-network
