@@ -23,7 +23,8 @@ services:
     container_name: python_user_service
     expose: 
       - "50051" # Chỉ báo cho mạng Docker biết cổng này mở nội bộ
-      - "8001"
+    ports:
+      - "8001:8001"
     networks:
       - micro-network
     restart: always
@@ -34,8 +35,8 @@ services:
       context: .
       dockerfile: ./service2_order/Dockerfile
     container_name: python_order_service
-    expose:
-      - "8002"
+    ports:
+      - "8002:8002"
     environment:
       # Truyền URL nội bộ của Docker cho giao tiếp ngầm (Proxy & gRPC)
       - USER_SERVICE_URL=user-service:50051
