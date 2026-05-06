@@ -3,11 +3,12 @@
 Tài liệu này dùng để giải thích cho giảng viên về cách chúng ta sử dụng công nghệ ảo hóa mạng của **Docker** và **Docker Compose** để kết nối microservices. Bạn có thể chép thông tin này vào Slide PPTx.
 
 ## 1. Cấu trúc Hình thái (Topology Setup)
-Chúng ta có 2 block độc lập hoàn toàn (cả về mã nguồn lẫn biến môi trường):
-- **Node A**: User Service (FastAPI + gRPC Server)
-- **Node B**: Order Service (FastAPI + gRPC Client)
+Chúng ta có 3 block độc lập hoàn toàn (cả về mã nguồn lẫn biến môi trường):
+- **Node A**: User Service (FastAPI REST + gRPC Server)
+- **Node B**: Order Service (FastAPI REST + gRPC Client)
+- **Node C**: API Gateway (FastAPI Auth + Proxy Server)
 
-Nếu không có Docker, 2 hệ thống này muốn nói chuyện được với nhau phải hard-code bằng các IP ảo (localhost) và tự quản lý môi trường Python rất rườm rà.
+Nếu không có Docker, 3 hệ thống này muốn nói chuyện được với nhau phải hard-code bằng các IP ảo (localhost) và tự quản lý môi trường Python rất rườm rà.
 
 ## 2. Lát cắt Dockerfile
 Cả 2 dịch vụ đều được gói trong Alpine/Slim Python image siêu nhẹ (`python:3.10-slim`).

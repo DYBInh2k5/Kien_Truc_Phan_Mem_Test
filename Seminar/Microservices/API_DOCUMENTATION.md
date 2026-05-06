@@ -45,3 +45,18 @@ Tài liệu này đóng vai trò như một quyển "Từ điển", mô tả chi
 
 ### 2.3. Health Check (`GET /health`)
 - Trả về nhịp tim sức khỏe của service, dùng để Docker quyết định xem Container đó có còn "Sống" không để auto-restart.
+
+---
+
+## 3. Giao thức ngoại bộ tập trung: API Gateway (Port 8000)
+Được host trên Swagger UI của `Gateway Service` (Port 8000). Đây là cửa ngõ duy nhất Client dùng để truy cập vào hệ thống.
+
+### 3.1. Xác thực Hệ thống (Login)
+- **Endpoint**: `POST /login`
+- **Input**: Form Data (`username=admin`, `password=123456`)
+- **Response**: Trả về một chuỗi JWT Access Token (Mặc định: `secret_jwt_token_123`).
+
+### 3.2. Ủy quyền lấy thông tin Hóa Đơn (Gateway Proxy)
+- **Endpoint**: `GET /api/orders/{order_id}`
+- **Header bắt buộc**: `Authorization: Bearer <Token>`
+- **Cơ chế**: Gateway kiểm tra tính hợp lệ của token, ghi log hành vi, sau đó hoạt động dưới quyền Reverse Proxy để chuyển tiếp yêu cầu sâu vào mạng nội bộ của Order Service. Cuối cùng trả về JSON nguyên vẹn cho Client.

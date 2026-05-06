@@ -50,3 +50,9 @@ Tài liệu này tổng hợp toàn bộ lý thuyết lõi, giải thích địn
 - Tốc độ xứ lý bất đồng bộ (Asynchronous) thông qua thư viện `asyncio` đứng top 3 thị trường, ngang ngửa NodeJS, cực mượt.
 - Hệ thống Document (Swagger UI) tự động sinh thiết kế giao diện từ Code, giúp màn hình Demo trở nên tuyệt đẹp không mất công frontend.
 - Pydantic siêu việt: Tự động format và xác thực/validate dữ liệu truyền vào API.
+
+---
+
+## 6. TẠI SAO CẦN THÊM API GATEWAY?
+- **Vấn đề**: Trực tiếp phơi bày toàn bộ Microservices ra Internet (Port 8001, 8002) khiến hacker dễ dàng dò quét và DDos từng service một.
+- **Giải pháp**: Xây một Tòa Thành (API Gateway ở Port 8000). Toàn bộ Client chỉ được phép nói chuyện với Tòa Thành này. Gateway sẽ cấp phát thẻ ra vào (JWT Token), theo dõi, ghi Log, và thay mặt Client chạy vào trong kho lấy dữ liệu (Reverse Proxy). Chặn đứng mọi truy cập lậu.

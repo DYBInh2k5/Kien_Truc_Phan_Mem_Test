@@ -13,7 +13,11 @@ Seminar/Microservices/
 │   ├── Dockerfile
 │   ├── main.py               
 │   └── requirements.txt
-└── service2_order/           # Gọi gRPC sang service 1 & mở FastAPI REST port 8002
+├── service2_order/           # Gọi gRPC sang service 1 & mở FastAPI REST port 8002
+│   ├── Dockerfile
+│   ├── main.py
+│   └── requirements.txt
+└── service3_gateway/         # Cổng bảo vệ, cấp Token & Proxy chuyển tiếp port 8000
     ├── Dockerfile
     ├── main.py
     └── requirements.txt
@@ -35,7 +39,7 @@ docker-compose up --build
 ```
 *Lưu ý: Bạn có thể thêm cờ `-d` ở cuối để chạy ngầm (detached mode).*
 
-Lúc này, Docker sẽ nạp các file Proto, tự động sinh code ra file `_pb2.py` và `_pb2_grpc.py`, cài đặt các package trong `requirements.txt` và chạy 2 cổng.
+Lúc này, Docker sẽ nạp các file Proto, tự động sinh code ra file `_pb2.py` và `_pb2_grpc.py`, cài đặt các package trong `requirements.txt` và chạy 3 cổng (8000, 8001, 8002).
 
 **B2. Kiểm tra log khởi động:**
 

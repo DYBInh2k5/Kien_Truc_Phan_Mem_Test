@@ -20,3 +20,9 @@ Dưới đây là cẩm nang để bạn "chữa cháy" nếu gặp lỗi trong 
 ## 🗣️ Mẹo Vấn đáp bảo vệ Seminar:
 * Câu hỏi: **Vì sao lại dùng gRPC mà không Call HTTP REST giữa các Service cho dễ?**
 * Trả lời: *Vì Payload của JSON gửi qua REST bị dư thừa text và nặng, trong khi gRPC mã hóa dưới dạng nhị phân (Binary Protocol Buffer) giúp tốc độ bắn dữ liệu liên server (Server-to-Server) nhanh hơn gấp 7-10 lần, đặc biệt khi áp dụng Streaming Transfer truyền file bự sẽ không gây thắt cổ chai hệ thống.*
+
+---
+
+## Lỗi 4: `401 Unauthorized` hoặc `403 Forbidden` khi test ở Port 8000
+- **Nguyên nhân**: API Gateway chặn request vì bạn chưa đính kèm Token hoặc điền sai Username/Password.
+- **Cách fix**: Ở trang Swagger UI (`localhost:8000/docs`), bạn bắt buộc phải bấm vào nút Ổ Khóa (Authorize), nhập đúng Username `admin` và Password `123456` để hệ thống cấp JWT Token rồi mới được xài các chức năng bên trong.
