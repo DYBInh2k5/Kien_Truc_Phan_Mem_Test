@@ -10,7 +10,12 @@ Link Slide tiếng việt https://app.agnes-ai.com/share/1776300981172309?sender
 ## 🛑 Slide 1: Tiêu đề & Giới thiệu
 - **Hình ảnh hiển thị trên Slide**:
   - Tên Đề tài: Phát triển Microservices hiệu suất cao với Python FastAPI, gRPC & API Gateway.
-  - Tên/Mã số Sinh viên của bạn.
+  - **Danh sách thành viên thực hiện:**
+    - Võ Duy Bình (Nhóm trưởng) - MSSV 22301500
+    - Trần Bá Lợi - MSSV 22300326
+    - Hồng Bảo Khang - MSSV 22101347
+    - Huỳnh Trung Tính - MSSV 22301490
+    - Võ Hoàng Sơn - MSSV 22300242
 - **Thoại thuyết trình**:
   > "Kính chào Thầy/Cô và các bạn. Hôm nay, em xin được trình bày chuyên đề Seminar Py01: Ứng dụng Python FastAPI kết hợp gRPC và Docker để xây dựng một kiến trúc Microservices hoàn chỉnh. Hệ thống demo của em xoay quanh mô hình Quản lý Đơn hàng - chia làm 3 mảnh ghép độc lập là: API Gateway, Khối User và Khối Order."
 
