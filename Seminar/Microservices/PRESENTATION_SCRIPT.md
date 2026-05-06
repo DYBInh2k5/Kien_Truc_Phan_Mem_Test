@@ -1,4 +1,4 @@
-Link Slide tiếng việt https://app.agnes-ai.com/share/1776300981172309?sender=0bad9116-c870-47e6-9126-cc06a9750ad9
+Link Slide: https://gamma.app/docs/Untitled-qnvon3gjvvbmyio
 
 
 # 🎤 KỊCH BẢN THUYẾT TRÌNH SEMINAR (Py01. Python FastAPI Microservices)
