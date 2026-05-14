@@ -1,0 +1,20 @@
+﻿using System.Collections.Generic;
+
+namespace SATestSocket.Models
+{
+    /// <summary>
+    /// Model quản lý thông tin phòng chat.
+    /// Lưu trữ danh sách tin nhắn và thời gian hoạt động cuối cùng để xác định trạng thái Online/Offline.
+    /// </summary>
+    internal class ChatRoom
+    {
+        public int id { get; set; }
+
+        // Danh sách lưu trữ lịch sử tin nhắn trong phòng
+        public List<Message> messages =
+            new List<Message>();
+
+        // Thời điểm cuối cùng có tin nhắn gửi tới phòng này
+        public DateTime lastActivity { get; set; }
+    }
+}

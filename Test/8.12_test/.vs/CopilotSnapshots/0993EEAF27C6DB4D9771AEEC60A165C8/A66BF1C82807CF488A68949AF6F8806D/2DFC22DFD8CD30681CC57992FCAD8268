@@ -1,0 +1,566 @@
+﻿SA TEST 12/08/2025
+Objective:
+Develop a web server using C# that utilizes Socket - library (System.Net.Sockets).
+
+Requirements:
+API/Page Requirements: (5 points)
+GET [/]: Displays detailed student information (id, fullname, PC's number) and provides a link to login.
+GET [/login]: Shows the login page.
+POST [/login]: Logs in with username and password. On success, redirects to /chat. On failure, displays a login failed message.
+GET [/chat]: Displays online and offline chat rooms. A chat room is online if it has had activity within the last 3 minutes. If offline, its history is cleared.
+POST [/chat/:id]: Sends a message to the chat room with the given id. After sending, changes the room status to online and redirects to GET /chat/:id
+GET [/chat/:id]: Retrieves all messages sent to the chat room in chronological order (time, username, message).
+User account information is stored in a JSON file with the following format: [ { "username": "nntu", "password": "56789" } , { "username": "AdTekDev", "password": "56789" } ]
+
+Apply 1-2 of the following design patterns: (3 points)
+Singleton: Apply to the class reading JSON content
+Builder: Create & Render Chat (themes) to WebRouter
+Time Requirement: (1 point)
+Students must submit their work before 10:20am, and grading will be completed in class.
+Other Requirements: (1point)
+Implement cookie storage, include a token, and ensure the website has an attractive design.
+Submission Requirements:
+Link: https://mlearning.hoasen.edu.vn/mod/assign/view.php?id=1175642
+
+Submit 3 parts:
+
+3-5 screenshots demonstrating the web interface execution.
+3-5 Image(s) of code implementing the chosen design pattern(s).
+zip file: containing the C# server and an HTML folder.
+hướng dẫn làm bài này tạo dùng vscode 2022, hướng dẫn tạo file và làm
+
+
+
+Bài này đúng kiểu:
+
+“Tự build mini web framework bằng raw Socket” 😎
+
+Mà thầy còn bắt:
+
+HTTP GET/POST
+Cookie
+JSON
+Chat room
+Design Pattern
+
+=> đây không còn là “socket demo” nữa.
+Nó là:
+
+Mini Web Server Architecture Lab
+
+Nhưng yên tâm, tao sẽ hướng dẫn đúng style code m đang học:
+
+✅ raw Socket
+✅ Thread
+✅ Receive/Send
+✅ parse HTTP bằng tay
+✅ không ASP.NET
+✅ làm bằng Visual Studio
+
+1. Tạo project trong Visual Studio 2022
+
+Mở:
+
+Visual Studio
+Bước 1
+Create a new project
+Bước 2
+
+Chọn:
+
+Console App (.NET)
+
+Ngôn ngữ:
+
+C#
+Bước 3
+
+Đặt tên project:
+
+SATestSocketServer
+Bước 4
+
+Chọn:
+
+.NET 6 hoặc .NET 8
+2. Cấu trúc thư mục nên làm
+
+Trong Solution Explorer tạo:
+
+SATestSocketServer
+│
+├── Program.cs
+├── Router.cs
+├── JsonAccountSingleton.cs
+├── ChatRoom.cs
+├── ChatBuilder.cs
+├── User.cs
+├── Message.cs
+│
+├── data
+│   └── accounts.json
+│
+├── html
+│   ├── index.html
+│   ├── login.html
+│   ├── chat.html
+│
+└── css
+    └── style.css
+3. Tạo file
+
+Chuột phải project:
+
+Add
+→ Class
+Tạo các file
+File	Vai trò
+Program.cs	Main server
+Router.cs	điều hướng GET/POST
+JsonAccountSingleton.cs	đọc JSON
+ChatRoom.cs	quản lý phòng chat
+ChatBuilder.cs	Builder Pattern
+User.cs	model user
+Message.cs	model message
+4. Tạo JSON account
+accounts.json
+[
+  {
+    "username": "nntu",
+    "password": "56789"
+  },
+  {
+    "username": "AdTekDev",
+    "password": "56789"
+  }
+]
+5. Program.cs
+
+Đây là server chính.
+
+Ý tưởng
+Socket
+→ Listen
+→ Accept
+→ Thread
+→ handleClient()
+Skeleton
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+
+IPEndPoint serverInfor =
+    new IPEndPoint(IPAddress.Any, 8080);
+
+Socket serverListen = new Socket(
+    AddressFamily.InterNetwork,
+    SocketType.Stream,
+    ProtocolType.Tcp
+);
+
+serverListen.Bind(serverInfor);
+
+serverListen.Listen(10);
+
+Console.WriteLine("Dang cho client...");
+
+while (true)
+{
+    Socket staff = serverListen.Accept();
+
+    Thread t = new Thread(handleClient);
+    t.Start(staff);
+}
+6. handleClient()
+
+Đây là trái tim bài 😈
+
+Nhiệm vụ
+Receive request
+↓
+Parse HTTP
+↓
+Router
+↓
+Response
+↓
+Send
+Đọc request
+byte[] bytes = new byte[10240];
+
+int bytesRec = staff.Receive(bytes);
+
+string requestData =
+    Encoding.ASCII.GetString(bytes, 0, bytesRec);
+Parse dòng đầu
+string[] requestLines = requestData.Split('\n');
+
+string firstLine = requestLines[0];
+
+Ví dụ:
+
+GET /login HTTP/1.1
+Tách Method + Path
+string[] tokens = firstLine.Split(' ');
+
+string method = tokens[0];
+string path = tokens[1];
+7. Routing
+
+Tạo file:
+
+Router.cs
+Ý tưởng
+GET /
+GET /login
+POST /login
+GET /chat
+GET /chat/1
+POST /chat/1
+Ví dụ
+if(method == "GET" && path == "/")
+{
+    // home page
+}
+else if(method == "GET" && path == "/login")
+{
+    // login page
+}
+8. GET /
+
+Yêu cầu:
+
+hiện MSSV
+fullname
+PC number
+link login
+HTML đơn giản
+string body = @"
+<html>
+<body>
+<h1>Student Info</h1>
+<p>ID: 2212345</p>
+<p>Name: Nguyen Van A</p>
+<p>PC: PC01</p>
+
+<a href='/login'>Login</a>
+</body>
+</html>
+";
+9. GET /login
+
+Trả form HTML:
+
+<form method='POST' action='/login'>
+<input name='username'>
+<input name='password' type='password'>
+<button>Login</button>
+</form>
+10. POST /login
+
+Đây là phần khó 😈
+
+Browser gửi
+username=nntu&password=56789
+Parse body
+string body =
+    requestData.Split("\r\n\r\n")[1];
+Tách dữ liệu
+string[] parts = body.Split('&');
+Kiểm tra login
+
+Dùng:
+
+Singleton Pattern 😎
+11. Singleton JSON Reader
+
+Tạo:
+
+JsonAccountSingleton.cs
+Code
+internal class JsonAccountSingleton
+{
+    private static JsonAccountSingleton instance = null;
+
+    public List<User> users;
+
+    private JsonAccountSingleton()
+    {
+        string json =
+            File.ReadAllText("data/accounts.json");
+
+        users =
+            JsonSerializer.Deserialize<List<User>>(json);
+    }
+
+    public static JsonAccountSingleton getInstance()
+    {
+        if(instance == null)
+        {
+            instance =
+                new JsonAccountSingleton();
+        }
+
+        return instance;
+    }
+}
+Đây ăn trọn Singleton point 😎
+12. Login thành công
+
+Nếu đúng:
+
+redirect /chat
+HTTP Redirect
+HTTP/1.1 302 Found
+Location: /chat
+Đồng thời set cookie
+Set-Cookie: token=abc123
+Đây ăn thêm điểm cookie 😎
+13. GET /chat
+
+Hiển thị:
+
+room online
+room offline
+Logic online/offline
+
+Nếu:
+
+Now - LastActivity <= 3 phút
+
+=> ONLINE
+
+Nếu offline
+clear history
+14. ChatRoom class
+class ChatRoom
+{
+    public int id;
+    public List<Message> messages;
+
+    public DateTime lastActivity;
+}
+15. GET /chat/:id
+
+Ví dụ:
+
+/chat/1
+
+Hiển thị:
+
+time
+username
+message
+16. POST /chat/:id
+
+Browser gửi message.
+
+Server:
+
+append message
+update lastActivity
+redirect GET /chat/:id
+17. Builder Pattern
+
+Thầy yêu cầu:
+
+Builder render chat theme
+Tạo:
+ChatBuilder.cs
+Ví dụ
+class ChatBuilder
+{
+    private string html = "";
+
+    public ChatBuilder setTitle(string title)
+    {
+        html += $"<h1>{title}</h1>";
+        return this;
+    }
+
+    public ChatBuilder addMessage(string msg)
+    {
+        html += $"<p>{msg}</p>";
+        return this;
+    }
+
+    public string build()
+    {
+        return html;
+    }
+}
+Dùng
+ChatBuilder builder =
+    new ChatBuilder();
+
+string body = builder
+    .setTitle("Room 1")
+    .addMessage("Hello")
+    .build();
+Đây ăn Builder point 😎
+18. Hàm response chung
+
+Tạo helper:
+
+static void sendResponse(
+    Socket staff,
+    string body
+)
+{
+    string response =
+        "HTTP/1.1 200 OK\r\n";
+
+    response +=
+        "Content-Type: text/html\r\n";
+
+    response +=
+        $"Content-Length: {body.Length}\r\n";
+
+    response += "\r\n";
+
+    response += body;
+
+    byte[] msg =
+        Encoding.ASCII.GetBytes(response);
+
+    staff.Send(msg);
+}
+19. Giao diện đẹp
+
+Thầy yêu cầu attractive design.
+
+Không cần Bootstrap đâu 😎
+
+Chỉ cần:
+
+<style>
+body{
+    font-family: Arial;
+    background:#111;
+    color:white;
+}
+button{
+    background:orange;
+}
+</style>
+
+là ăn điểm rồi.
+
+20. Test
+
+Chạy:
+
+http://localhost:8080
+21. Chụp hình
+
+Cần:
+
+Web screenshots
+home
+login
+login fail
+chat room
+online/offline
+Code screenshots
+Singleton
+Builder
+22. ZIP nộp
+
+Nộp:
+
+source code
++
+html folder
++
+json
+Tao khuyên m chiến lược này 😎
+PRIORITY
+1. Routing chạy được
+
+Quan trọng nhất.
+
+2. Login + Cookie
+3. Chat room hoạt động
+4. Singleton
+
+Dễ ăn điểm.
+
+5. Builder
+
+Builder chỉ cần đơn giản.
+
+Đừng cố làm:
+database
+websocket
+realtime chat
+
+Không kịp đâu 💀
+
+Mấu chốt bài này
+
+Thầy đang test:
+
+HTTP understanding
++
+Socket
++
+Thread
++
+Basic Architecture
++
+Design Pattern
+
+Chứ không phải production web server.
+
+M đang build internet bằng tay 😎
+
+---
+
+## 📘 CHI TIẾT CÔNG DỤNG & CÁCH HOẠT ĐỘNG (DÀNH CHO VẤN ĐÁP)
+
+### 1. Cơ chế hoạt động của Web Server (Socket)
+- **Lắng nghe (Listen):** Server sử dụng `Socket` lớp `Tcp` lắng nghe tại cổng `8080`.
+- **Đa luồng (Multi-threading):** Mỗi khi có một trình duyệt (Client) kết nối, `serverListen.Accept()` sẽ trả về một Socket riêng cho client đó. Server khởi tạo một `Thread` mới để xử lý request này, giúp Server có thể phục vụ nhiều người dùng cùng lúc.
+- **Xử lý HTTP thủ công:** Server nhận mảng Byte, chuyển thành String và tự phân tách dòng đầu tiên để lấy `Method` (GET/POST) và `Path` (/login, /chat). Đây là quá trình xây dựng "Mini Framework".
+
+### 2. Các Design Pattern đã áp dụng
+- **Singleton (JsonAccountSingleton):** 
+    - *Công dụng:* Đảm bảo chỉ có một instance duy nhất quản lý dữ liệu người dùng từ file JSON.
+    - *Tại sao dùng:* Việc đọc file từ ổ cứng rất chậm, Singleton giúp lưu trữ dữ liệu vào RAM một lần duy nhất và dùng chung cho mọi Thread xử lý request.
+- **Builder (ChatBuilder):** 
+    - *Công dụng:* Tách biệt việc tạo nội dung dữ liệu và việc trình bày (Rendering) HTML.
+    - *Tại sao dùng:* Giúp code trong `Router` không bị rối bởi các thẻ `<div>`, `<h1>`. Ta có thể dễ dàng thay đổi giao diện (Themes) của phòng chat mà không ảnh hưởng đến logic nghiệp vụ.
+
+### 3. Logic Nghiệp vụ đặc trưng
+- **Xác thực & Cookie:** Khi đăng nhập đúng, Server gửi header `Set-Cookie` chứa một `token`. Trình duyệt sẽ lưu lại và gửi kèm trong các request sau, giúp Server nhận biết người dùng đã đăng nhập.
+- **Trạng thái phòng Chat:** Hệ thống kiểm tra thuộc tính `LastActivity`. Nếu khoảng cách thời gian lớn hơn 3 phút, phòng chuyển sang `OFFLINE` và thực hiện hàm `Messages.Clear()` để xóa trắng lịch sử theo đúng yêu cầu đề bài.
+- **Phản hồi (Response):** Mọi dữ liệu gửi về trình duyệt đều phải tuân thủ cấu trúc HTTP Response: `Dòng trạng thái -> Headers -> Dòng trống (\r\n\r\n) -> Nội dung HTML`.
+
+### 4. Cấu trúc dữ liệu JSON
+- File `accounts.json` đóng vai trò như một cơ sở dữ liệu nhỏ (Flat-file database) dùng để lưu trữ `username` và `password` thô để đối chiếu.
+
+---
+
+## 🚩 QUY ĐỊNH NỘP BÀI & CẤU TRÚC THƯ MỤC NỘP (CỰC KỲ QUAN TRỌNG)
+
+### 1. Yêu cầu hiện diện
+- Sinh viên **phải có mặt** tại phòng Lab/lớp học trong suốt buổi nộp và vấn đáp. Vắng mặt không phép = 0 điểm.
+
+### 2. Cấu trúc thư mục nộp bài (3 phần bắt buộc)
+Khi nộp bài lên hệ thống, cần đảm bảo đúng cấu trúc folder sau:
+- **Folder `Results-screenshots`**: Chứa 3-5 ảnh chụp màn hình giao diện web đang chạy (Home, Login, Chat Room, Online/Offline).
+- **Folder `Code-DesignPatterns`**: Chứa 3-5 ảnh chụp đoạn code minh họa việc áp dụng Singleton và Builder Pattern.
+- **Folder `ProjectCode`**: Chứa toàn bộ source code của Server C# và các folder liên quan (`data`, `html`, `css` nếu có).
+
+### 3. Đặt tên File
+- Các file ảnh chụp màn hình phải được đặt tên rõ ràng theo tính năng (VD: `login_success.png`, `chat_room_online.png`, `singleton_pattern.png`):
+
+### 4. Tính thực thi
+- Dự án **phải chạy được** thành công. Dự án không chạy được sẽ bị trừ điểm rất nặng bất kể lượng code đã viết. Hãy kiểm tra kỹ bằng trình duyệt tại `http://localhost:8080` trước khi nén zip.
+
+### 5. Giải trình vấn đáp
+- Sinh viên phải tự giải thích được code mình viết. Điểm sẽ được chấm dựa trên mức độ hiểu biết và khả năng giải trình. Hiểu một phần = điểm một phần.
+
+### 6. Liêm chính học thuật
+- Không sao chép bài của người khác. Bài làm giống nhau hoặc copy AI mà không hiểu gì sẽ bị xử lý vi phạm học thuật (0 điểm).

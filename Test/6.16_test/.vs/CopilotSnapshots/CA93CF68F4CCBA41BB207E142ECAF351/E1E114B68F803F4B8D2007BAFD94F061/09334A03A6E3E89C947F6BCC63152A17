@@ -1,0 +1,35 @@
+﻿using System.Collections.Generic;
+using _6._16_test.Models;
+
+namespace _6._16_test.Managers
+{
+    internal class ChatManager
+    {
+        private static ChatManager instance = null;
+        public List<ChatRoom> Rooms { get; private set; } = new List<ChatRoom>();
+
+        private ChatManager()
+        {
+            for (int i = 1; i <= 3; i++)
+            {
+                Rooms.Add(new ChatRoom { Id = i });
+            }
+        }
+
+        public static ChatManager GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new ChatManager();
+            }
+            return instance;
+        }
+
+        public ChatRoom GetRoom(int id)
+        {
+            var room = Rooms.Find(r => r.Id == id);
+            room?.CheckStatus();
+            return room;
+        }
+    }
+}

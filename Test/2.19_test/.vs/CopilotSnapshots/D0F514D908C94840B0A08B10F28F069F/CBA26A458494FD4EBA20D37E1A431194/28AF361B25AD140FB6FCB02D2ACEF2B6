@@ -1,0 +1,28 @@
+﻿namespace SA_TEST.Router
+{
+    // Áp dụng BUILDER PATTERN: Giúp việc cấu hình ứng dụng và thêm Route trở nên linh hoạt
+    internal class RouteBuilder
+    {
+        private WebRouter router =
+            new WebRouter();
+
+        // Phương thức trả về 'this' (chính nó) để có thể gọi chuỗi: .addHome().addLogin()
+        public RouteBuilder addHome(Func<string> action)
+        {
+            router.addRoute("/", action);
+            return this;
+        }
+
+        public RouteBuilder addLogin(Func<string> action)
+        {
+            router.addRoute("/login", action);
+            return this;
+        }
+
+        // Bước cuối cùng để trả về đối tượng router hoàn chỉnh
+        public WebRouter build()
+        {
+            return router;
+        }
+    }
+}

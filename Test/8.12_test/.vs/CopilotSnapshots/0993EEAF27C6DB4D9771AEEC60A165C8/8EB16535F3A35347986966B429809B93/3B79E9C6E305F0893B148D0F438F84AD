@@ -1,0 +1,61 @@
+﻿namespace _8._12_test
+{
+    /// <summary>
+    /// DESIGN PATTERN: BUILDER
+    /// Cung cấp giải pháp xây dựng giao diện HTML cho phòng chat theo từng bước (Step-by-step).
+    /// Giúp code sạch hơn, dễ bảo trì thay vì cộng chuỗi HTML thủ công trong Router.
+    /// </summary>
+    class ChatBuilder
+    {
+        private string html = "";
+
+        public ChatBuilder setTitle(string title)
+        {
+            html += $"<h1 style='color: orange;'>{title}</h1>";
+            return this;
+        }
+
+        public ChatBuilder addMessage(Message msg)
+        {
+            html += $"<div style='margin-bottom: 10px; border-bottom: 1px solid #444;'>";
+            html += $"<small>{msg.Timestamp:HH:mm:ss}</small> <strong>{msg.Username}</strong>: {msg.Content}";
+            html += "</div>";
+            return this;
+        }
+
+        public ChatBuilder addInputForm(int roomId)
+        {
+            html += $@"
+                <form method='POST' action='/chat/{roomId}'>
+                    <input name='message' style='width: 80%; padding: 5px;' required>
+                    <button type='submit' style='padding: 5px 15px; background: orange; border: none; cursor: pointer;'>Send</button>
+                </form>";
+            return this;
+        }
+
+        /// <summary>
+        /// Tổng hợp các thành phần đã thêm (Title, Messages, Form) thành một trang HTML hoàn chỉnh.
+        /// Bao gồm cả CSS để giao diện trông "Attractive" hơn theo yêu cầu.
+        /// </summary>
+        public string build()
+        {
+            return $@"
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial; background: #111; color: white; padding: 20px; }}
+                    a {{ color: orange; text-decoration: none; }}
+                    .room-list {{ list-style: none; padding: 0; }}
+                    .room-item {{ padding: 10px; margin: 5px 0; border: 1px solid #333; }}
+                    .online {{ color: #0f0; }}
+                    .offline {{ color: #f00; }}
+                </style>
+            </head>
+            <body>
+                {html}
+                <br><a href='/chat'>Back to Rooms</a> | <a href='/'>Home</a>
+            </body>
+            </html>";
+        }
+    }
+}

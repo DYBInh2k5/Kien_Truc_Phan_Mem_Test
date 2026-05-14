@@ -1,0 +1,200 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using _6._16_test.Factory;
+using _6._16_test.Managers;
+using _6._16_test.Models;
+
+namespace _6._16_test
+{
+    internal class Program
+    {
+        private static string currentUser = null;
+
+        static void Main(string[] args)
+        {
+            // Thiết lập mã hóa UTF-8 để hiển thị tiếng Việt trên Console và Web
+            Console.OutputEncoding = Encoding.UTF8;
+            
+            // Khởi tạo địa chỉ IP (Bất kỳ IP nào của máy) và Port 8080
+            IPEndPoint serverInfo = new IPEndPoint(IPAddress.Any, 8080);
+            
+            // Tạo Socket sử dụng giao thức TCP
+            Socket serverListen = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            // Gắn Socket vào địa chỉ và bắt đầu lắng nghe kết nối (max 10 hàng đợi)
+            serverListen.Bind(serverInfo);
+            serverListen.Listen(10);
+
+            Console.WriteLine("Server đang chạy tại http://localhost:8080");
+
+            while (true)
+            {
+                // Chấp nhận kết nối từ trình duyệt (Client)
+                Socket staff = serverListen.Accept();
+                
+                // Mỗi client sẽ được xử lý trên một luồng (Thread) riêng biệt để không chặn nhau (Multi-threading)
+                Thread t = new Thread(HandleClient);
+                t.Start(staff);
+            }
+        }
+
+        static void HandleClient(object obj)
+        {
+            Socket staff = (Socket)obj;
+            // Buffer để nhận dữ liệu từ trình duyệt (8KB)
+            byte[] bytes = new byte[8192]; 
+            try
+            {
+                // Nhận dữ liệu thô từ Socket
+                int byteRec = staff.Receive(bytes);
+                if (byteRec == 0) return;
+
+                // Chuyển dữ liệu binary nhận được sang chuỗi string UTF-8 để parse HTTP
+                string request = Encoding.UTF8.GetString(bytes, 0, byteRec);
+                string[] lines = request.Split('\n');
+                if (lines.Length == 0) return;
+
+                string firstLine = lines[0]; // Dòng đầu tiên: Method + Path + Protocol (e.g., GET /login HTTP/1.1)
+                Console.WriteLine($"Request: {firstLine.Trim()}");
+
+                // --- ĐIỀU HƯỚNG CÁC ĐƯỜNG DẪN (ROUTING) ---
+
+                // Route: GET / (Trang chủ thông tin sinh viên)
+                if (firstLine.Contains("GET / HTTP"))
+                {
+                    string html = File.ReadAllText("Html/index.html");
+                    staff.Send(ResponseFactory.Html(html));
+                }
+                // Route: GET /login (Hiển thị form đăng nhập)
+                else if (firstLine.Contains("GET /login"))
+                {
+                    string html = File.ReadAllText("Html/login.html");
+                    staff.Send(ResponseFactory.Html(html));
+                }
+                // Route: POST /login (Xử lý dữ liệu đăng nhập từ Form)
+                else if (firstLine.Contains("POST /login"))
+                {
+                    // Tách lấy phần Body của HTTP Request (nơi chứa username & password)
+                    string body = request.Split("\r\n\r\n")[1]; 
+                    var data = ParseFormData(body);
+                    if (ValidateUser(data["username"], data["password"]))
+                    {
+                        currentUser = data["username"]; // Lưu session đơn giản bằng biến static
+                        staff.Send(ResponseFactory.Redirect("/chat")); // Thành công -> Chuyển hướng sang /chat
+                    }
+                    else
+                    {
+                        staff.Send(ResponseFactory.Html("<h1>Login Failed</h1><a href='/login'>Try again</a>"));
+                    }
+                }
+                // Route: GET /chat (Danh sách phòng chat)
+                else if (firstLine.Contains("GET /chat "))
+                {
+                    var rooms = ChatManager.GetInstance().Rooms;
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var room in rooms)
+                    {
+                        // Kiểm tra trạng thái phòng: Nếu quá 3 phút không chat sẽ Offline và xóa tin nhắn
+                        room.CheckStatus(); 
+                        string status = room.IsOnline ? "<span style='color:green'>Online</span>" : "<span style='color:red'>Offline</span>";
+                        sb.Append($"<li><a href='/chat/{room.Id}'>Room {room.Id}</a> - {status}</li>");
+                    }
+                    string html = File.ReadAllText("Html/chat.html").Replace("{{RoomsList}}", sb.ToString());
+                    staff.Send(ResponseFactory.Html(html));
+                }
+                // Route: GET /chat/:id (Chi tiết nội dung chat trong phòng)
+                else if (firstLine.Contains("GET /chat/"))
+                {
+                    int roomId = int.Parse(firstLine.Split("/chat/")[1].Split(' ')[0]);
+                    var room = ChatManager.GetInstance().GetRoom(roomId);
+                    if (room != null)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var msg in room.Messages)
+                        {
+                            sb.Append($"<p>[{msg.Time:HH:mm:ss}] <b>{msg.Username}</b>: {msg.Content}</p>");
+                        }
+                        string html = File.ReadAllText("Html/room.html")
+                            .Replace("{{RoomId}}", room.Id.ToString())
+                            .Replace("{{Messages}}", sb.ToString());
+                        staff.Send(ResponseFactory.Html(html));
+                    }
+                }
+                // Route: POST /chat/:id (Gửi tin nhắn mới vào phòng)
+                else if (firstLine.Contains("POST /chat/"))
+                {
+                    int roomId = int.Parse(firstLine.Split("/chat/")[1].Split(' ')[0]);
+                    
+                    // Tìm vị trí của Body sau hai cặp \r\n
+                    int bodyStartIndex = request.IndexOf("\r\n\r\n") + 4;
+                    string body = request.Substring(bodyStartIndex);
+                    
+                    var data = ParseFormData(body);
+                    var room = ChatManager.GetInstance().GetRoom(roomId);
+                    
+                    // Kiểm tra xem user đã login chưa và message có dữ liệu không
+                    if (room != null && !string.IsNullOrEmpty(currentUser) && data.ContainsKey("message"))
+                    {
+                        room.Messages.Add(new Message
+                        {
+                            Username = currentUser,
+                            Content = WebUtility.UrlDecode(data["message"]),
+                            Time = DateTime.Now
+                        });
+                        room.LastActivity = DateTime.Now;
+                        staff.Send(ResponseFactory.Redirect($"/chat/{roomId}"));
+                    }
+                    else
+                    {
+                        // Nếu chưa login thì yêu cầu login lại
+                        staff.Send(ResponseFactory.Redirect("/login"));
+                    }
+                }
+                // Nếu không khớp với bất kỳ điều hướng nào ở trên -> Hiển thị lỗi 404
+                else
+                {
+                    staff.Send(ResponseFactory.Html("<h1>404 Not Found</h1>"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+            finally
+            {
+                staff.Close(); // Đóng kết nối Socket với client sau khi xử lý xong
+            }
+        }
+
+        // Phân tích dữ liệu form được encode trong URL sang Dictionary
+        static Dictionary<string, string> ParseFormData(string body)
+        {
+            var dict = new Dictionary<string, string>();
+            var pairs = body.Split('&');
+            foreach (var pair in pairs)
+            {
+                var kv = pair.Split('=');
+                if (kv.Length == 2) dict[kv[0]] = kv[1];
+            }
+            return dict;
+        }
+
+        // Hàm kiểm tra tính hợp lệ của người dùng (đăng nhập)
+        static bool ValidateUser(string username, string password)
+        {
+            try
+            {
+                string json = File.ReadAllText("users.json");
+                var users = JsonSerializer.Deserialize<List<User>>(json);
+                return users.Exists(u => u.username == username && u.password == password);
+            }
+            catch { return false; }
+        }
+    }
+}

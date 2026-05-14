@@ -1,0 +1,25 @@
+﻿namespace _8._12_test
+{
+    class ChatRoom
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<Message> Messages { get; set; } = new List<Message>();
+        public DateTime LastActivity { get; set; } = DateTime.MinValue;
+
+        /// <summary>
+        /// Logic yêu cầu: Kiểm tra phòng có hoạt động trong 3 phút gần nhất không.
+        /// Nếu không hoạt động (Offline): Xóa sạch lịch sử tin nhắn.
+        /// </summary>
+        public bool IsOnline()
+        {
+            if (DateTime.Now - LastActivity <= TimeSpan.FromMinutes(3))
+            {
+                return true;
+            }
+            // If offline, its history is cleared.
+            if (Messages.Count > 0) Messages.Clear();
+            return false;
+        }
+    }
+}

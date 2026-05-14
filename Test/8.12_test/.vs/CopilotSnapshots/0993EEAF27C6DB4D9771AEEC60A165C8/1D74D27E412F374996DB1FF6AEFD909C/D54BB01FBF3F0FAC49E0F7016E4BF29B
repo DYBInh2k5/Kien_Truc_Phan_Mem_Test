@@ -1,0 +1,13 @@
+﻿namespace _8._12_test
+{
+    /// <summary>
+    /// Model đại diện cho một tin nhắn trong phòng chat.
+    /// Lưu trữ thông tin về người gửi, nội dung văn bản và thời điểm gửi tin.
+    /// </summary>
+    public class Message
+    {
+        public string Username { get; set; }
+        public string Content { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+}

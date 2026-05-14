@@ -1,0 +1,253 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\product_modernchair.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\product_modernchair.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\product_victorianchair.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\product_victorianchair.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\iproduct_chair.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\iproduct_chair.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\ifactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\ifactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\factory_victorian.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\factory_victorian.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\factory_modern.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\factory_modern.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\iproduct_coffeetable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\iproduct_coffeetable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\iproduct_sofa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\iproduct_sofa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\product_victoriancoffeetable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\product_victoriancoffeetable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\product_moderncoffeetable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\product_moderncoffeetable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\product_victoriansofa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\product_victoriansofa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w07\\dpct5_1_singleton\\dpct5_1_singleton\\product_modernsofa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{17429262-8C58-43AB-93E2-9518FE8C04C2}|DPCT5_1_Singleton\\DPCT5_1_Singleton.csproj|solutionrelative:dpct5_1_singleton\\product_modernsofa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 13,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{fbcae063-e2c0-4ab1-a516-996ea3dafb72}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Product_ModernSofa.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_ModernSofa.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\Product_ModernSofa.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_ModernSofa.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\Product_ModernSofa.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:34:26.857Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Product_VictorianSofa.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_VictorianSofa.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\Product_VictorianSofa.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_VictorianSofa.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\Product_VictorianSofa.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:34:23.762Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Product_ModernCoffeeTable.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_ModernCoffeeTable.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\Product_ModernCoffeeTable.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_ModernCoffeeTable.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\Product_ModernCoffeeTable.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:34:19.464Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Product_VictorianCoffeeTable.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_VictorianCoffeeTable.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\Product_VictorianCoffeeTable.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_VictorianCoffeeTable.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\Product_VictorianCoffeeTable.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:34:16.786Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IProduct_Sofa.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\IProduct_Sofa.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\IProduct_Sofa.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\IProduct_Sofa.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\IProduct_Sofa.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:34:14.657Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IProduct_CoffeeTable.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\IProduct_CoffeeTable.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\IProduct_CoffeeTable.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\IProduct_CoffeeTable.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\IProduct_CoffeeTable.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:34:12.592Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Factory_Modern.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Factory_Modern.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\Factory_Modern.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Factory_Modern.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\Factory_Modern.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:28:07.618Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Factory_Victorian.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Factory_Victorian.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\Factory_Victorian.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Factory_Victorian.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\Factory_Victorian.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:28:06.671Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IFactory.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\IFactory.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\IFactory.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\IFactory.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\IFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:28:05.832Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IProduct_Chair.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\IProduct_Chair.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\IProduct_Chair.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\IProduct_Chair.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\IProduct_Chair.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:28:04.804Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Product_ModernChair.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_ModernChair.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\Product_ModernChair.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_ModernChair.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\Product_ModernChair.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:28:03.879Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Product_VictorianChair.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_VictorianChair.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\Product_VictorianChair.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Product_VictorianChair.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\Product_VictorianChair.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:28:02.971Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Program.cs",
+              "RelativeDocumentMoniker": "DPCT5_1_Singleton\\Program.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W07\\DPCT5_1_Singleton\\DPCT5_1_Singleton\\Program.cs",
+              "RelativeToolTip": "DPCT5_1_Singleton\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T03:26:18.246Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

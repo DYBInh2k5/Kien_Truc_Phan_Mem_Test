@@ -1,0 +1,61 @@
+﻿using System.Text.Json;
+using SA_TEST.Models;
+
+namespace SA_TEST.Services
+{
+    // Áp d?ng SINGLETON PATTERN: ??m b?o ch? có 1 instance duy nh?t ?? qu?n lý vi?c ??c file JSON
+    internal class JsonService
+    {
+        private static JsonService instance = null;
+
+        // Constructor private ?? không cho phép t?o m?i t? bên ngoài
+        private JsonService() { }
+
+        // Ph??ng th?c t?nh ?? l?y instance duy nh?t
+        public static JsonService getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new JsonService();
+            }
+
+            return instance;
+        }
+
+        public List<User> getUsers()
+        {
+            // Kiểm tra nhiều vị trí để tìm file users.json
+            string[] possiblePaths = {
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "users.json"),
+                Path.Combine(Directory.GetCurrentDirectory(), "Data", "users.json"),
+                "Data/users.json",
+                // Thêm đường dẫn lùi 3 cấp để xử lý khi chạy trong bin/Debug/net8.0
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Data", "users.json")
+            };
+
+            string path = "";
+            foreach (var p in possiblePaths)
+            {
+                if (File.Exists(p))
+                {
+                    path = p;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(path))
+            {
+                Console.WriteLine("LỖI: Không tìm thấy file users.json tại bất kỳ vị trí nào!");
+                return new List<User>();
+            }
+
+            // Đọc toàn bộ nội dung file và chuyển đổi (Deserialize) từ JSON sang List Object
+            string json = File.ReadAllText(path).Trim();
+            try {
+                return JsonSerializer.Deserialize<List<User>>(json);
+            } catch {
+                return new List<User>();
+            }
+        }
+    }
+}

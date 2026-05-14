@@ -1,0 +1,133 @@
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using SA_TEST.Controllers;
+using SA_TEST.Services;
+using SA_TEST.Utils;
+using SA_TEST.Router;
+
+namespace SA_TEST
+{
+    class Program
+    {
+        // Khởi tạo Router và Builder
+        private static WebRouter router;
+
+        static void Main(string[] args)
+        {
+            // Áp dụng BUILDER PATTERN để cấu hình các đường dẫn (Routes)
+            RouteBuilder builder = new RouteBuilder();
+            router = builder
+                .addHome(() => HomeController.Index())
+                .addLogin(() => LoginController.LoginPage())
+                .addChat(() => ChatController.ChatList())
+                .build();
+
+            // Thiết lập địa chỉ IP (bất kỳ) và Port 8080 cho Server
+            IPEndPoint serverInfor = new IPEndPoint(IPAddress.Any, 8080);
+            
+            // Khởi tạo Socket lắng nghe kết nối TCP
+            Socket serverListen = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            serverListen.Bind(serverInfor);
+            serverListen.Listen(10); 
+            Console.WriteLine("Server running on http://localhost:8080");
+
+            while (true)
+            {
+                Socket staff = serverListen.Accept();
+                new Thread(HandleClient).Start(staff);
+            }
+        }
+
+        static void HandleClient(object obj)
+        {
+            Socket staff = (Socket)obj;
+            try
+            {
+                byte[] bytes = new byte[8192];
+                int bytesRec = staff.Receive(bytes);
+                if (bytesRec == 0) return;
+
+                string requestData = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                string[] lines = requestData.Split("\r\n");
+                if (lines.Length == 0) return;
+
+                string[] firstLine = lines[0].Split(' ');
+                if (firstLine.Length < 2) return;
+
+                string method = firstLine[0];
+                string url = firstLine[1];
+
+                string responseBody = "";
+                string contentType = "text/html";
+                string extraHeaders = "";
+                int statusCode = 200;
+                string statusText = "OK";
+
+                string currentUser = HttpHelper.GetCookie(requestData, "token");
+
+                if (method == "GET")
+                {
+                    // Xử lý Static Files (CSS)
+                    if (url == "/style.css") {
+                        contentType = "text/css";
+                        responseBody = File.Exists("Html/style.css") ? File.ReadAllText("Html/style.css") : "";
+                    }
+                    // Sử dụng WebRouter để điều hướng các trang chính
+                    else if (router.routes.ContainsKey(url))
+                    {
+                        // Kiểm tra quyền truy cập cho trang Chat
+                        if (url.StartsWith("/chat") && string.IsNullOrEmpty(currentUser)) {
+                            statusCode = 302; statusText = "Found"; extraHeaders = "Location: /login\r\n";
+                        } else {
+                            responseBody = router.routes[url]();
+                        }
+                    }
+                    // Xử lý động cho Chat Room (VD: /chat/1)
+                    else if (url.StartsWith("/chat/"))
+                    {
+                        if (string.IsNullOrEmpty(currentUser)) {
+                            statusCode = 302; statusText = "Found"; extraHeaders = "Location: /login\r\n";
+                        } else {
+                            int.TryParse(url.Substring(6), out int id);
+                            responseBody = ChatController.ChatRoom(id);
+                        }
+                    }
+                    else { responseBody = "<h1>404 Not Found</h1>"; statusCode = 404; }
+                }
+                else if (method == "POST")
+                {
+                    var formData = HttpHelper.ParseFormData(requestData);
+                    if (url == "/login")
+                    {
+                        var users = JsonService.getInstance().getUsers();
+                        var user = users.FirstOrDefault(u => u.username == (formData.ContainsKey("username") ? formData["username"] : "") 
+                                                        && u.password == (formData.ContainsKey("password") ? formData["password"] : ""));
+                        if (user != null) { 
+                            statusCode = 302; statusText = "Found"; 
+                            extraHeaders = "Location: /chat\r\nSet-Cookie: token=" + user.username + "; Path=/\r\n"; 
+                        }
+                        else responseBody = "<h1>Login Failed</h1><p>Check your credentials.</p><a href='/login'>Try again</a>";
+                    }
+                    else if (url.StartsWith("/chat/"))
+                    {
+                        int.TryParse(url.Substring(6), out int id);
+                        if (formData.ContainsKey("message")) {
+                            ChatService.AddMessage(id, currentUser ?? "Anonymous", formData["message"]);
+                        }
+                        statusCode = 302; statusText = "Found"; extraHeaders = $"Location: /chat/{id}\r\n";
+                    }
+                }
+
+                string response = $"HTTP/1.1 {statusCode} {statusText}\r\n" +
+                                  $"Content-Type: {contentType}\r\n" +
+                                  $"Content-Length: {Encoding.UTF8.GetByteCount(responseBody)}\r\n" +
+                                  extraHeaders + "\r\n" + responseBody;
+
+                staff.Send(Encoding.UTF8.GetBytes(response));
+            }
+            catch (Exception ex) { Console.WriteLine("Error: " + ex.Message); }
+            finally { staff.Close(); }
+        }
+    }
+}

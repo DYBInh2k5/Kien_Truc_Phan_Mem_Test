@@ -1,0 +1,164 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using _6._16_test.Factory;
+using _6._16_test.Managers;
+using _6._16_test.Models;
+
+namespace _6._16_test
+{
+    internal class Program
+    {
+        private static string currentUser = null;
+
+        static void Main(string[] args)
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            IPEndPoint serverInfo = new IPEndPoint(IPAddress.Any, 8080);
+            Socket serverListen = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            serverListen.Bind(serverInfo);
+            serverListen.Listen(10);
+
+            Console.WriteLine("Server đang chạy tại http://localhost:8080");
+
+            while (true)
+            {
+                Socket staff = serverListen.Accept();
+                Thread t = new Thread(HandleClient);
+                t.Start(staff);
+            }
+        }
+
+        static void HandleClient(object obj)
+        {
+            Socket staff = (Socket)obj;
+            byte[] bytes = new byte[8192];
+            try
+            {
+                int byteRec = staff.Receive(bytes);
+                if (byteRec == 0) return;
+
+                string request = Encoding.UTF8.GetString(bytes, 0, byteRec);
+                string[] lines = request.Split('\n');
+                if (lines.Length == 0) return;
+
+                string firstLine = lines[0];
+                Console.WriteLine($"Request: {firstLine.Trim()}");
+
+                if (firstLine.Contains("GET / HTTP"))
+                {
+                    string html = File.ReadAllText("Html/index.html");
+                    staff.Send(ResponseFactory.Html(html));
+                }
+                else if (firstLine.Contains("GET /login"))
+                {
+                    string html = File.ReadAllText("Html/login.html");
+                    staff.Send(ResponseFactory.Html(html));
+                }
+                else if (firstLine.Contains("POST /login"))
+                {
+                    string body = request.Split("\r\n\r\n")[1];
+                    var data = ParseFormData(body);
+                    if (ValidateUser(data["username"], data["password"]))
+                    {
+                        currentUser = data["username"];
+                        staff.Send(ResponseFactory.Redirect("/chat"));
+                    }
+                    else
+                    {
+                        staff.Send(ResponseFactory.Html("<h1>Login Failed</h1><a href='/login'>Try again</a>"));
+                    }
+                }
+                else if (firstLine.Contains("GET /chat "))
+                {
+                    var rooms = ChatManager.GetInstance().Rooms;
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var room in rooms)
+                    {
+                        room.CheckStatus();
+                        string status = room.IsOnline ? "<span style='color:green'>Online</span>" : "<span style='color:red'>Offline</span>";
+                        sb.Append($"<li><a href='/chat/{room.Id}'>Room {room.Id}</a> - {status}</li>");
+                    }
+                    string html = File.ReadAllText("Html/chat.html").Replace("{{RoomsList}}", sb.ToString());
+                    staff.Send(ResponseFactory.Html(html));
+                }
+                else if (firstLine.Contains("GET /chat/"))
+                {
+                    int roomId = int.Parse(firstLine.Split("/chat/")[1].Split(' ')[0]);
+                    var room = ChatManager.GetInstance().GetRoom(roomId);
+                    if (room != null)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var msg in room.Messages)
+                        {
+                            sb.Append($"<p>[{msg.Time:HH:mm:ss}] <b>{msg.Username}</b>: {msg.Content}</p>");
+                        }
+                        string html = File.ReadAllText("Html/room.html")
+                            .Replace("{{RoomId}}", room.Id.ToString())
+                            .Replace("{{Messages}}", sb.ToString());
+                        staff.Send(ResponseFactory.Html(html));
+                    }
+                }
+                else if (firstLine.Contains("POST /chat/"))
+                {
+                    int roomId = int.Parse(firstLine.Split("/chat/")[1].Split(' ')[0]);
+                    string body = request.Split("\r\n\r\n")[1];
+                    var data = ParseFormData(body);
+                    var room = ChatManager.GetInstance().GetRoom(roomId);
+                    if (room != null && !string.IsNullOrEmpty(currentUser))
+                    {
+                        room.Messages.Add(new Message
+                        {
+                            Username = currentUser,
+                            Content = WebUtility.UrlDecode(data["message"]),
+                            Time = DateTime.Now
+                        });
+                        room.LastActivity = DateTime.Now;
+                        staff.Send(ResponseFactory.Redirect($"/chat/{roomId}"));
+                    }
+                }
+                else
+                {
+                    staff.Send(ResponseFactory.Html("<h1>404 Not Found</h1>"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+            finally
+            {
+                staff.Close();
+            }
+        }
+
+        static Dictionary<string, string> ParseFormData(string body)
+        {
+            var dict = new Dictionary<string, string>();
+            var pairs = body.Split('&');
+            foreach (var pair in pairs)
+            {
+                var kv = pair.Split('=');
+                if (kv.Length == 2) dict[kv[0]] = kv[1];
+            }
+            return dict;
+        }
+
+        static bool ValidateUser(string username, string password)
+        {
+            try
+            {
+                string json = File.ReadAllText("users.json");
+                var users = JsonSerializer.Deserialize<List<User>>(json);
+                return users.Exists(u => u.username == username && u.password == password);
+            }
+            catch { return false; }
+        }
+    }
+}

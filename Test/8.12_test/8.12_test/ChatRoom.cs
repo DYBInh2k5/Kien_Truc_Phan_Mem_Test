@@ -1,0 +1,29 @@
+namespace _8._12_test
+{
+    /// <summary>
+    /// Qu?n lý d? li?u và tr?ng thái c?a m?t phòng chat c? th?.
+    /// Bao g?m danh sách tin nh?n và logic ki?m tra tr?ng thái Online/Offline.
+    /// </summary>
+    class ChatRoom
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<Message> Messages { get; set; } = new List<Message>();
+        public DateTime LastActivity { get; set; } = DateTime.MinValue;
+
+        /// <summary>
+        /// Logic yêu c?u: Ki?m tra phòng có ho?t ??ng trong 3 phút g?n nh?t không.
+        /// N?u không ho?t ??ng (Offline): Xóa s?ch l?ch s? tin nh?n.
+        /// </summary>
+        public bool IsOnline()
+        {
+            if (DateTime.Now - LastActivity <= TimeSpan.FromMinutes(3))
+            {
+                return true;
+            }
+            // If offline, its history is cleared.
+            if (Messages.Count > 0) Messages.Clear();
+            return false;
+        }
+    }
+}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Room {{RoomId}}</title>
+</head>
+<body>
+    <h1>Room {{RoomId}}</h1>
+    <a href="/chat">Quay lại danh sách phòng</a>
+    <hr />
+    <div style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+        {{Messages}}
+    </div>
+    <hr />
+    <form method="POST" action="/chat/{{RoomId}}">
+        <input name="message" placeholder="Nhập tin nhắn..." required style="width: 80%;" />
+        <button type="submit">Gửi</button>
+    </form>
+</body>
+</html>

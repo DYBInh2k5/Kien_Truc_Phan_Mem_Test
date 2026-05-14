@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "DPCT5_1_Singleton/1.0.0": {
+        "runtime": {
+          "DPCT5_1_Singleton.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DPCT5_1_Singleton/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

@@ -1,0 +1,33 @@
+﻿namespace SA_TEST.Router
+{
+    // Áp dụng BUILDER PATTERN: Giúp cấu hình đường dẫn (Route) cho ứng dụng một cách linh hoạt và mạch lạc
+    internal class RouteBuilder
+    {
+        private WebRouter router = new WebRouter();
+
+        // Phương thức trả về 'this' (chính nó) để tạo kiểu gọi hàm nối tiếp (Fluent Interface)
+        public RouteBuilder addHome(Func<string> action)
+        {
+            router.addRoute("/", action); // Gán hàm xử lý cho trang chủ
+            return this;
+        }
+
+        public RouteBuilder addLogin(Func<string> action)
+        {
+            router.addRoute("/login", action); // Gán hàm xử lý cho trang đăng nhập
+            return this;
+        }
+
+        public RouteBuilder addChat(Func<string> action)
+        {
+            router.addRoute("/chat", action); // Gán hàm xử lý cho danh sách phòng chat
+            return this;
+        }
+
+        // Bước hoàn tất để nhận về đối tượng WebRouter đã được cấu hình xong
+        public WebRouter build()
+        {
+            return router;
+        }
+    }
+}

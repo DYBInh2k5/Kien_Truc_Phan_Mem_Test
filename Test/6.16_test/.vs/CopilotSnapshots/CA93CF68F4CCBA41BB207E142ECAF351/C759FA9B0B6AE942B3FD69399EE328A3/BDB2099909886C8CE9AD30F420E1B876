@@ -1,0 +1,14 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>SA TEST - Home</title>
+</head>
+<body>
+    <h1>SA TEST</h1>
+    <p>H? T�n: Nguy?n V?n A</p>
+    <p>MSSV: 123456</p>
+    <hr />
+    <a href="/login">?i t?i trang Login</a>
+</body>
+</html>

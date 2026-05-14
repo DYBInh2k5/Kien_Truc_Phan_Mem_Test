@@ -1,0 +1,43 @@
+﻿using System.Net;
+
+namespace SA_TEST.Utils
+{
+    internal class HttpHelper
+    {
+        public static Dictionary<string, string> ParseFormData(string requestData)
+        {
+            var dict = new Dictionary<string, string>();
+            string[] separator = { "\r\n\r\n" };
+            var parts = requestData.Split(separator, StringSplitOptions.None);
+            if (parts.Length < 2) return dict;
+
+            var body = parts[1].Trim('\0');
+            var pairs = body.Split('&');
+            foreach (var pair in pairs)
+            {
+                var kv = pair.Split('=');
+                if (kv.Length == 2) 
+                    dict[WebUtility.UrlDecode(kv[0])] = WebUtility.UrlDecode(kv[1]);
+            }
+            return dict;
+        }
+
+        public static string GetCookie(string requestData, string cookieName)
+        {
+            var lines = requestData.Split("\r\n");
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("Cookie:"))
+                {
+                    var cookies = line.Substring(7).Split(';');
+                    foreach (var c in cookies)
+                    {
+                        var kv = c.Trim().Split('=');
+                        if (kv.Length == 2 && kv[0] == cookieName) return kv[1];
+                    }
+                }
+            }
+            return null;
+        }
+    }
+}

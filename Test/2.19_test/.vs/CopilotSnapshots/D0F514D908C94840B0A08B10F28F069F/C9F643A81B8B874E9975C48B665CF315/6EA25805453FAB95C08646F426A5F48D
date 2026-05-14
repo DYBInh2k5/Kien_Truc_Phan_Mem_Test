@@ -1,0 +1,28 @@
+﻿namespace SA_TEST.Router
+{
+    // Áp d?ng BUILDER PATTERN: Giúp vi?c c?u hình ?ng d?ng và thêm Route tr? nên linh ho?t
+    internal class RouteBuilder
+    {
+        private WebRouter router =
+            new WebRouter();
+
+        // Ph??ng th?c tr? v? 'this' (chính nó) ?? có th? g?i chu?i: .addHome().addLogin()
+        public RouteBuilder addHome(Func<string> action)
+        {
+            router.addRoute("/", action);
+            return this;
+        }
+
+        public RouteBuilder addLogin(Func<string> action)
+        {
+            router.addRoute("/login", action);
+            return this;
+        }
+
+        // B??c cu?i cùng ?? tr? v? ??i t??ng router hoàn ch?nh
+        public WebRouter build()
+        {
+            return router;
+        }
+    }
+}

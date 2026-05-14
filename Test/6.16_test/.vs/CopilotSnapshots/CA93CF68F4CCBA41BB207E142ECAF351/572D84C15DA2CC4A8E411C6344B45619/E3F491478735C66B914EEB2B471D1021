@@ -1,0 +1,14 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>SA TEST - Home</title>
+</head>
+<body>
+    <h1>SA TEST</h1>
+    <p>Họ Tên: Nguyễn Văn A</p>
+    <p>MSSV: 123456</p>
+    <hr />
+    <a href="/login">Đi tới trang Login</a>
+</body>
+</html>

@@ -1,0 +1,26 @@
+﻿using System.Text;
+
+namespace SATestSocket.Patterns
+{
+    internal class ServerFacade
+    {
+        public static byte[] buildResponse(
+            string body)
+        {
+            string response =
+                "HTTP/1.1 200 OK\r\n";
+
+            response +=
+                "Content-Type: text/html\r\n";
+
+            response +=
+                $"Content-Length: {body.Length}\r\n";
+
+            response += "\r\n";
+
+            response += body;
+
+            return Encoding.ASCII.GetBytes(response);
+        }
+    }
+}

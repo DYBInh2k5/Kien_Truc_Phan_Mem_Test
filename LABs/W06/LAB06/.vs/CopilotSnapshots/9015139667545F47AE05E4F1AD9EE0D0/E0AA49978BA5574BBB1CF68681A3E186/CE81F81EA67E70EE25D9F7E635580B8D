@@ -1,0 +1,129 @@
+﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+
+namespace LAB06
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            // 1. Khởi tạo IP + Port
+            IPEndPoint serverInfor = new IPEndPoint(IPAddress.Any, 8080);
+
+            // 2. Tạo TCP Socket
+            Socket server = new Socket(
+                AddressFamily.InterNetwork,
+                SocketType.Stream,
+                ProtocolType.Tcp);
+
+            server.Bind(serverInfor);
+            server.Listen(10);
+
+            Console.WriteLine("Server dang chay tai http://localhost:8080");
+
+            // 3. Nhận nhiều client (multi-thread)
+            while (true)
+            {
+                Socket client = server.Accept();
+                Console.WriteLine($"Client: {client.RemoteEndPoint}");
+
+                Thread t = new Thread(HandleClient);
+                t.Start(client);
+            }
+        }
+
+        // 4. Xử lý từng client
+        static void HandleClient(object obj)
+        {
+            Socket client = (Socket)obj;
+
+            try
+            {
+                string requestData = "";
+                byte[] buffer = new byte[1024];
+
+                // 5. Nhận HTTP request
+                while (true)
+                {
+                    int bytesRec = client.Receive(buffer);
+                    if (bytesRec == 0) break;
+
+                    requestData += Encoding.ASCII.GetString(buffer, 0, bytesRec);
+
+                    // HTTP kết thúc bằng dòng trống
+                    if (requestData.Contains("\r\n\r\n"))
+                        break;
+                }
+
+                Console.WriteLine("==== REQUEST ====");
+                Console.WriteLine(requestData);
+
+                // 6. Lấy dòng đầu: GET /login HTTP/1.1
+                string firstLine = requestData.Split('\n')[0];
+
+                // Lấy path
+                string path = "/";
+                if (firstLine.StartsWith("GET"))
+                {
+                    string[] parts = firstLine.Split(' ');
+                    if (parts.Length > 1)
+                        path = parts[1];
+                }
+
+                Console.WriteLine("Path: " + path);
+
+                // 7. Routing (điểm chính bài này)
+                string responseBody = "";
+
+                switch (path)
+                {
+                    case "/login":
+                        responseBody = "<html><body><h1>Login Page</h1><p>Nhap tai khoan...</p></body></html>";
+                        break;
+
+                    case "/contact":
+                        responseBody = "<html><body><h1>Contact Page</h1><p>Email: support@otu.com</p></body></html>";
+                        break;
+
+                    case "/about":
+                        responseBody = "<html><body><h1>About Page</h1><p>He thong quan ly don hang</p></body></html>";
+                        break;
+
+                    default:
+                        responseBody = "<html><body><h1>404 Not Found</h1></body></html>";
+                        break;
+                }
+
+                // 8. Tạo HTTP response
+                int contentLength = Encoding.UTF8.GetByteCount(responseBody);
+
+                string responseHeader =
+                    "HTTP/1.1 200 OK\r\n" +
+                    "Server: oTu\r\n" +
+                    "Content-Type: text/html; charset=UTF-8\r\n" +
+                    $"Content-Length: {contentLength}\r\n" +
+                    "Connection: close\r\n" +
+                    "\r\n";
+
+                string fullResponse = responseHeader + responseBody;
+
+                // 9. Gửi về client
+                byte[] responseBytes = Encoding.UTF8.GetBytes(fullResponse);
+                client.Send(responseBytes);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Loi: " + ex.Message);
+            }
+            finally
+            {
+                try { client.Shutdown(SocketShutdown.Both); } catch { }
+                client.Close();
+                Console.WriteLine("Client disconnected");
+            }
+        }
+    }
+}

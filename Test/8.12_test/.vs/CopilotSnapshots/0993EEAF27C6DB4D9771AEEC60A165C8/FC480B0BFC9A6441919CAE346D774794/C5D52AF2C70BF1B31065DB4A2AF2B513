@@ -1,0 +1,154 @@
+﻿namespace _8._12_test
+{
+    /// <summary>
+    /// DESIGN PATTERN: BUILDER
+    /// Cung cấp giải pháp xây dựng giao diện HTML cho phòng chat theo từng bước (Step-by-step).
+    /// Giúp code sạch hơn, dễ bảo trì thay vì cộng chuỗi HTML thủ công trong Router.
+    /// </summary>
+    class ChatBuilder
+    {
+        private string _title = "";
+        private string _body = "";
+
+        public ChatBuilder setTitle(string title)
+        {
+            _title = $"<h1 style='color: orange;'>{title}</h1>";
+            return this;
+        }
+
+        public ChatBuilder setBody(string bodyHtml)
+        {
+            _body = bodyHtml;
+            return this;
+        }
+
+        public ChatBuilder addMessage(Message msg)
+        {
+            _body += $@"
+                <div class='msg-item'>
+                    <span class='timestamp'>[{msg.Timestamp:HH:mm:ss}]</span>
+                    <span class='username'>{msg.Username}:</span>
+                    <span class='content'>{msg.Content}</span>
+                </div>";
+            return this;
+        }
+
+        public ChatBuilder addInputForm(int roomId)
+        {
+            _body += $@"
+                <form method='POST' action='/chat/{roomId}'>
+                    <input name='message' placeholder='Nhập tin nhắn...' required autofocus autocomplete='off'>
+                    <button type='submit'>Gửi</button>
+                </form>";
+            return this;
+        }
+
+        /// <summary>
+        /// Tổng hợp các thành phần đã thêm (Title, Body) thành một trang HTML hoàn chỉnh.
+        /// Bao gồm cả CSS để giao diện trông "Attractive" hơn theo yêu cầu.
+        /// </summary>
+        public string build()
+        {
+            return $@"
+            <html>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <style>
+                    :root {{
+                        --primary: #f39c12;
+                        --bg: #121212;
+                        --surface: #1e1e1e;
+                        --text: #e0e0e0;
+                    }}
+                    body {{ 
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                        background: var(--bg); 
+                        color: var(--text); 
+                        padding: 20px; 
+                        display: flex; 
+                        flex-direction: column; 
+                        align-items: center;
+                        min-height: 100vh;
+                        margin: 0;
+                    }}
+                    .container {{
+                        width: 100%;
+                        max-width: 600px;
+                        background: var(--surface);
+                        padding: 30px;
+                        border-radius: 12px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                    }}
+                    h1 {{ color: var(--primary); text-align: center; margin-top: 0; }}
+                    a {{ color: var(--primary); text-decoration: none; font-weight: bold; transition: 0.3s; }}
+                    a:hover {{ opacity: 0.8; text-decoration: underline; }}
+                    .msg-item {{ 
+                        background: #2a2a2a; 
+                        padding: 12px; 
+                        margin-bottom: 12px; 
+                        border-radius: 8px; 
+                        border-left: 4px solid var(--primary);
+                        animation: fadeIn 0.3s ease-in;
+                    }}
+                    @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(5px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+                    .timestamp {{ font-size: 0.8em; color: #888; display: block; }}
+                    .username {{ font-weight: bold; color: var(--primary); margin-right: 5px; }}
+                    .room-list {{ list-style: none; padding: 0; }}
+                    .room-item {{ 
+                        padding: 15px; 
+                        margin: 10px 0; 
+                        background: #252525; 
+                        border-radius: 8px; 
+                        display: flex; 
+                        justify-content: space-between;
+                        align-items: center;
+                        transition: 0.3s;
+                    }}
+                    .room-item:hover {{ background: #333; }}
+                    .online-badge {{ 
+                        padding: 4px 8px; 
+                        border-radius: 4px; 
+                        font-size: 0.7em; 
+                        font-weight: bold; 
+                    }}
+                    .online {{ background: #27ae60; color: white; }}
+                    .offline {{ background: #c0392b; color: white; }}
+                    form {{ display: flex; gap: 10px; margin-top: 20px; }}
+                    input {{ 
+                        flex: 1; 
+                        background: #333; 
+                        color: white; 
+                        border: 1px solid #444; 
+                        padding: 12px; 
+                        border-radius: 6px; 
+                        outline: none;
+                    }}
+                    input:focus {{ border-color: var(--primary); }}
+                    button {{ 
+                        background: var(--primary); 
+                        color: #000; 
+                        border: none; 
+                        padding: 12px 20px; 
+                        border-radius: 6px; 
+                        cursor: pointer; 
+                        font-weight: bold; 
+                        transition: 0.3s;
+                    }}
+                    button:hover {{ transform: scale(1.05); }}
+                    .nav-links {{ margin-top: 20px; text-align: center; border-top: 1px solid #333; padding-top: 15px; }}
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    {_title}
+                    {_body}
+                    <div class='nav-links'>
+                        <a href='/chat'>Danh sách phòng</a> | <a href='/'>Trang chủ</a>
+                    </div>
+                </div>
+            </body>
+            </html>";
+        }
+    }
+}

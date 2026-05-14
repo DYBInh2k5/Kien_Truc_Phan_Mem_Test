@@ -1,0 +1,18 @@
+﻿using SATestSocket.Models;
+
+namespace SATestSocket.Patterns
+{
+    internal class UserFactory
+    {
+        public static User create(
+            string username,
+            string password)
+        {
+            return new User
+            {
+                username = username,
+                password = password
+            };
+        }
+    }
+}

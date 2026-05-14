@@ -1,0 +1,230 @@
+﻿using System.Net.Sockets;
+using System.Text;
+using System.Web;
+
+namespace _8._12_test
+{
+    /// <summary>
+    /// Đóng vai trò là bộ định tuyến (Routing) chính của Web Server.
+    /// Quyết định nội dung HTML nào sẽ trả về dựa trên HTTP Method (GET/POST) và URL Path.
+    /// Quản lý danh sách các ChatRoom và xử lý Logic đăng nhập (Auth).
+    /// </summary>
+    class Router
+    {
+        private static List<ChatRoom> rooms = new List<ChatRoom>
+        {
+            new ChatRoom { Id = 1, Name = "General Chat" },
+            new ChatRoom { Id = 2, Name = "Tech Talk" }
+        };
+
+        /// <summary>
+        /// Hàm xử lý chính: So khớp Request và gọi các hàm chức năng tương ứng.
+        /// </summary>
+        public static void Handle(Socket staff, string method, string path, string body, string cookie)
+        {
+            if (method == "GET" && path == "/")
+            {
+                SendResponse(staff, GetHomeHtml());
+            }
+            else if (method == "GET" && path == "/login")
+            {
+                SendResponse(staff, GetLoginHtml());
+            }
+            else if (method == "POST" && path == "/login")
+            {
+                HandleLogin(staff, body);
+            }
+            else if (method == "GET" && path == "/chat")
+            {
+                SendResponse(staff, GetChatRoomsHtml());
+            }
+            else if (method == "GET" && path.StartsWith("/chat/"))
+            {
+                HandleGetChatRoom(staff, path);
+            }
+            else if (method == "POST" && path.StartsWith("/chat/"))
+            {
+                HandlePostChatRoom(staff, path, body, cookie);
+            }
+            else
+            {
+                SendResponse(staff, "<h1>404 Not Found</h1>", "404 Not Found");
+            }
+        }
+
+        private static string GetHomeHtml()
+        {
+            return @"
+            <html>
+            <head>
+                <style>body { font-family: Arial; background: #111; color: white; padding: 20px; } a { color: orange; }</style>
+            </head>
+            <body>
+                <h1>Student Info</h1>
+                <p>ID: 2212345</p>
+                <p>Fullname: Nguyen Van A</p>
+                <p>PC's number: PC01</p>
+                <hr>
+                <a href='/login'>Login to Chat</a>
+            </body>
+            </html>";
+        }
+
+        private static string GetLoginHtml(string message = "")
+        {
+            return $@"
+            <html>
+            <head>
+                <style>body {{ font-family: Arial; background: #111; color: white; padding: 20px; }} input {{ display: block; margin: 10px 0; padding: 5px; }} button {{ background: orange; border: none; padding: 10px; cursor: pointer; }}</style>
+            </head>
+            <body>
+                <h1>Login</h1>
+                <p style='color: red;'>{message}</p>
+                <form method='POST' action='/login'>
+                    <input name='username' placeholder='Username' required>
+                    <input name='password' type='password' placeholder='Password' required>
+                    <button type='submit'>Login</button>
+                </form>
+            </body>
+            </html>";
+        }
+
+        /// <summary>
+        /// Xử lý Xác thực người dùng bằng cách so sánh Login Data với dữ liệu từ Singleton JSON.
+        /// Nếu đúng: Tạo Cookie Token và chuyển hướng (Redirect) về /chat.
+        /// </summary>
+        private static void HandleLogin(Socket staff, string body)
+        {
+            var data = ParseQueryString(body);
+            string user = data.ContainsKey("username") ? data["username"] : "";
+            string pass = data.ContainsKey("password") ? data["password"] : "";
+
+            var users = JsonAccountSingleton.getInstance().users;
+            var authenticatedUser = users.Find(u => u.username == user && u.password == pass);
+
+            if (authenticatedUser != null)
+            {
+                // Success: Redirect to /chat and set cookie
+                string token = Guid.NewGuid().ToString();
+                SendRedirect(staff, "/chat", $"token={token}; Path=/; HttpOnly; Max-Age=3600");
+            }
+            else
+            {
+                SendResponse(staff, GetLoginHtml("Login failed. Please try again."));
+            }
+        }
+
+        private static string GetChatRoomsHtml()
+        {
+            var builder = new ChatBuilder();
+            builder.setTitle("Chat Rooms");
+            string bodyHtml = "<ul class='room-list'>"; // Change variable name to avoid conflict with method parameter
+            foreach (var room in rooms)
+            {
+                bool isOnline = room.IsOnline();
+                string status = isOnline ? "<span class='online'>ONLINE</span>" : "<span class='offline'>OFFLINE</span>";
+                bodyHtml += $"<li class='room-item'><a href='/chat/{room.Id}'>{room.Name}</a> - {status}</li>";
+            }
+            bodyHtml += "</ul>";
+            return builder.setBody(bodyHtml).build();
+        }
+
+        private static void HandleGetChatRoom(Socket staff, string path)
+        {
+            int roomId = int.Parse(path.Replace("/chat/", ""));
+            var room = rooms.Find(r => r.Id == roomId);
+            if (room != null)
+            {
+                room.IsOnline(); // Refresh state
+                var builder = new ChatBuilder();
+                builder.setTitle(room.Name);
+                
+                string messagesHtml = "";
+                foreach (var msg in room.Messages)
+                {
+                    messagesHtml += $"<div style='margin-bottom: 10px; border-bottom: 1px solid #444;\">";
+                    messagesHtml += $"<small>{msg.Timestamp:HH:mm:ss}</small> <strong>{msg.Username}</strong>: {msg.Content}";
+                    messagesHtml += "</div>";
+                }
+                
+                string formHtml = $@"
+                    <form method='POST' action='/chat/{room.Id}'>
+                        <input name='message' style='width: 80%; padding: 5px;' required>
+                        <button type='submit' style='padding: 5px 15px; background: orange; border: none; cursor: pointer;'>Send</button>
+                    </form>";
+
+                SendResponse(staff, builder.setBody(messagesHtml + formHtml).build());
+            }
+            else
+            {
+                SendResponse(staff, "<h1>Room not found</h1>");
+            }
+        }
+
+        private static void HandlePostChatRoom(Socket staff, string path, string body, string cookie)
+        {
+            int roomId = int.Parse(path.Replace("/chat/", ""));
+            var room = rooms.Find(r => r.Id == roomId);
+            var data = ParseQueryString(body);
+            string messageContent = data.ContainsKey("message") ? data["message"] : "";
+
+            if (room != null && !string.IsNullOrEmpty(messageContent))
+            {
+                // In a real app, we'd extract username from cookie/session
+                string user = "Guest"; 
+                if (!string.IsNullOrEmpty(cookie) && cookie.Contains("token=")) user = "User";
+
+                room.Messages.Add(new Message
+                {
+                    Username = user,
+                    Content = HttpUtility.UrlDecode(messageContent),
+                    Timestamp = DateTime.Now
+                });
+                room.LastActivity = DateTime.Now;
+                SendRedirect(staff, $"/chat/{roomId}");
+            }
+        }
+
+        /// <summary>
+        /// Gửi phản hồi HTTP (Response) chuẩn về Browser bao gồm: Header (Status, Content-Type, Length, Cookie) và Body.
+        /// </summary>
+        private static void SendResponse(Socket staff, string body, string status = "200 OK", string cookie = null)
+        {
+            string response = $"HTTP/1.1 {status}\r\n";
+            response += "Content-Type: text/html; charset=UTF-8\r\n";
+            response += $"Content-Length: {Encoding.UTF8.GetByteCount(body)}\r\n";
+            if (!string.IsNullOrEmpty(cookie)) response += $"Set-Cookie: {cookie}\r\n";
+            response += "Connection: close\r\n";
+            response += "\r\n";
+            response += body;
+
+            staff.Send(Encoding.UTF8.GetBytes(response));
+            staff.Close();
+        }
+
+        /// <summary>
+        /// Gửi Header 302 Found để trình duyệt tự động chuyển hướng sang URL khác.
+        /// </summary>
+        private static void SendRedirect(Socket staff, string location, string cookie = null)
+        {
+            string response = "HTTP/1.1 302 Found\r\n";
+            response += $"Location: {location}\r\n";
+            if (!string.IsNullOrEmpty(cookie)) response += $"Set-Cookie: {cookie}\r\n";
+            response += "Connection: close\r\n\r\n";
+
+            staff.Send(Encoding.UTF8.GetBytes(response));
+            staff.Close();
+        }
+
+        private static Dictionary<string, string> ParseQueryString(string query)
+        {
+            var dict = new Dictionary<string, string>();
+            foreach (var part in query.Split('&'))
+            {
+                var kv = part.Split('=');
+                if (kv.Length == 2) dict[kv[0]] = HttpUtility.UrlDecode(kv[1]);
+            }
+            return dict;
+        }
+    }
+}

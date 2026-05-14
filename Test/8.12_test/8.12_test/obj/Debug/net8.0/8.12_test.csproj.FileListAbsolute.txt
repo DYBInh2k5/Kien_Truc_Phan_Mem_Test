@@ -1,0 +1,16 @@
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\bin\Debug\net8.0\8.12_test.exe
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\bin\Debug\net8.0\8.12_test.deps.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\bin\Debug\net8.0\8.12_test.runtimeconfig.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\bin\Debug\net8.0\8.12_test.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\bin\Debug\net8.0\8.12_test.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\8.12_test.GeneratedMSBuildEditorConfig.editorconfig
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\8.12_test.AssemblyInfoInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\8.12_test.AssemblyInfo.cs
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\8.12_test.csproj.CoreCompileInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\8.12_test.sourcelink.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\8.12_test.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\refint\8.12_test.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\8.12_test.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\8.12_test.genruntimeconfig.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\obj\Debug\net8.0\ref\8.12_test.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\8.12_test\8.12_test\bin\Debug\net8.0\data\accounts.json

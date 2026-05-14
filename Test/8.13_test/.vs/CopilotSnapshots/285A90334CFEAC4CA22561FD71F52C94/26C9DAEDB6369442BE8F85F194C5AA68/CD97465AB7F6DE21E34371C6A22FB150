@@ -1,0 +1,158 @@
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using SATestSocket.Patterns;
+
+namespace _8._13_test
+{
+    /// <summary>
+    /// Lớp chính điều khiển toàn bộ web server chạy trên giao thức Socket TCP.
+    /// </summary>
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            // Thiết lập địa chỉ IP (tất cả các card mạng) và cổng 8080 cho server
+            IPEndPoint serverInfor =
+                new IPEndPoint(IPAddress.Any, 8080);
+
+            // Tạo Socket chuẩn TCP/IP
+            Socket serverListen = new Socket(
+                AddressFamily.InterNetwork,
+                SocketType.Stream,
+                ProtocolType.Tcp);
+
+            // Gắn Socket vào địa chỉ và cổng đã chọn
+            serverListen.Bind(serverInfor);
+
+            // Bắt đầu lắng nghe kết nối (hàng đợi tối đa 10 kết nối)
+            serverListen.Listen(10);
+
+            Console.WriteLine("Dang cho khach...");
+
+            // Vòng lặp vô tận để server luôn trực chiến chấp nhận khách hàng mới
+            while (true)
+            {
+                // Chấp nhận một kết nối mới từ trình duyệt
+                Socket staff = serverListen.Accept();
+
+                // Tạo một luồng (Thread) mới cho mỗi khách hàng để không gây tắc nghẽn (Đa luồng)
+                Thread t = new Thread(handleClient);
+
+                t.Start(staff);
+            }
+        }
+
+        /// <summary>
+        /// Hàm xử lý từng yêu cầu (Request) từ trình duyệt của khách hàng.
+        /// </summary>
+        static void handleClient(object? obj)
+        {
+            if (obj == null) return;
+            Socket staff = (Socket)obj;
+
+            string requestData = "";
+
+            // Nhận dữ liệu thô (Raw HTTP Request) từ trình duyệt
+            while (true)
+            {
+                byte[] bytes = new byte[1024];
+
+                int bytesRec = staff.Receive(bytes);
+
+                requestData += Encoding.ASCII.GetString(
+                    bytes,
+                    0,
+                    bytesRec);
+
+                // Nếu dữ liệu nhận được ít hơn buffer thì coi như đã nhận xong request
+                if (bytesRec < 1024)
+                {
+                    break;
+                }
+            }
+
+            Console.WriteLine(requestData);
+
+            // Phân tích Request: Cắt các dòng của request để tìm Method và Path
+            string[] requestLines =
+                requestData.Split('\n');
+
+            string firstLine = requestLines[0];
+
+            string body = "";
+
+            // ĐIỀU HƯỚNG (ROUTING)
+            // Trường hợp: Truy cập Trang chủ (GET /)
+            if (firstLine.Contains("GET / "))
+            {
+                body =
+                @"<html>
+                <body>
+                <h1>Student Information</h1>
+                <p>ID: 123456</p>
+                <p>Fullname: Nguyen Van A</p>
+                <p>PC Number: 10</p>
+
+                <a href='/login'>
+                Login
+                </a>
+
+                </body>
+                </html>";
+            }
+
+            // Trường hợp: Truy cập Trang đăng nhập (GET /login)
+            else if (firstLine.Contains("GET /login"))
+            {
+                body =
+                @"<html>
+                <body>
+
+                <h1>Login</h1>
+
+                <form method='POST'
+                action='/login'>
+
+                Username:
+                <input name='username'/>
+
+                <br/>
+
+                Password:
+                <input type='password'
+                name='password'/>
+
+                <br/>
+
+                <button type='submit'>
+                Login
+                </button>
+
+                </form>
+
+                </body>
+                </html>";
+            }
+
+            // Trường hợp không tìm thấy đường dẫn (404 Not Found)
+            else
+            {
+                body =
+                "<html><body>404</body></html>";
+            }
+
+            // Sử dụng FACADE PATTERN để đóng gói việc tạo HTTP Response
+            byte[] msg =
+                ServerFacade.buildResponse(body);
+
+            // Gửi kết quả về cho trình duyệt
+            staff.Send(msg);
+
+            // Ngắt kết nối socket đúng quy trình
+            staff.Shutdown(SocketShutdown.Both);
+
+            staff.Close();
+        }
+    }
+}

@@ -1,0 +1,40 @@
+﻿using System.Text;
+
+namespace SATestSocket.Patterns
+{
+    /// <summary>
+    /// FACADE PATTERN: Lớp này giúp đơn giản hóa việc xây dựng gói tin HTTP Response.
+    /// Thay vì phải viết header HTTP thủ công ở nhiều nơi, ta chỉ cần gọi buildResponse.
+    /// </summary>
+    internal class ServerFacade
+    {
+        /// <summary>
+        /// Tạo ra một mảng byte chứa gói tin phản hồi HTTP hoàn chỉnh bao gồm Header và Body.
+        /// </summary>
+        public static byte[] buildResponse(
+            string body)
+        {
+            // Xây dựng Header HTTP 1.1 thành công (200 OK)
+            string response =
+                "HTTP/1.1 200 OK\r\n";
+
+            // Khai báo kiểu nội dung là HTML UTF-8
+            response +=
+                "Content-Type: text/html; charset=utf-8\r\n";
+
+            // Khai báo độ dài của nội dung gửi về (giúp trình duyệt biết khi nào dừng đọc)
+            int byteLength = Encoding.UTF8.GetByteCount(body);
+            response +=
+                $"Content-Length: {byteLength}\r\n";
+
+            // Một dòng trống để phân tách Header và Body theo chuẩn HTTP
+            response += "\r\n";
+
+            // Gắn phần nội dung HTML vào sau Header
+            response += body;
+
+            // Chuyển chuỗi văn bản thành mảng byte UTF-8 để gửi qua Socket
+            return Encoding.UTF8.GetBytes(response);
+        }
+    }
+}

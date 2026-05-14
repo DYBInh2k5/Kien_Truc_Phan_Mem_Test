@@ -1,0 +1,292 @@
+﻿using System.Net.Sockets;
+using System.Text;
+using System.Web;
+
+namespace _8._12_test
+{
+    /// <summary>
+    /// Đóng vai trò là bộ định tuyến (Router) chính của Web Server.
+    /// Quyết định nội dung HTML trả về dựa trên HTTP Method (GET/POST) và URL Path.
+    /// Quản lý danh sách phòng chat và xử lý logic xác thực người dùng.
+    /// </summary>
+    class Router
+    {
+        private static List<ChatRoom> rooms = new List<ChatRoom>
+        {
+            new ChatRoom { Id = 1, Name = "General Chat" },
+            new ChatRoom { Id = 2, Name = "Tech Talk" }
+        };
+
+        /// <summary>
+        /// Hàm x? lý chính: phân tích Method và Path r?i g?i hàm x? lý t??ng ?ng.
+        /// Tham s?:
+        /// - staff: Socket c?p?a client hi?n t?i
+        /// - method: HTTP method (GET/POST)
+        /// - path: ???ng d?n yêu c?u
+        /// - body: n?i dung body (n?u có)
+        /// - cookie: header Cookie (n?u có)
+        /// </summary>
+        public static void Handle(Socket staff, string method, string path, string body, string cookie)
+        {
+            if (method == "GET" && path == "/")
+            {
+                SendResponse(staff, GetHomeHtml());
+            }
+            else if (method == "GET" && path == "/login")
+            {
+                SendResponse(staff, GetLoginHtml());
+            }
+            else if (method == "POST" && path == "/login")
+            {
+                HandleLogin(staff, body);
+            }
+            else if (method == "GET" && path == "/chat")
+            {
+                SendResponse(staff, GetChatRoomsHtml());
+            }
+            else if (method == "GET" && path.StartsWith("/chat/"))
+            {
+                HandleGetChatRoom(staff, path);
+            }
+            else if (method == "POST" && path.StartsWith("/chat/"))
+            {
+                HandlePostChatRoom(staff, path, body, cookie);
+            }
+            else
+            {
+                SendResponse(staff, "<h1>404 Not Found</h1>", "404 Not Found");
+            }
+        }
+
+        // Trang Home hiển thị thông tin sinh viên và liên kết tới trang Login
+        private static string GetHomeHtml()
+        {
+            return @"
+            <html>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <style>
+                    :root { --primary: #f39c12; --bg: #121212; --surface: #1e1e1e; --text: #e0e0e0; }
+                    body { font-family: 'Segoe UI', Arial; background: var(--bg); color: var(--text); padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+                    .card { background: var(--surface); padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; }
+                    h1 { color: var(--primary); margin-bottom: 25px; }
+                    .info-box { text-align: left; background: #252525; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid var(--primary); }
+                    p { margin: 10px 0; font-size: 1.1em; }
+                    .btn { display: inline-block; background: var(--primary); color: black; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: 0.3s; }
+                    .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3); }
+                </style>
+            </head>
+            <body>
+                <div class='card'>
+                    <h1>Thông tin sinh viên</h1>
+                    <div class='info-box'>
+                        <p><strong>MSSV:</strong> 22301500</p>
+                        <p><strong>Họ tên:</strong> Võ Duy Bình</p>
+                        <p><strong>Số máy:</strong> PC01</p>
+                    </div>
+                    <a href='/login' class='btn'>Đăng nhập vào Chat</a>
+                </div>
+            </body>
+            </html>";
+        }
+
+        // Trang Login (GET) - trả form đăng nhập
+        private static string GetLoginHtml(string message = "")
+        {
+            string errorStyle = string.IsNullOrEmpty(message) ? "display:none" : "display:block";
+            return $@"
+            <html>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <style>
+                    :root {{ --primary: #f39c12; --bg: #121212; --surface: #1e1e1e; --text: #e0e0e0; }}
+                    body {{ font-family: 'Segoe UI', Arial; background: var(--bg); color: var(--text); padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }}
+                    .card {{ background: var(--surface); padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 350px; }}
+                    h1 {{ color: var(--primary); text-align: center; margin-bottom: 30px; }}
+                    .error {{ background: #c0392b; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px; text-align: center; font-size: 0.9em; {errorStyle} }}
+                    .form-group {{ margin-bottom: 20px; }}
+                    label {{ display: block; margin-bottom: 8px; font-weight: bold; }}
+                    input {{ width: 100%; padding: 12px; background: #333; border: 1px solid #444; border-radius: 6px; color: white; box-sizing: border-box; }}
+                    input:focus {{ border-color: var(--primary); outline: none; }}
+                    button {{ width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 6px; color: black; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }}
+                    button:hover {{ opacity: 0.9; transform: scale(1.02); }}
+                    .back {{ display: block; text-align: center; margin-top: 20px; color: var(--primary); text-decoration: none; font-size: 0.9em; }}
+                </style>
+            </head>
+            <body>
+                <div class='card'>
+                    <h1>Hệ thống Chat</h1>
+                    <div class='error'>{message}</div>
+                    <form method='POST' action='/login'>
+                        <div class='form-group'>
+                            <label>Tên đăng nhập</label>
+                            <input name='username' placeholder='Nhập username...' required autofocus>
+                        </div>
+                        <div class='form-group'>
+                            <label>Mật mã</label>
+                            <input name='password' type='password' placeholder='Nhập mật mã...' required>
+                        </div>
+                        <button type='submit'>Đăng nhập</button>
+                    </form>
+                    <a href='/' class='back'>Quay lại trang chủ</a>
+                </div>
+            </body>
+            </html>";
+        }
+
+        /// <summary>
+        /// X? lý POST /login
+        /// - Parse body (form urlencoded) -> ki?m tra username/password so v?i danh sách users
+        /// - N?u xác th?c thành công: t?o token, tr? header Set-Cookie và redirect v? /chat
+        /// - N?u th?t b?i: tr? l?i trang login kèm thông báo l?i
+        /// </summary>
+        private static void HandleLogin(Socket staff, string body)
+        {
+            var data = ParseQueryString(body);
+            string user = data.ContainsKey("username") ? data["username"] : "";
+            string pass = data.ContainsKey("password") ? data["password"] : "";
+
+            var users = JsonAccountSingleton.getInstance().users;
+            var authenticatedUser = users.Find(u => u.username == user && u.password == pass);
+
+            if (authenticatedUser != null)
+            {
+                // Thành công: t?o token và redirect v? /chat, kèm Set-Cookie
+                string token = Guid.NewGuid().ToString();
+                SendRedirect(staff, "/chat", $"token={token}; Path=/; HttpOnly; Max-Age=3600");
+            }
+            else
+            {
+                SendResponse(staff, GetLoginHtml("Login failed. Please try again."));
+            }
+        }
+
+        // Trang danh sách phòng chat (/chat)
+        private static string GetChatRoomsHtml()
+        {
+            var builder = new ChatBuilder();
+            builder.setTitle("Chat Rooms");
+            string bodyHtml = "<ul class='room-list'>"; // danh sách phòng
+            foreach (var room in rooms)
+            {
+                bool isOnline = room.IsOnline();
+                string status = isOnline ? "<span class='online'>ONLINE</span>" : "<span class='offline'>OFFLINE</span>";
+                bodyHtml += $"<li class='room-item'><a href='/chat/{room.Id}'>{room.Name}</a> - {status}</li>";
+            }
+            bodyHtml += "</ul>";
+            return builder.setBody(bodyHtml).build();
+        }
+
+        /// <summary>
+        /// X? lý GET /chat/{id}
+        /// - L?y phòng theo id, hi?n th? l?ch s? tin nh?n (theo th? t? th?i gian) và form g?i tin
+        /// - N?u phòng offline thì l?ch s? ?ã b? xóa b?i ChatRoom.IsOnline()
+        /// </summary>
+        private static void HandleGetChatRoom(Socket staff, string path)
+        {
+            int roomId = int.Parse(path.Replace("/chat/", ""));
+            var room = rooms.Find(r => r.Id == roomId);
+            if (room != null)
+            {
+                room.IsOnline(); // Cập nhật trạng thái
+                var builder = new ChatBuilder();
+                builder.setTitle(room.Name);
+                
+                // Sử dụng addMessage của Builder thay vì cộng chuỗi thủ công
+                foreach (var msg in room.Messages)
+                {
+                    builder.addMessage(msg);
+                }
+                
+                // Sử dụng addInputForm của Builder
+                builder.addInputForm(room.Id);
+
+                SendResponse(staff, builder.build());
+            }
+            else
+            {
+                SendResponse(staff, "<h1>Room not found</h1>");
+            }
+        }
+
+        /// <summary>
+        /// X? lý POST /chat/{id}
+        /// - L?y n?i dung message t? body, decode và thêm vào danh sách tin nhắn c?a phòng
+        /// - C?p nh?t LastActivity ?? phòng ???c ?ánh d?u online
+        /// - Redirect v? GET /chat/{id} ?? hi?n th? l?i trang
+        /// </summary>
+        private static void HandlePostChatRoom(Socket staff, string path, string body, string cookie)
+        {
+            int roomId = int.Parse(path.Replace("/chat/", ""));
+            var room = rooms.Find(r => r.Id == roomId);
+            var data = ParseQueryString(body);
+            string messageContent = data.ContainsKey("message") ? data["message"] : "";
+
+            if (room != null && !string.IsNullOrEmpty(messageContent))
+            {
+                // ? bài lab này, username ??n gi?n l?y t? cookie token có hay không
+                string user = "Guest";
+                if (!string.IsNullOrEmpty(cookie) && cookie.Contains("token=")) user = "User";
+
+                room.Messages.Add(new Message
+                {
+                    Username = user,
+                    Content = HttpUtility.UrlDecode(messageContent),
+                    Timestamp = DateTime.Now
+                });
+                room.LastActivity = DateTime.Now;
+                SendRedirect(staff, $"/chat/{roomId}");
+            }
+        }
+
+        /// <summary>
+        /// G?i ph?n h?i HTTP chu?n v? Browser bao g?m: Status line, Headers và Body.
+        /// N?u có cookie, thêm header Set-Cookie.
+        /// </summary>
+        private static void SendResponse(Socket staff, string body, string status = "200 OK", string cookie = null)
+        {
+            string response = $"HTTP/1.1 {status}\r\n";
+            response += "Content-Type: text/html; charset=UTF-8\r\n";
+            response += $"Content-Length: {Encoding.UTF8.GetByteCount(body)}\r\n";
+            if (!string.IsNullOrEmpty(cookie)) response += $"Set-Cookie: {cookie}\r\n";
+            response += "Connection: close\r\n";
+            response += "\r\n";
+            response += body;
+
+            staff.Send(Encoding.UTF8.GetBytes(response));
+            staff.Close();
+        }
+
+        /// <summary>
+        /// G?i header 302 Found ?? trình duy?t t? ??ng chuy?n h??ng.
+        /// N?u có cookie, thêm header Set-Cookie.
+        /// </summary>
+        private static void SendRedirect(Socket staff, string location, string cookie = null)
+        {
+            string response = "HTTP/1.1 302 Found\r\n";
+            response += $"Location: {location}\r\n";
+            if (!string.IsNullOrEmpty(cookie)) response += $"Set-Cookie: {cookie}\r\n";
+            response += "Connection: close\r\n\r\n";
+
+            staff.Send(Encoding.UTF8.GetBytes(response));
+            staff.Close();
+        }
+
+        /// <summary>
+        /// Parse chu?i query string d?ng key1=val1&key2=val2 thành Dictionary.
+        /// Giá tr? ???c URL-decode.
+        /// </summary>
+        private static Dictionary<string, string> ParseQueryString(string query)
+        {
+            var dict = new Dictionary<string, string>();
+            foreach (var part in query.Split('&'))
+            {
+                var kv = part.Split('=');
+                if (kv.Length == 2) dict[kv[0]] = HttpUtility.UrlDecode(kv[1]);
+            }
+            return dict;
+        }
+    }
+}

@@ -1,0 +1,57 @@
+﻿using System.Text.Json;
+
+namespace _8._12_test
+{
+    /// <summary>
+    /// DESIGN PATTERN: SINGLETON
+    /// ??m b?o t?p accounts.json ch? ???c ??c 1 l?n duy nh?t vào b? nh?.
+    /// Giúp ti?t ki?m tài nguyên I/O và ??ng b? d? li?u ng??i dùng trong su?t vòng ??i Server.
+    /// </summary>
+    internal class JsonAccountSingleton
+    {
+        private static JsonAccountSingleton instance = null;
+        public List<User> users;
+
+        private JsonAccountSingleton()
+        {
+            // Thiết lập các đường dẫn khả thi để tìm file accounts.json
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string filePath = Path.Combine(baseDir, "data", "accounts.json");
+            
+            // Nếu không thấy trong bin, thử tìm ở project source (dành cho Visual Studio Debug)
+            if (!File.Exists(filePath))
+            {
+                // Đi ngược lên 4 cấp từ bin/Debug/net8.0/ để vào thư mục project
+                string projectDir = Path.GetFullPath(Path.Combine(baseDir, "..", "..", ".."));
+                filePath = Path.Combine(projectDir, "data", "accounts.json");
+            }
+
+            // Kiểm tra và nạp dữ liệu
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                users = JsonSerializer.Deserialize<List<User>>(json) ?? new List<User>();
+                Console.WriteLine($"[SUCCESS] Loaded users from: {filePath}");
+                Console.WriteLine($"[INFO] Number of accounts: {users.Count}");
+            }
+            else
+            {
+                users = new List<User>();
+                Console.WriteLine($"[ERROR] accounts.json NOT FOUND!");
+                Console.WriteLine($"[DEBUG] Tried path: {filePath}");
+            }
+        }
+
+        /// <summary>
+        /// Ph??ng th?c truy c?p duy nh?t ?? l?y th?c th? (Instance) c?a l?p.
+        /// </summary>
+        public static JsonAccountSingleton getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new JsonAccountSingleton();
+            }
+            return instance;
+        }
+    }
+}

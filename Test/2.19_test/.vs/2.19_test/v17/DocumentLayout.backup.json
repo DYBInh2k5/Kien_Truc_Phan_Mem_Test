@@ -1,0 +1,297 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\services\\jsonservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\services\\jsonservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\router\\routebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\router\\routebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\models\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\models\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\models\\chatroom.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\models\\chatroom.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\html\\style.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\html\\style.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\submission_rules.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\submission_rules.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\data\\users.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\data\\users.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\utils\\httphelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\utils\\httphelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\router\\webrouter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\router\\webrouter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\test\\2.19_test\\2.19_test\\services\\chatservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9375F47B-6B6F-4020-B8E6-7E4770341F93}|2.19_test\\2.19_test.csproj|solutionrelative:2.19_test\\services\\chatservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 13,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{fbcae063-e2c0-4ab1-a516-996ea3dafb72}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "SUBMISSION_RULES.md",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\SUBMISSION_RULES.md",
+              "RelativeDocumentMoniker": "2.19_test\\SUBMISSION_RULES.md",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\SUBMISSION_RULES.md",
+              "RelativeToolTip": "2.19_test\\SUBMISSION_RULES.md",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAFEAAACaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-05-13T07:14:22.524Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ChatController.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Controllers\\ChatController.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Controllers\\ChatController.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Controllers\\ChatController.cs",
+              "RelativeToolTip": "2.19_test\\Controllers\\ChatController.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwDIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:47:18.585Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ChatService.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Services\\ChatService.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Services\\ChatService.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Services\\ChatService.cs",
+              "RelativeToolTip": "2.19_test\\Services\\ChatService.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAowDIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:46:50.506Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "HttpHelper.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Utils\\HttpHelper.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Utils\\HttpHelper.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Utils\\HttpHelper.cs",
+              "RelativeToolTip": "2.19_test\\Utils\\HttpHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:46:45.831Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "style.css",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Html\\style.css",
+              "RelativeDocumentMoniker": "2.19_test\\Html\\style.css",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Html\\style.css",
+              "RelativeToolTip": "2.19_test\\Html\\style.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-05-09T09:45:41.658Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "users.json",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Data\\users.json",
+              "RelativeDocumentMoniker": "2.19_test\\Data\\users.json",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Data\\users.json",
+              "RelativeToolTip": "2.19_test\\Data\\users.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-09T09:45:33.525Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "LoginController.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Controllers\\LoginController.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Controllers\\LoginController.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Controllers\\LoginController.cs",
+              "RelativeToolTip": "2.19_test\\Controllers\\LoginController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:45:30.93Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Controllers\\HomeController.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "2.19_test\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:45:28.304Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RouteBuilder.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Router\\RouteBuilder.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Router\\RouteBuilder.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Router\\RouteBuilder.cs",
+              "RelativeToolTip": "2.19_test\\Router\\RouteBuilder.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvyEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:45:26.016Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "WebRouter.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Router\\WebRouter.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Router\\WebRouter.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Router\\WebRouter.cs",
+              "RelativeToolTip": "2.19_test\\Router\\WebRouter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:45:23.373Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "JsonService.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Services\\JsonService.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Services\\JsonService.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Services\\JsonService.cs",
+              "RelativeToolTip": "2.19_test\\Services\\JsonService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:45:18.345Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ChatRoom.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Models\\ChatRoom.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Models\\ChatRoom.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Models\\ChatRoom.cs",
+              "RelativeToolTip": "2.19_test\\Models\\ChatRoom.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:45:13.044Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Message.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Models\\Message.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Models\\Message.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Models\\Message.cs",
+              "RelativeToolTip": "2.19_test\\Models\\Message.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:45:10.078Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Models\\User.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Models\\User.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Models\\User.cs",
+              "RelativeToolTip": "2.19_test\\Models\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:45:07.753Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "README.md",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\README.md",
+              "RelativeDocumentMoniker": "2.19_test\\README.md",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\README.md",
+              "RelativeToolTip": "2.19_test\\README.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC8CAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-05-09T09:29:03.147Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Program.cs",
+              "RelativeDocumentMoniker": "2.19_test\\Program.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\Test\\2.19_test\\2.19_test\\Program.cs",
+              "RelativeToolTip": "2.19_test\\Program.cs",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAlwHAAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:28:30.605Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

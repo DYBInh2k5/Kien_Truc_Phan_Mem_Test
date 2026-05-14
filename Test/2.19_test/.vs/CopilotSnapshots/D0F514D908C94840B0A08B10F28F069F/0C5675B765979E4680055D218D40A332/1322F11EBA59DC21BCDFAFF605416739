@@ -1,0 +1,508 @@
+﻿SA TEST 19/02
+old: 14/11
+Objective:
+Develop a web server using C# that utilizes Socket - library (System.Net.Sockets).
+
+Requirements:
+API/Page Requirements: (5 points)
+GET [/]: Displays detailed student information (id, fullname, PC's number) and provides a link to login.
+GET [/login]: Shows the login page.
+POST [/login]: Logs in with username and password. On success, redirects to /chat. On failure, displays a login failed message.
+GET [/chat]: Displays online and offline chat rooms. A chat room is online if it has had activity within the last 3 minutes. If offline, its history is cleared.
+POST [/chat/:id]: Sends a message to the chat room with the given id. After sending, changes the room status to online and redirects to GET /chat/:id
+GET [/chat/:id]: Retrieves all messages sent to the chat room in chronological order (time, username, message).
+User account information is stored in a JSON file with the following format: [ { "username": "nntu", "password": "56789" } , { "username": "AdTekDev", "password": "56789" } ]
+
+Apply 2 of the following design patterns: (3 points)
+Singleton: Apply to the class reading JSON content
+Builder: Create & Add Controller (login, chat, home) to WebRouter
+Time Requirement: (1 point)
+Students must submit their work before 4 PM, and grading will be completed in class.
+Other Requirements: (1point)
+Implement cookie storage, include a token, and ensure the website has an attractive design.
+Submission Requirements:
+Link: https://mlearning.hoasen.edu.vn/mod/assign/view.php?id=1125940
+
+Submit 3 parts:
+
+3-5 screenshots demonstrating the web interface execution.
+3-5 Image(s) of code implementing the chosen design pattern(s).
+zip file: containing the C# server and an HTML folder.
+hướng dẫn làm bài này tạo dùng vscode 2022, hướng dẫn tạo file và làm
+
+
+Bài này đúng kiểu:
+
+“Tự build mini web framework bằng raw Socket” 😎
+
+Và với style code m gửi trước đó thì hoàn toàn làm được.
+
+Tao sẽ hướng dẫn đúng hệ:
+
+✅ raw Socket
+✅ Thread
+✅ parse HTTP bằng tay
+✅ VSCode / Visual Studio
+✅ không ASP.NET
+✅ đúng kiểu lab môn Software Architecture + Network
+
+MỤC TIÊU CUỐI CÙNG
+
+Sau khi xong m sẽ có:
+
+SA_TEST/
+│
+├── Program.cs
+├── Router/
+│   ├── WebRouter.cs
+│   └── RouteBuilder.cs
+│
+├── Controllers/
+│   ├── HomeController.cs
+│   ├── LoginController.cs
+│   └── ChatController.cs
+│
+├── Models/
+│   ├── User.cs
+│   ├── Message.cs
+│   └── ChatRoom.cs
+│
+├── Services/
+│   ├── JsonService.cs
+│   ├── CookieService.cs
+│   └── ChatService.cs
+│
+├── Data/
+│   └── users.json
+│
+├── Html/
+│   ├── login.html
+│   ├── home.html
+│   └── style.css
+│
+└── Utils/
+    └── HttpHelper.cs
+PHẦN 1 — TẠO PROJECT
+Nếu dùng Visual Studio 2022
+B1
+
+Mở:
+
+Visual Studio 2022
+B2
+
+Chọn:
+
+Create new project
+B3
+
+Chọn:
+
+Console App (.NET)
+
+KHÔNG chọn ASP.NET.
+
+B4
+
+Tên project:
+
+SA_TEST
+B5
+
+Framework:
+
+.NET 6 hoặc .NET 8
+PHẦN 2 — TẠO THƯ MỤC
+Trong Solution Explorer
+
+Right click project:
+
+Add
+→ New Folder
+
+Tạo:
+
+Controllers
+Models
+Services
+Router
+Html
+Data
+Utils
+PHẦN 3 — TẠO FILE
+Controllers
+
+Right click folder:
+
+Add
+→ Class
+
+Tạo:
+
+HomeController.cs
+LoginController.cs
+ChatController.cs
+Models
+
+Tạo:
+
+User.cs
+Message.cs
+ChatRoom.cs
+Services
+
+Tạo:
+
+JsonService.cs
+CookieService.cs
+ChatService.cs
+Router
+
+Tạo:
+
+WebRouter.cs
+RouteBuilder.cs
+Utils
+
+Tạo:
+
+HttpHelper.cs
+Data
+
+Tạo file:
+
+users.json
+Html
+
+Tạo:
+
+login.html
+home.html
+style.css
+PHẦN 4 — users.json
+Data/users.json
+[
+  {
+    "username": "nntu",
+    "password": "56789"
+  },
+  {
+    "username": "AdTekDev",
+    "password": "56789"
+  }
+]
+PHẦN 5 — MODEL
+Models/User.cs
+namespace SA_TEST.Models
+{
+    internal class User
+    {
+        public string username { get; set; }
+        public string password { get; set; }
+    }
+}
+Models/Message.cs
+namespace SA_TEST.Models
+{
+    internal class Message
+    {
+        public string username { get; set; }
+
+        public string content { get; set; }
+
+        public DateTime time { get; set; }
+    }
+}
+Models/ChatRoom.cs
+using System.Collections.Generic;
+
+namespace SA_TEST.Models
+{
+    internal class ChatRoom
+    {
+        public int id { get; set; }
+
+        public List<Message> messages =
+            new List<Message>();
+
+        public DateTime lastActivity { get; set; }
+    }
+}
+PHẦN 6 — SINGLETON PATTERN
+
+Yêu cầu đề bài 😎
+
+Services/JsonService.cs
+using System.Text.Json;
+using SA_TEST.Models;
+
+namespace SA_TEST.Services
+{
+    internal class JsonService
+    {
+        private static JsonService instance = null;
+
+        private JsonService() { }
+
+        public static JsonService getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new JsonService();
+            }
+
+            return instance;
+        }
+
+        public List<User> getUsers()
+        {
+            string json =
+                File.ReadAllText("Data/users.json");
+
+            return JsonSerializer.Deserialize<List<User>>(json);
+        }
+    }
+}
+Đây chính là:
+Singleton Pattern
+PHẦN 7 — BUILDER PATTERN
+Router/WebRouter.cs
+namespace SA_TEST.Router
+{
+    internal class WebRouter
+    {
+        public Dictionary<string, Func<string>> routes =
+            new Dictionary<string, Func<string>>();
+
+        public void addRoute(string url, Func<string> action)
+        {
+            routes[url] = action;
+        }
+    }
+}
+Router/RouteBuilder.cs
+namespace SA_TEST.Router
+{
+    internal class RouteBuilder
+    {
+        private WebRouter router =
+            new WebRouter();
+
+        public RouteBuilder addHome(Func<string> action)
+        {
+            router.addRoute("/", action);
+            return this;
+        }
+
+        public RouteBuilder addLogin(Func<string> action)
+        {
+            router.addRoute("/login", action);
+            return this;
+        }
+
+        public WebRouter build()
+        {
+            return router;
+        }
+    }
+}
+Đây là:
+Builder Pattern
+PHẦN 8 — HOME CONTROLLER
+Controllers/HomeController.cs
+namespace SA_TEST.Controllers
+{
+    internal class HomeController
+    {
+        public static string Index()
+        {
+            return @"
+            <html>
+            <body>
+                <h1>Student Information</h1>
+
+                <p>ID: 2212345</p>
+                <p>Fullname: Nguyen Van A</p>
+                <p>PC: PC01</p>
+
+                <a href='/login'>Login</a>
+
+            </body>
+            </html>
+            ";
+        }
+    }
+}
+PHẦN 9 — LOGIN CONTROLLER
+Controllers/LoginController.cs
+using SA_TEST.Services;
+
+namespace SA_TEST.Controllers
+{
+    internal class LoginController
+    {
+        public static string LoginPage()
+        {
+            return @"
+            <html>
+            <body>
+
+            <form method='POST' action='/login'>
+
+                Username:
+                <input name='username'/>
+
+                <br/>
+
+                Password:
+                <input name='password' type='password'/>
+
+                <br/>
+
+                <button>Login</button>
+
+            </form>
+
+            </body>
+            </html>
+            ";
+        }
+    }
+}
+PHẦN 10 — PROGRAM.CS
+
+Đây là trái tim server 😎
+
+Program.cs
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+
+IPEndPoint serverInfor =
+    new IPEndPoint(IPAddress.Any, 8080);
+
+Socket serverListen = new Socket(
+    AddressFamily.InterNetwork,
+    SocketType.Stream,
+    ProtocolType.Tcp
+);
+
+serverListen.Bind(serverInfor);
+
+serverListen.Listen(10);
+
+Console.WriteLine("Dang cho client...");
+
+while (true)
+{
+    Socket staff = serverListen.Accept();
+
+    Thread thread = new Thread(handleClient);
+
+    thread.Start(staff);
+}
+
+static void handleClient(object obj)
+{
+    Socket staff = (Socket)obj;
+
+    byte[] bytes = new byte[1024];
+
+    int bytesRec = staff.Receive(bytes);
+
+    string requestData =
+        Encoding.ASCII.GetString(bytes, 0, bytesRec);
+
+    Console.WriteLine(requestData);
+
+    string responseBody = "";
+
+    if (requestData.StartsWith("GET / "))
+    {
+        responseBody =
+            SA_TEST.Controllers.HomeController.Index();
+    }
+    else if (requestData.StartsWith("GET /login"))
+    {
+        responseBody =
+            SA_TEST.Controllers.LoginController.LoginPage();
+    }
+
+    string responseData =
+        "HTTP/1.1 200 OK\r\n";
+
+    responseData +=
+        "Content-Type: text/html\r\n";
+
+    responseData +=
+        $"Content-Length: {responseBody.Length}\r\n";
+
+    responseData += "\r\n";
+
+    responseData += responseBody;
+
+    byte[] msg =
+        Encoding.ASCII.GetBytes(responseData);
+
+    staff.Send(msg);
+
+    staff.Close();
+}
+PHẦN 11 — CHẠY SERVER
+Nhấn
+Ctrl + F5
+Browser mở:
+http://localhost:8080
+PHẦN 12 — SAU ĐÓ LÀM TIẾP
+
+Sau khi chạy được basic server:
+
+Bước tiếp theo
+1. POST /login
+   - **Mục tiêu:** Xác thực người dùng và bắt đầu phiên làm việc.
+   - **Cách làm:** Đọc dữ liệu từ body của Request. Dữ liệu này thường có dạng `username=nntu&password=56789`.
+   - **Xử lý:** Sử dụng `HttpHelper.ParseFormData` để chuyển chuỗi trên thành Dictionary. Sau đó gọi `JsonService.getInstance().getUsers()` để lấy danh sách user từ file JSON và so sánh.
+
+2. Cookie & Session
+   - **Mục tiêu:** Duy trì trạng thái đã đăng nhập mà không bắt người dùng login lại mỗi trang.
+   - **Cách làm:** Khi login thành công, Server gửi header `Set-Cookie: token=username; Path=/` về trình duyệt.
+   - **Xử lý:** Ở các trang yêu cầu bảo mật như `/chat`, Server sẽ kiểm tra header `Cookie` trong request gửi tới. Nếu không thấy "token", Server sẽ trả về mã lỗi 302 (Redirect) để đẩy người dùng quay lại trang `/login`.
+
+3. GET /chat (Trang danh sách phòng)
+   - **Mục tiêu:** Hiển thị toàn bộ phòng chat và trạng thái của chúng.
+   - **Logic:** Gọi `ChatService.GetRooms()`. Trong Service này, chúng ta sẽ kiểm tra `DateTime.Now - room.lastActivity`.
+     - Nếu `< 3 phút`: Phòng Online (Hiển thị màu xanh).
+     - Nếu `> 3 phút`: Phòng Offline (Hiển thị màu đỏ và gọi `room.messages.Clear()` để xóa lịch sử tin nhắn).
+
+4. GET /chat/:id (Trang chi tiết phòng)
+   - **Mục tiêu:** Xem lịch sử chat và gửi tin nhắn mới.
+   - **Cách làm:** Server bóc tách ID phòng từ URL (ví dụ `/chat/1`). Sau đó gọi `ChatService.GetRoom(id)` để lấy danh sách tin nhắn và render ra HTML.
+
+5. POST /chat/:id (Gửi tin nhắn)
+   - **Mục tiêu:** Ghi nhận tin nhắn mới và cập nhật trạng thái phòng.
+   - **Cách làm:** Nhận nội dung tin nhắn từ Form POST.
+   - **Xử lý:** Thêm tin nhắn vào `room.messages`, cập nhật `room.lastActivity = DateTime.Now`. Sau đó Redirect người dùng quay lại trang GET `/chat/:id` để họ thấy tin nhắn vừa gửi.
+
+HƯỚNG DẪN CHI TIẾT CÁC THỰC HIỆN (EXPLAINED)
+
+1. Xử lý Socket:
+   - **Cơ chế:** Server sử dụng `Socket.Bind` và `Socket.Listen` để mở cổng 8080.
+   - **Đa luồng:** Mỗi khi có trình duyệt kết nối (`Accept`), Server tạo một `Thread` mới. Điều này cực kỳ quan trọng vì nếu không có thread, khi 1 người đang tải trang, những người khác sẽ bị kẹt (Blocking).
+
+2. Phân tích HTTP (Manual Parsing):
+   - **Cơ chế:** Vì không dùng thư viện có sẵn, chúng ta phải tự đọc mảng byte từ Socket và chuyển về chuỗi.
+   - **Cấu trúc:** Http Request gồm: `Method URL Protocol\r\nHeaders\r\n\r\nBody`. Chúng ta tách chuỗi dựa trên `\r\n` và khoảng trắng để lấy thông tin cần thiết.
+
+3. Áp dụng Design Patterns (Yêu cầu đề bài):
+   - **Singleton (JsonService):** Đảm bảo chỉ có DUY NHẤT 1 đối tượng đọc file JSON trong suốt vòng đời ứng dụng. Điều này tránh việc nạp file nhiều lần vào bộ nhớ và đảm bảo tính nhất quán của dữ liệu.
+   - **Builder (RouteBuilder):** Cung cấp cách thức "lắp ghép" các Route linh hoạt (`.addHome().addLogin().build()`). Giúp code ở `Program.cs` cực kỳ sạch sẽ và dễ dàng thêm trang mới mà không làm rối logic khởi động server.
+
+4. Quản lý trạng thái (State Management):
+   - Do không dùng Database, toàn bộ tin nhắn và trạng thái Online/Offline được lưu trong các biến `static` (trong bộ nhớ RAM). Nếu Server bị tắt, dữ liệu chat sẽ biến mất (đây là đặc điểm của đồ án Network mức độ Lab).
+
+CHÚ THÍCH CÁC Tệp QUAN TRỌNG ĐỂ VẤN ĐÁP:
+- **Program.cs:** "Bộ não" - Nơi tiếp nhận kết nối thô và điều hướng.
+- **Controllers/**: "Người trình diễn" - Chỉ lo việc tạo ra mã HTML để hiển thị.
+- **Services/**: "Người làm việc" - Chứa logic tính toán (xóa chat, đọc file).
+- **HttpHelper.cs**: "Công cụ" - Giúp bóc tách các mảng byte phức tạp thành dữ liệu dễ hiểu.
+

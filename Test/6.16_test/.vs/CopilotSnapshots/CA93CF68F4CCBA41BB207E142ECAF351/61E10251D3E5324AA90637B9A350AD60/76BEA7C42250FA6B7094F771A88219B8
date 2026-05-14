@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace _6._16_test.Models
+{
+    /// <summary>
+    /// Model qu?n lý d? li?u cho t?ng phòng chat.
+    /// Ch?a business logic: N?u phòng không ho?t ??ng (không có ai chat) trong 3 phút thì xóa h?t tin nh?n.
+    /// </summary>
+    internal class ChatRoom
+    {
+        public int Id { get; set; }
+        public List<Message> Messages { get; set; } = new List<Message>();
+        public DateTime LastActivity { get; set; } = DateTime.Now;
+
+        // Tr?ng thái Online/Offline: Tính toán d?a trên hi?u s? th?i gian hi?n t?i và l?n chat cu?i cùng
+        public bool IsOnline => (DateTime.Now - LastActivity).TotalMinutes < 3;
+
+        // X? lý d?n d?p b? nh?: N?u chuy?n sang tr?ng thái Offline thì CLEAR s?ch d? li?u Messages
+        public void CheckStatus()
+        {
+            if (!IsOnline)
+            {
+                Messages.Clear();
+            }
+        }
+    }
+}

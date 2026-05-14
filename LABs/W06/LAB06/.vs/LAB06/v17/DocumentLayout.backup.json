@@ -1,0 +1,49 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W06\\LAB06\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{CE11BF11-743C-49EE-9194-9809823F1A1B}|LAB06\\LAB06.csproj|d:\\hsu\\2533semester 3(2025-2026)\\ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\kien_truc_phan_mem_test-main\\kien_truc_phan_mem_test-main\\labs\\w06\\lab06\\lab06\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CE11BF11-743C-49EE-9194-9809823F1A1B}|LAB06\\LAB06.csproj|solutionrelative:lab06\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{fbcae063-e2c0-4ab1-a516-996ea3dafb72}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W06\\LAB06\\LAB06\\Program.cs",
+              "RelativeDocumentMoniker": "LAB06\\Program.cs",
+              "ToolTip": "D:\\HSU\\2533Semester 3(2025-2026)\\Ki\u1EBFn tr\u00FAc ph\u1EA7n m\u1EC1m\\Kien_Truc_Phan_Mem_Test-main\\Kien_Truc_Phan_Mem_Test-main\\LABs\\W06\\LAB06\\LAB06\\Program.cs",
+              "RelativeToolTip": "LAB06\\Program.cs",
+              "ViewState": "AgIAAJ0AAAAAAAAAAAAiwGkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-23T02:24:45.977Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

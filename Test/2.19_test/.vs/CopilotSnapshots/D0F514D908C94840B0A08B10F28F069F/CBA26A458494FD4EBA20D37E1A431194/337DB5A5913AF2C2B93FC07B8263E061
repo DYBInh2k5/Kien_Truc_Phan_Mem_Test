@@ -1,0 +1,50 @@
+﻿using SA_TEST.Models;
+
+namespace SA_TEST.Services
+{
+    // Lớp quản lý logic của phòng chat và tin nhắn
+    internal class ChatService
+    {
+        // Danh sách các phòng chat được lưu trong bộ nhớ (Sẽ mất khi tắt server)
+        private static List<ChatRoom> rooms = new List<ChatRoom>
+        {
+            new ChatRoom { id = 1, lastActivity = DateTime.Now },
+            new ChatRoom { id = 2, lastActivity = DateTime.Now.AddMinutes(-5) }
+        };
+
+        public static List<ChatRoom> GetRooms()
+        {
+            foreach (var room in rooms)
+            {
+                // LOGIC QUAN TRỌNG: Nếu quá 3 phút không hoạt động, xóa toàn bộ lịch sử chat
+                if ((DateTime.Now - room.lastActivity).TotalMinutes > 3)
+                {
+                    room.messages.Clear();
+                }
+            }
+            return rooms;
+        }
+
+        public static ChatRoom GetRoom(int id)
+        {
+            var room = rooms.FirstOrDefault(r => r.id == id);
+            // Kiểm tra tương tự cho từng phòng cụ thể
+            if (room != null && (DateTime.Now - room.lastActivity).TotalMinutes > 3)
+            {
+                room.messages.Clear();
+            }
+            return room;
+        }
+
+        public static void AddMessage(int roomId, string username, string content)
+        {
+            var room = rooms.FirstOrDefault(r => r.id == roomId);
+            if (room != null)
+            {
+                // Thêm tin nhắn và cập nhật thời gian hoạt động mới nhất
+                room.messages.Add(new Message { username = username, content = content, time = DateTime.Now });
+                room.lastActivity = DateTime.Now;
+            }
+        }
+    }
+}

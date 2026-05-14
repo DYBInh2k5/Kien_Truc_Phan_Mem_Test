@@ -1,0 +1,12 @@
+﻿namespace SA_TEST.Models
+{
+    // Đối tượng đại diện cho một tin nhắn
+    internal class Message
+    {
+        public string username { get; set; } // Người gửi
+
+        public string content { get; set; } // Nội dung chuỗi
+
+        public DateTime time { get; set; } // Thời gian gửi
+    }
+}

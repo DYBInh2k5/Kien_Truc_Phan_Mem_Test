@@ -1,0 +1,17 @@
+﻿using System.Collections.Generic;
+
+namespace SA_TEST.Models
+{
+    // Đối tượng đại diện cho một phòng chat
+    internal class ChatRoom
+    {
+        public int id { get; set; } // Định danh phòng
+
+        // Danh sách các tin nhắn trong phòng
+        public List<Message> messages =
+            new List<Message>();
+
+        // Thời điểm cuối cùng có tương tác (để tính Online/Offline)
+        public DateTime lastActivity { get; set; }
+    }
+}

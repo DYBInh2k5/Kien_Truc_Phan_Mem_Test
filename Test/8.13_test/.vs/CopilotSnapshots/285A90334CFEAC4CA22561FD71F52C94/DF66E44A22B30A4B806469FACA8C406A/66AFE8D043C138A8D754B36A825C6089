@@ -1,0 +1,14 @@
+﻿using System.Collections.Generic;
+
+namespace SATestSocket.Models
+{
+    internal class ChatRoom
+    {
+        public int id { get; set; }
+
+        public List<Message> messages =
+            new List<Message>();
+
+        public DateTime lastActivity { get; set; }
+    }
+}

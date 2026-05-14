@@ -1,0 +1,13 @@
+namespace _8._12_test
+{
+    /// <summary>
+    /// Model ??i di?n cho m?t tin nh?n trong phòng chat.
+    /// L?u tr? thông tin v? ng??i g?i, n?i dung v?n b?n và th?i ?i?m g?i tin.
+    /// </summary>
+    public class Message
+    {
+        public string Username { get; set; }
+        public string Content { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+}

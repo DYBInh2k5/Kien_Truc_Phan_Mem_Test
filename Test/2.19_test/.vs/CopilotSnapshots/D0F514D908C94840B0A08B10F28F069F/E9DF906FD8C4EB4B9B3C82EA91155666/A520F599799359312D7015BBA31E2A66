@@ -1,0 +1,45 @@
+﻿using SA_TEST.Models;
+
+namespace SA_TEST.Services
+{
+    internal class ChatService
+    {
+        private static List<ChatRoom> rooms = new List<ChatRoom>
+        {
+            new ChatRoom { id = 1, lastActivity = DateTime.Now },
+            new ChatRoom { id = 2, lastActivity = DateTime.Now.AddMinutes(-5) }
+        };
+
+        public static List<ChatRoom> GetRooms()
+        {
+            foreach (var room in rooms)
+            {
+                if ((DateTime.Now - room.lastActivity).TotalMinutes > 3)
+                {
+                    room.messages.Clear();
+                }
+            }
+            return rooms;
+        }
+
+        public static ChatRoom GetRoom(int id)
+        {
+            var room = rooms.FirstOrDefault(r => r.id == id);
+            if (room != null && (DateTime.Now - room.lastActivity).TotalMinutes > 3)
+            {
+                room.messages.Clear();
+            }
+            return room;
+        }
+
+        public static void AddMessage(int roomId, string username, string content)
+        {
+            var room = rooms.FirstOrDefault(r => r.id == roomId);
+            if (room != null)
+            {
+                room.messages.Add(new Message { username = username, content = content, time = DateTime.Now });
+                room.lastActivity = DateTime.Now;
+            }
+        }
+    }
+}

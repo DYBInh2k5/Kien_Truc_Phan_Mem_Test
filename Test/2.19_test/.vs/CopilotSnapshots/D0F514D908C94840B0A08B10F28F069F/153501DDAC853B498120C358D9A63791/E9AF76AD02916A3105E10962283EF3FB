@@ -1,0 +1,40 @@
+﻿using System.Text.Json;
+using SA_TEST.Models;
+
+namespace SA_TEST.Services
+{
+    internal class JsonService
+    {
+        private static JsonService instance = null;
+
+        private JsonService() { }
+
+        public static JsonService getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new JsonService();
+            }
+
+            return instance;
+        }
+
+        public List<User> getUsers()
+        {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "users.json");
+            if (!File.Exists(path))
+            {
+                // Ensure directory exists for later if needed, but for now just return empty if file missing
+                // or handle as per project structure. The README says Data/users.json.
+                // In a console app, it might be in the project root or output dir.
+                path = "Data/users.json"; 
+            }
+
+            if (!File.Exists(path)) return new List<User>();
+
+            string json = File.ReadAllText(path);
+
+            return JsonSerializer.Deserialize<List<User>>(json);
+        }
+    }
+}

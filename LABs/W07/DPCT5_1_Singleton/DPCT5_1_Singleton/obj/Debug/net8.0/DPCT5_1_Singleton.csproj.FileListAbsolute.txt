@@ -1,0 +1,15 @@
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\bin\Debug\net8.0\DPCT5_1_Singleton.exe
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\bin\Debug\net8.0\DPCT5_1_Singleton.deps.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\bin\Debug\net8.0\DPCT5_1_Singleton.runtimeconfig.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\bin\Debug\net8.0\DPCT5_1_Singleton.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\bin\Debug\net8.0\DPCT5_1_Singleton.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\DPCT5_1_Singleton.GeneratedMSBuildEditorConfig.editorconfig
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\DPCT5_1_Singleton.AssemblyInfoInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\DPCT5_1_Singleton.AssemblyInfo.cs
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\DPCT5_1_Singleton.csproj.CoreCompileInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\DPCT5_1_Singleton.sourcelink.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\DPCT5_1_Singleton.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\refint\DPCT5_1_Singleton.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\DPCT5_1_Singleton.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\DPCT5_1_Singleton.genruntimeconfig.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W07\DPCT5_1_Singleton\DPCT5_1_Singleton\obj\Debug\net8.0\ref\DPCT5_1_Singleton.dll

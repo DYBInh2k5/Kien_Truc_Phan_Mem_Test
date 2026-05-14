@@ -1,0 +1,15 @@
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\bin\Debug\net8.0\Readme_test.exe
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\bin\Debug\net8.0\Readme_test.deps.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\bin\Debug\net8.0\Readme_test.runtimeconfig.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\bin\Debug\net8.0\Readme_test.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\bin\Debug\net8.0\Readme_test.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\Readme_test.GeneratedMSBuildEditorConfig.editorconfig
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\Readme_test.AssemblyInfoInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\Readme_test.AssemblyInfo.cs
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\Readme_test.csproj.CoreCompileInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\Readme_test.sourcelink.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\Readme_test.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\refint\Readme_test.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\Readme_test.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\Readme_test.genruntimeconfig.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Test\Readme_test\Readme_test\obj\Debug\net8.0\ref\Readme_test.dll

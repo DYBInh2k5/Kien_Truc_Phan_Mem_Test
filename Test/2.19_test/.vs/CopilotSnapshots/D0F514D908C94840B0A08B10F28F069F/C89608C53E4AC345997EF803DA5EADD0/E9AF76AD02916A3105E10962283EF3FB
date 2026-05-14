@@ -1,0 +1,41 @@
+﻿using System.Text.Json;
+using SA_TEST.Models;
+
+namespace SA_TEST.Services
+{
+    // Áp d?ng SINGLETON PATTERN: ??m b?o ch? có 1 instance duy nh?t ?? qu?n lý vi?c ??c file JSON
+    internal class JsonService
+    {
+        private static JsonService instance = null;
+
+        // Constructor private ?? không cho phép t?o m?i t? bên ngoài
+        private JsonService() { }
+
+        // Ph??ng th?c t?nh ?? l?y instance duy nh?t
+        public static JsonService getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new JsonService();
+            }
+
+            return instance;
+        }
+
+        public List<User> getUsers()
+        {
+            // Xác ??nh ???ng d?n file users.json
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "users.json");
+            if (!File.Exists(path))
+            {
+                path = "Data/users.json"; 
+            }
+
+            if (!File.Exists(path)) return new List<User>();
+
+            // ??c toàn b? n?i dung file và chuy?n ??i (Deserialize) t? JSON sang List Object
+            string json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<List<User>>(json);
+        }
+    }
+}

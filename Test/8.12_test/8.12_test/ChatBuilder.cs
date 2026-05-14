@@ -1,0 +1,228 @@
+namespace _8._12_test
+{
+    /// <summary>
+    /// DESIGN PATTERN: BUILDER
+    /// Cung c?p gi?i pháp xây d?ng giao di?n HTML cho phòng chat theo t?ng b??c (Step-by-step).
+    /// Giúp code s?ch h?n, d? b?o trì thay vì c?ng chu?i HTML th? công trong Router.
+    /// </summary>
+    class ChatBuilder
+    {
+        private string _title = "";
+        private string _body = "";
+
+        public ChatBuilder setTitle(string title)
+        {
+            _title = $"<h1 style='color: orange;'>{title}</h1>";
+            return this;
+        }
+
+        public ChatBuilder setBody(string bodyHtml)
+        {
+            _body = bodyHtml;
+            return this;
+        }
+
+        public ChatBuilder addMessage(Message msg)
+        {
+            _body += $@"
+                <div class='msg-item'>
+                    <span class='username'>{msg.Username}</span>
+                    <span class='timestamp'>{msg.Timestamp:HH:mm:ss}</span>
+                    <div class='content'>{msg.Content}</div>
+                </div>";
+            return this;
+        }
+
+        public ChatBuilder addInputForm(int roomId)
+        {
+            _body += $@"
+                <div class='input-area'>
+                    <form method='POST' action='/chat/{roomId}'>
+                        <input name='message' placeholder='Type your message here...' required autofocus autocomplete='off'>
+                        <button type='submit'>
+                            <svg viewBox='0 0 24 24' width='24' height='24'><path fill='currentColor' d='M2.01 21L23 12 2.01 3 2 10l15 2-15 2z'></path></svg>
+                        </button>
+                    </form>
+                </div>";
+            return this;
+        }
+
+        /// <summary>
+        /// T?ng h?p các thành ph?n ?ã thêm (Title, Body) thành m?t trang HTML hoàn ch?nh.
+        /// Bao g?m c? CSS ?? giao di?n trông "Attractive" h?n theo yêu c?u.
+        /// </summary>
+        public string build()
+        {
+            return $@"
+            <html>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <style>
+                    :root {{
+                        --primary: #f39c12;
+                        --primary-hover: #e67e22;
+                        --bg: #0f0f0f;
+                        --surface: #1a1a1a;
+                        --text: #ffffff;
+                        --text-muted: #a0a0a0;
+                        --msg-bg: #2d2d2d;
+                    }}
+                    body {{ 
+                        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; 
+                        background: var(--bg); 
+                        color: var(--text); 
+                        padding: 0; 
+                        display: flex; 
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        margin: 0;
+                    }}
+                    .container {{
+                        width: 100%;
+                        max-width: 800px;
+                        height: 90vh;
+                        background: var(--surface);
+                        display: flex;
+                        flex-direction: column;
+                        border-radius: 16px;
+                        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+                        overflow: hidden;
+                    }}
+                    .chat-header {{
+                        padding: 20px;
+                        background: rgba(255,255,255,0.03);
+                        border-bottom: 1px solid rgba(255,255,255,0.05);
+                        text-align: center;
+                    }}
+                    h1 {{ 
+                        color: var(--primary); 
+                        margin: 0; 
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                    }}
+                    .chat-messages {{
+                        flex: 1;
+                        padding: 20px;
+                        overflow-y: auto;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 12px;
+                        scrollbar-width: thin;
+                        scrollbar-color: var(--primary) transparent;
+                    }}
+                    .chat-messages::-webkit-scrollbar {{ width: 6px; }}
+                    .chat-messages::-webkit-scrollbar-thumb {{ background: var(--primary); border-radius: 10px; }}
+                    .msg-item {{ 
+                        max-width: 80%;
+                        align-self: flex-start;
+                        animation: slideIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+                    }}
+                    @keyframes slideIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+                    .username {{ 
+                        font-size: 0.85rem; 
+                        font-weight: 600; 
+                        color: var(--primary); 
+                        margin-bottom: 4px;
+                        display: block;
+                        margin-left: 12px;
+                    }}
+                    .content {{ 
+                        background: var(--msg-bg); 
+                        padding: 12px 16px; 
+                        border-radius: 18px; 
+                        border-bottom-left-radius: 4px;
+                        font-size: 0.95rem;
+                        line-height: 1.4;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                        white-space: pre-wrap;
+                        word-break: break-word;
+                    }}
+                    .timestamp {{ 
+                        font-size: 0.7rem; 
+                        color: var(--text-muted); 
+                        margin-left: 8px;
+                        font-weight: 400;
+                    }}
+                    .input-area {{
+                        padding: 20px;
+                        background: rgba(255,255,255,0.02);
+                        border-top: 1px solid rgba(255,255,255,0.05);
+                    }}
+                    form {{ display: flex; gap: 12px; align-items: center; }}
+                    input {{ 
+                        flex: 1; 
+                        background: #252525; 
+                        color: white; 
+                        border: 1px solid transparent; 
+                        padding: 14px 20px; 
+                        border-radius: 12px; 
+                        outline: none;
+                        font-size: 0.95rem;
+                        transition: 0.2s;
+                    }}
+                    input:focus {{ border-color: var(--primary); background: #2a2a2a; }}
+                    button {{ 
+                        background: var(--primary); 
+                        color: #000; 
+                        border: none; 
+                        width: 48px;
+                        height: 48px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border-radius: 12px; 
+                        cursor: pointer; 
+                        transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                    }}
+                    button:hover {{ background: var(--primary-hover); transform: scale(1.05); }}
+                    button:active {{ transform: scale(0.95); }}
+                    .nav-links {{ 
+                        padding: 12px; 
+                        text-align: center; 
+                        background: var(--bg);
+                        font-size: 0.9rem;
+                    }}
+                    .nav-links a {{ 
+                        color: var(--text-muted); 
+                        text-decoration: none; 
+                        margin: 0 10px;
+                        transition: 0.2s;
+                    }}
+                    .nav-links a:hover {{ color: var(--primary); }}
+                    
+                    /* Room List Styling Overrides */
+                    .room-list {{ list-style: none; padding: 20px; }}
+                    .room-item {{ 
+                        padding: 18px; 
+                        margin: 12px 0; 
+                        background: #222; 
+                        border-radius: 12px; 
+                        display: flex; 
+                        justify-content: space-between;
+                        align-items: center;
+                        transition: 0.2s;
+                        border: 1px solid rgba(255,255,255,0.03);
+                    }}
+                    .room-item:hover {{ transform: scale(1.02); background: #282828; border-color: var(--primary); }}
+                    .room-item a {{ color: white; text-decoration: none; font-weight: 600; flex: 1; }}
+                    .online {{ color: #2ecc71; font-weight: 700; font-size: 0.75rem; border: 1px solid #2ecc71; padding: 4px 8px; border-radius: 6px; }}
+                    .offline {{ color: #e74c3c; font-weight: 700; font-size: 0.75rem; border: 1px solid #e74c3c; padding: 4px 8px; border-radius: 6px; }}
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='chat-header'>{_title}</div>
+                    <div class='chat-messages'>
+                        {_body}
+                    </div>
+                </div>
+                <div style='position: fixed; bottom: 20px;' class='nav-links'>
+                    <a href='/chat'>Rooms</a> • <a href='/'>Home</a>
+                </div>
+            </body>
+            </html>";
+        }
+    }
+}

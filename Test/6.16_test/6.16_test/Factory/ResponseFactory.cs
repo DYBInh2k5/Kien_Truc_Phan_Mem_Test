@@ -1,0 +1,36 @@
+using System.Text;
+
+namespace _6._16_test.Factory
+{
+    /// <summary>
+    /// [DESIGN PATTERN: FACTORY]
+    /// M?c ?ích: T?o ra các "s?n ph?m" (? ?ây là các gói tin HTTP Response) m?t cách chu?n hóa.
+    /// T?i sao dùng ? ?ây: Giúp che gi?u s? ph?c t?p c?a vi?c ??nh ngh?a các Header HTTP (Status code, Content-Type, Content-Length).
+    /// Khi c?n thay ??i ??nh d?ng ph?n h?i chung, ch? c?n s?a t?i ?ây thay vì s?a ? kh?p n?i trong Program.cs.
+    /// </summary>
+    internal class ResponseFactory
+    {
+        // Nhà máy s?n xu?t Response lo?i hi?n th? HTML
+        public static byte[] Html(string body)
+        {
+            // Xây d?ng chu?i HTTP Response thô (Raw HTTP Response)
+            string response = "HTTP/1.1 200 OK\r\n"; // Dòng tr?ng thái: OK
+            response += "Content-Type: text/html; charset=utf-8\r\n"; // ??nh ngh?a ki?u n?i dung là HTML
+            response += $"Content-Length: {Encoding.UTF8.GetByteCount(body)}\r\n"; // ?? dài d? li?u (quan tr?ng ?? Browser nh?n ?? file)
+            response += "\r\n"; // Dòng tr?ng b?t bu?c phân cách Header và Body
+            response += body; // N?i dung th?c t? là mã HTML
+
+            return Encoding.UTF8.GetBytes(response);
+        }
+
+        // Nhà máy s?n xu?t Response lo?i chuy?n h??ng trang (Redirect)
+        public static byte[] Redirect(string location)
+        {
+            string response = "HTTP/1.1 302 Found\r\n"; // Mã 302: Trình duy?t ph?i di chuy?n sang trang khác
+            response += $"Location: {location}\r\n"; // ??a ch? c?n nh?y t?i (e.g. /chat)
+            response += "\r\n";
+
+            return Encoding.ASCII.GetBytes(response);
+        }
+    }
+}

@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace _6._16_test.Models
+{
+    /// <summary>
+    /// Model quản lý dữ liệu cho từng phòng chat.
+    /// Chứa business logic: Nếu phòng không hoạt động (không có ai chat) trong 3 phút thì xóa hết tin nhắn.
+    /// </summary>
+    internal class ChatRoom
+    {
+        public int Id { get; set; }
+        public List<Message> Messages { get; set; } = new List<Message>();
+        public DateTime LastActivity { get; set; } = DateTime.Now;
+
+        // Trạng thái Online/Offline: Tính toán dựa trên hiệu số thời gian hiện tại và lần chat cuối cùng
+        public bool IsOnline => (DateTime.Now - LastActivity).TotalMinutes < 3;
+
+        // Xử lý dọn dẹp bộ nhớ: Nếu chuyển sang trạng thái Offline thì CLEAR sạch dữ liệu Messages
+        public void CheckStatus()
+        {
+            if (!IsOnline)
+            {
+                Messages.Clear();
+            }
+        }
+    }
+}

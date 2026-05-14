@@ -1,0 +1,15 @@
+﻿namespace SATestSocket.Models
+{
+    /// <summary>
+    /// Model đại diện cho một tin nhắn trong hệ thống chat.
+    /// Bao gồm người gửi, nội dung và thời gian gửi.
+    /// </summary>
+    internal class Message
+    {
+        public string username { get; set; }
+
+        public string content { get; set; }
+
+        public DateTime time { get; set; }
+    }
+}

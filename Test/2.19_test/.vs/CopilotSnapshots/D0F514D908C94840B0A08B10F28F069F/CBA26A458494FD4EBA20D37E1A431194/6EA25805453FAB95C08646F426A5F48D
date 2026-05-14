@@ -1,0 +1,25 @@
+﻿namespace SA_TEST.Router
+{
+    internal class RouteBuilder
+    {
+        private WebRouter router =
+            new WebRouter();
+
+        public RouteBuilder addHome(Func<string> action)
+        {
+            router.addRoute("/", action);
+            return this;
+        }
+
+        public RouteBuilder addLogin(Func<string> action)
+        {
+            router.addRoute("/login", action);
+            return this;
+        }
+
+        public WebRouter build()
+        {
+            return router;
+        }
+    }
+}

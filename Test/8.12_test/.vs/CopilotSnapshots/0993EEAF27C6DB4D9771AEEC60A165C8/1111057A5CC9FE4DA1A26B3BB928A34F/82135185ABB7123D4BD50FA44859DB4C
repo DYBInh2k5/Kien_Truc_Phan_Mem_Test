@@ -1,0 +1,47 @@
+﻿using System.Text.Json;
+
+namespace _8._12_test
+{
+    /// <summary>
+    /// DESIGN PATTERN: SINGLETON
+    /// ??m b?o t?p accounts.json ch? ???c ??c 1 l?n duy nh?t vào b? nh?.
+    /// Giúp ti?t ki?m tài nguyên I/O và ??ng b? d? li?u ng??i dùng trong su?t vòng ??i Server.
+    /// </summary>
+    internal class JsonAccountSingleton
+    {
+        private static JsonAccountSingleton instance = null;
+        public List<User> users;
+
+        private JsonAccountSingleton()
+        {
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "accounts.json");
+            // For development, if file not found in bin, look in project folder
+            if (!File.Exists(filePath))
+            {
+                 filePath = "data/accounts.json";
+            }
+            
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                users = JsonSerializer.Deserialize<List<User>>(json);
+            }
+            else
+            {
+                users = new List<User>();
+            }
+        }
+
+        /// <summary>
+        /// Ph??ng th?c truy c?p duy nh?t ?? l?y th?c th? (Instance) c?a l?p.
+        /// </summary>
+        public static JsonAccountSingleton getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new JsonAccountSingleton();
+            }
+            return instance;
+        }
+    }
+}

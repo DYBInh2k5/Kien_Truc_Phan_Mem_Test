@@ -1,0 +1,13 @@
+﻿namespace _8._12_test
+{
+    /// <summary>
+    /// Model đại diện cho người dùng (User) trong hệ thống.
+    /// Dùng để map dữ liệu từ file JSON `accounts.json` thông qua thư viện `System.Text.Json`.
+    /// Chứa hai thuộc tính: `username` và `password`.
+    /// </summary>
+    public class User
+    {
+        public string username { get; set; }
+        public string password { get; set; }
+    }
+}

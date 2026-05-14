@@ -1,0 +1,15 @@
+namespace SATestSocket.Models
+{
+    /// <summary>
+    /// Model ??i di?n cho m?t tin nh?n trong h? th?ng chat.
+    /// Bao g?m ng??i g?i, n?i dung và th?i gian g?i.
+    /// </summary>
+    internal class Message
+    {
+        public string username { get; set; }
+
+        public string content { get; set; }
+
+        public DateTime time { get; set; }
+    }
+}

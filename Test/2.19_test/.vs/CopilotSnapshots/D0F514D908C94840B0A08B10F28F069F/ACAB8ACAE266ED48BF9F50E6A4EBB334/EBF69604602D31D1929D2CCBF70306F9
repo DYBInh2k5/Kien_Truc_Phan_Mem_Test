@@ -1,0 +1,9 @@
+﻿namespace SA_TEST.Models
+{
+    // Đối tượng đại diện cho một người dùng trong hệ thống
+    internal class User
+    {
+        public string username { get; set; }
+        public string password { get; set; }
+    }
+}

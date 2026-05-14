@@ -1,0 +1,47 @@
+﻿using System.Text.Json;
+
+namespace _8._12_test
+{
+    /// <summary>
+    /// DESIGN PATTERN: SINGLETON
+    /// Đảm bảo tệp accounts.json chỉ được đọc 1 lần duy nhất vào bộ nhớ.
+    /// Giúp tiết kiệm tài nguyên I/O và đồng bộ dữ liệu người dùng trong suốt vòng đời Server.
+    /// </summary>
+    internal class JsonAccountSingleton
+    {
+        private static JsonAccountSingleton instance = null;
+        public List<User> users;
+
+        private JsonAccountSingleton()
+        {
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "accounts.json");
+            // For development, if file not found in bin, look in project folder
+            if (!File.Exists(filePath))
+            {
+                 filePath = "data/accounts.json";
+            }
+            
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                users = JsonSerializer.Deserialize<List<User>>(json);
+            }
+            else
+            {
+                users = new List<User>();
+            }
+        }
+
+        /// <summary>
+        /// Phương thức truy cập duy nhất để lấy thực thể (Instance) của lớp.
+        /// </summary>
+        public static JsonAccountSingleton getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new JsonAccountSingleton();
+            }
+            return instance;
+        }
+    }
+}

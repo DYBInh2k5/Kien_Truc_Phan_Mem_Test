@@ -1,0 +1,39 @@
+﻿using System.Text;
+
+namespace SATestSocket.Patterns
+{
+    /// <summary>
+    /// FACADE PATTERN: L?p này giúp ??n gi?n hóa vi?c xây d?ng gói tin HTTP Response.
+    /// Thay vì ph?i vi?t header HTTP th? công ? nhi?u n?i, ta ch? c?n g?i buildResponse.
+    /// </summary>
+    internal class ServerFacade
+    {
+        /// <summary>
+        /// T?o ra m?t m?ng byte ch?a gói tin ph?n h?i HTTP hoàn ch?nh bao g?m Header và Body.
+        /// </summary>
+        public static byte[] buildResponse(
+            string body)
+        {
+            // Xây d?ng Header HTTP 1.1 thành công (200 OK)
+            string response =
+                "HTTP/1.1 200 OK\r\n";
+
+            // Khai báo ki?u n?i dung là HTML
+            response +=
+                "Content-Type: text/html\r\n";
+
+            // Khai báo ?? dài c?a n?i dung g?i v? (giúp trình duy?t bi?t khi nào d?ng ??c)
+            response +=
+                $"Content-Length: {body.Length}\r\n";
+
+            // M?t dòng tr?ng ?? phân tách Header và Body theo chu?n HTTP
+            response += "\r\n";
+
+            // G?n ph?n n?i dung HTML vào sau Header
+            response += body;
+
+            // Chuy?n chu?i v?n b?n thành m?ng byte ?? g?i qua Socket
+            return Encoding.ASCII.GetBytes(response);
+        }
+    }
+}

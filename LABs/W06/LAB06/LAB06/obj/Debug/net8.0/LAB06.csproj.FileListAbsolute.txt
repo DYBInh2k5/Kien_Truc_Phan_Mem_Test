@@ -1,0 +1,15 @@
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\bin\Debug\net8.0\LAB06.exe
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\bin\Debug\net8.0\LAB06.deps.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\bin\Debug\net8.0\LAB06.runtimeconfig.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\bin\Debug\net8.0\LAB06.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\bin\Debug\net8.0\LAB06.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\LAB06.GeneratedMSBuildEditorConfig.editorconfig
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\LAB06.AssemblyInfoInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\LAB06.AssemblyInfo.cs
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\LAB06.csproj.CoreCompileInputs.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\LAB06.sourcelink.json
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\LAB06.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\refint\LAB06.dll
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\LAB06.pdb
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\LAB06.genruntimeconfig.cache
+D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\LABs\W06\LAB06\LAB06\obj\Debug\net8.0\ref\LAB06.dll

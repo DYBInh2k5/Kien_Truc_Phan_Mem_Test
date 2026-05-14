@@ -1,0 +1,137 @@
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using SATestSocket.Patterns;
+
+namespace _8._13_test
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            IPEndPoint serverInfor =
+                new IPEndPoint(IPAddress.Any, 8080);
+
+            Socket serverListen = new Socket(
+                AddressFamily.InterNetwork,
+                SocketType.Stream,
+                ProtocolType.Tcp);
+
+            serverListen.Bind(serverInfor);
+
+            serverListen.Listen(10);
+
+            Console.WriteLine("Dang cho khach...");
+
+            while (true)
+            {
+                Socket staff = serverListen.Accept();
+
+                Thread t = new Thread(handleClient);
+
+                t.Start(staff);
+            }
+        }
+
+        static void handleClient(object? obj)
+        {
+            if (obj == null) return;
+            Socket staff = (Socket)obj;
+
+            string requestData = "";
+
+            while (true)
+            {
+                byte[] bytes = new byte[1024];
+
+                int bytesRec = staff.Receive(bytes);
+
+                requestData += Encoding.ASCII.GetString(
+                    bytes,
+                    0,
+                    bytesRec);
+
+                if (bytesRec < 1024)
+                {
+                    break;
+                }
+            }
+
+            Console.WriteLine(requestData);
+
+            string[] requestLines =
+                requestData.Split('\n');
+
+            string firstLine = requestLines[0];
+
+            string body = "";
+
+            // GET /
+            if (firstLine.Contains("GET / "))
+            {
+                body =
+                @"<html>
+                <body>
+                <h1>Student Information</h1>
+                <p>ID: 123456</p>
+                <p>Fullname: Nguyen Van A</p>
+                <p>PC Number: 10</p>
+
+                <a href='/login'>
+                Login
+                </a>
+
+                </body>
+                </html>";
+            }
+
+            // GET /login
+            else if (firstLine.Contains("GET /login"))
+            {
+                body =
+                @"<html>
+                <body>
+
+                <h1>Login</h1>
+
+                <form method='POST'
+                action='/login'>
+
+                Username:
+                <input name='username'/>
+
+                <br/>
+
+                Password:
+                <input type='password'
+                name='password'/>
+
+                <br/>
+
+                <button type='submit'>
+                Login
+                </button>
+
+                </form>
+
+                </body>
+                </html>";
+            }
+
+            else
+            {
+                body =
+                "<html><body>404</body></html>";
+            }
+
+            byte[] msg =
+                ServerFacade.buildResponse(body);
+
+            staff.Send(msg);
+
+            staff.Shutdown(SocketShutdown.Both);
+
+            staff.Close();
+        }
+    }
+}

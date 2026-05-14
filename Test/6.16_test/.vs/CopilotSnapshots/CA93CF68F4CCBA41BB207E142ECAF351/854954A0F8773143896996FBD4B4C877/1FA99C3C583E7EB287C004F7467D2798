@@ -1,0 +1,42 @@
+﻿# SA TEST - Low-level Web Chat Server (Socket Programming)
+
+Dự án này là một Web Server cơ bản được xây dựng bằng công nghệ Socket trong C#, không sử dụng ASP.NET. Mục tiêu là hiểu về cách thức hoạt động của giao thức HTTP, quản lý luồng (Thread) và áp dụng các mẫu thiết kế (Design Patterns).
+
+## 🚀 Tính năng chính
+- **Low-level Socket Server:** Tự xây dựng cơ chế lắng nghe và phản hồi HTTP Request qua TCP Socket.
+- **Authentication:** Đăng nhập người dùng dựa trên dữ liệu từ file `users.json`.
+- **Chat Rooms System:** Hệ thống phòng chat thời gian thực (giả lập qua HTTP).
+- **State Management:** Quản lý trạng thái Online/Offline của phòng chat (Tự xóa lịch sử nếu không có hoạt động quá 3 phút).
+- **Multi-threading:** Xử lý nhiều người dùng đồng thời bằng Thread.
+
+## 🏗️ Kiến trúc & Design Patterns
+### 1. Singleton (ChatManager)
+- **Công dụng:** Đảm bảo toàn hệ thống chỉ có một bộ quản lý phòng chat duy nhất. Mọi Client khi truy cập đều thao tác trên cùng một danh sách dữ liệu phòng chat, giúp đồng bộ tin nhắn.
+- **Vị trí code:** `Managers/ChatManager.cs`
+
+### 2. Factory (ResponseFactory)
+- **Công dụng:** Tách biệt việc tạo chuỗi phản hồi HTTP thô (Raw HTTP Response) ra khỏi logic chính. Cung cấp các phương thức tiện lợi để tạo phản hồi HTML hoặc lệnh chuyển hướng (Redirect).
+- **Vị trí code:** `Factory/ResponseFactory.cs`
+
+## 📁 Cấu trúc thư mục
+- `Program.cs`: Entry point, chứa logic lắng nghe Socket và điều hướng (Routing).
+- `Models/`: Định nghĩa các thực thể dữ liệu (`User`, `Message`, `ChatRoom`).
+- `Managers/`: Chứa `ChatManager` (Singleton).
+- `Factory/`: Chứa `ResponseFactory` (Factory Pattern).
+- `Html/`: Chứa các trang giao diện tĩnh (HTML).
+- `users.json`: Cơ sở dữ liệu người dùng dưới dạng JSON.
+
+## 📝 Hướng dẫn chuẩn bị vấn đáp
+1. **Dòng đời của một Request:**
+   - Trình duyệt gửi Request -> Socket Server nhận qua hàm `Accept()` -> Tạo một `Thread` mới -> `HandleClient()` parse chuỗi Request -> Kiểm tra URL -> `ResponseFactory` tạo phản hồi -> Gửi về qua `staff.Send()`.
+2. **Tại sao dùng Singleton?**
+   - Để dữ liệu các phòng chat (tin nhắn, thời gian hoạt động) không bị khởi tạo lại mỗi khi có người dùng mới kết nối.
+3. **Cơ chế xử lý Offline?**
+   - Mỗi phòng chat có thuộc tính `LastActivity`. Mỗi khi có tin nhắn mới, thuộc tính này được cập nhật. Nếu `Bây giờ - LastActivity > 3 phút`, phòng được coi là Offline và hàm `CheckStatus()` sẽ `Clear()` toàn bộ tin nhắn.
+
+## 🛠️ Cách chạy
+Sử dụng Visual Studio hoặc VS Code:
+```bash
+dotnet run
+```
+Truy cập: `http://localhost:8080`

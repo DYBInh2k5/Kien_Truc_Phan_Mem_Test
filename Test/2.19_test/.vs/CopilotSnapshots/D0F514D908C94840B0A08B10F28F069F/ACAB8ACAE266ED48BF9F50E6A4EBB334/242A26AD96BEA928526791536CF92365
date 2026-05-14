@@ -1,0 +1,39 @@
+﻿using SA_TEST.Services;
+
+namespace SA_TEST.Controllers
+{
+    // Lớp Controller quản lý trang đăng nhập
+    internal class LoginController
+    {
+        // Trả về chuỗi HTML chứa Form đăng nhập
+        public static string LoginPage()
+        {
+            return @"
+            <html>
+            <head>
+                <link rel='stylesheet' href='/style.css'>
+            </head>
+            <body>
+
+            <form method='POST' action='/login'>
+                <h2>Login</h2>
+                Username:
+                <input name='username'/>
+
+                <br/><br/>
+
+                Password:
+                <input name='password' type='password'/>
+
+                <br/><br/>
+
+                <button type='submit'>Login</button>
+
+            </form>
+
+            </body>
+            </html>
+            ";
+        }
+    }
+}

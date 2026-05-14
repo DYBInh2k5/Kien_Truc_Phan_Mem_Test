@@ -1,0 +1,39 @@
+﻿using System.Text.Json;
+
+namespace _8._12_test
+{
+    internal class JsonAccountSingleton
+    {
+        private static JsonAccountSingleton instance = null;
+        public List<User> users;
+
+        private JsonAccountSingleton()
+        {
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "accounts.json");
+            // For development, if file not found in bin, look in project folder
+            if (!File.Exists(filePath))
+            {
+                 filePath = "data/accounts.json";
+            }
+            
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                users = JsonSerializer.Deserialize<List<User>>(json);
+            }
+            else
+            {
+                users = new List<User>();
+            }
+        }
+
+        public static JsonAccountSingleton getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new JsonAccountSingleton();
+            }
+            return instance;
+        }
+    }
+}

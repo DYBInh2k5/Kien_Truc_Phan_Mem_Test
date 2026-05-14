@@ -1,0 +1,42 @@
+﻿using System.Collections.Generic;
+using _6._16_test.Models;
+
+namespace _6._16_test.Managers
+{
+    /// <summary>
+    /// DESIGN PATTERN: SINGLETON
+    /// Đảm bảo trong toàn bộ ứng dụng chỉ có duy nhất một đối tượng ChatManager quản lý tập trung các phòng chat.
+    /// </summary>
+    internal class ChatManager
+    {
+        private static ChatManager instance = null;
+        public List<ChatRoom> Rooms { get; private set; } = new List<ChatRoom>();
+
+        // Constructor private để không cho phép tạo mới từ bên ngoài
+        private ChatManager()
+        {
+            // Khởi tạo mặc định 3 phòng chat
+            for (int i = 1; i <= 3; i++)
+            {
+                Rooms.Add(new ChatRoom { Id = i });
+            }
+        }
+
+        // Phương thức tĩnh để lấy instance duy nhất
+        public static ChatManager GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new ChatManager();
+            }
+            return instance;
+        }
+
+        public ChatRoom GetRoom(int id)
+        {
+            var room = Rooms.Find(r => r.Id == id);
+            room?.CheckStatus(); // Mỗi lần truy cập đều kiểm tra trạng thái Online/Offline
+            return room;
+        }
+    }
+}

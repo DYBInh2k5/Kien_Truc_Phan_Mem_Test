@@ -1,0 +1,36 @@
+﻿using System.Text;
+
+namespace _6._16_test.Factory
+{
+    /// <summary>
+    /// [DESIGN PATTERN: FACTORY]
+    /// Mục đích: Tạo ra các "sản phẩm" (ở đây là các gói tin HTTP Response) một cách chuẩn hóa.
+    /// Tại sao dùng ở đây: Giúp che giấu sự phức tạp của việc định nghĩa các Header HTTP (Status code, Content-Type, Content-Length).
+    /// Khi cần thay đổi định dạng phản hồi chung, chỉ cần sửa tại đây thay vì sửa ở khắp nơi trong Program.cs.
+    /// </summary>
+    internal class ResponseFactory
+    {
+        // Nhà máy sản xuất Response loại hiển thị HTML
+        public static byte[] Html(string body)
+        {
+            // Xây dựng chuỗi HTTP Response thô (Raw HTTP Response)
+            string response = "HTTP/1.1 200 OK\r\n"; // Dòng trạng thái: OK
+            response += "Content-Type: text/html; charset=utf-8\r\n"; // Định nghĩa kiểu nội dung là HTML
+            response += $"Content-Length: {Encoding.UTF8.GetByteCount(body)}\r\n"; // Độ dài dữ liệu (quan trọng để Browser nhận đủ file)
+            response += "\r\n"; // Dòng trống bắt buộc phân cách Header và Body
+            response += body; // Nội dung thực tế là mã HTML
+
+            return Encoding.UTF8.GetBytes(response);
+        }
+
+        // Nhà máy sản xuất Response loại chuyển hướng trang (Redirect)
+        public static byte[] Redirect(string location)
+        {
+            string response = "HTTP/1.1 302 Found\r\n"; // Mã 302: Trình duyệt phải di chuyển sang trang khác
+            response += $"Location: {location}\r\n"; // Địa chỉ cần nhảy tới (e.g. /chat)
+            response += "\r\n";
+
+            return Encoding.ASCII.GetBytes(response);
+        }
+    }
+}

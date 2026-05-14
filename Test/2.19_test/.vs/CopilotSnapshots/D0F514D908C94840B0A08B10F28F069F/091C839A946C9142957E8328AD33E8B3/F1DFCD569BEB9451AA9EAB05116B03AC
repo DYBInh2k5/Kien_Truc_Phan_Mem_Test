@@ -1,0 +1,64 @@
+﻿using System.Text.Json;
+using SA_TEST.Models;
+
+namespace SA_TEST.Services
+{
+    // Áp dụng SINGLETON PATTERN: Đảm bảo chỉ có 1 thực thể (instance) duy nhất xử lý file dữ liệu
+    internal class JsonService
+    {
+        private static JsonService instance = null;
+
+        // Định nghĩa Constructor là private để ngăn chặn việc tạo đối tượng bằng từ khóa 'new' từ bên ngoài
+        private JsonService() { }
+
+        // Phương thức tĩnh để truy cập vào thực thể duy nhất của lớp này
+        public static JsonService getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new JsonService();
+            }
+
+            return instance;
+        }
+
+        // Hàm đọc danh sách người dùng từ file JSON
+        public List<User> getUsers()
+        {
+            // Kiểm tra nhiều vị trí để tìm file users.json (phòng trường hợp chạy từ Visual Studio hoặc dòng lệnh)
+            string[] possiblePaths = {
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "users.json"),
+                Path.Combine(Directory.GetCurrentDirectory(), "Data", "users.json"),
+                "Data/users.json",
+                // Lùi 3 cấp thư mục để tìm về thư mục gốc nếu đang chạy trong bin/Debug/net8.0
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Data", "users.json")
+            };
+
+            string path = "";
+            foreach (var p in possiblePaths)
+            {
+                if (File.Exists(p))
+                {
+                    path = p;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(path))
+            {
+                Console.WriteLine("LỖI: Không tìm thấy file users.json tại bất kỳ vị trí nào!");
+                return new List<User>();
+            }
+
+            // Đọc nội dung văn bản thô từ file JSON
+            string json = File.ReadAllText(path).Trim();
+            try {
+                // Chuyển đổi định dạng văn bản JSON thành danh sách đối tượng User trong C#
+                return JsonSerializer.Deserialize<List<User>>(json);
+            } catch (Exception ex) {
+                Console.WriteLine("LỖI phân tích JSON: " + ex.Message);
+                return new List<User>();
+            }
+        }
+    }
+}

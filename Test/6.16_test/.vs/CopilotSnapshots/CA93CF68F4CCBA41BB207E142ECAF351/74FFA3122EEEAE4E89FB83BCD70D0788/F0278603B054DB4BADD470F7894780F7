@@ -1,0 +1,10 @@
+﻿namespace _6._16_test
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello, World!");
+        }
+    }
+}

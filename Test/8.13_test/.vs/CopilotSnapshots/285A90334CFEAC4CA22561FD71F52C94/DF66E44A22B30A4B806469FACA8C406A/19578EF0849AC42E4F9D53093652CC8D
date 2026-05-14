@@ -1,0 +1,25 @@
+﻿using SATestSocket.Models;
+
+namespace SATestSocket.Patterns
+{
+    /// <summary>
+    /// FACTORY PATTERN: Lớp chuyên trách việc khởi tạo đối tượng User.
+    /// Giúp quản lý việc tạo mới User một cách tập trung và linh hoạt.
+    /// </summary>
+    internal class UserFactory
+    {
+        /// <summary>
+        /// Tạo một instance mới của lớp User với tên đăng nhập và mật khẩu.
+        /// </summary>
+        public static User create(
+            string username,
+            string password)
+        {
+            return new User
+            {
+                username = username,
+                password = password
+            };
+        }
+    }
+}

@@ -1,0 +1,11 @@
+﻿namespace SA_TEST.Models
+{
+    internal class Message
+    {
+        public string username { get; set; }
+
+        public string content { get; set; }
+
+        public DateTime time { get; set; }
+    }
+}

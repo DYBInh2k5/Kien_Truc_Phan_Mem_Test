@@ -1,0 +1,27 @@
+﻿using System.Text;
+
+namespace _6._16_test.Factory
+{
+    internal class ResponseFactory
+    {
+        public static byte[] Html(string body)
+        {
+            string response = "HTTP/1.1 200 OK\r\n";
+            response += "Content-Type: text/html; charset=utf-8\r\n";
+            response += $"Content-Length: {Encoding.UTF8.GetByteCount(body)}\r\n";
+            response += "\r\n";
+            response += body;
+
+            return Encoding.UTF8.GetBytes(response);
+        }
+
+        public static byte[] Redirect(string location)
+        {
+            string response = "HTTP/1.1 302 Found\r\n";
+            response += $"Location: {location}\r\n";
+            response += "\r\n";
+
+            return Encoding.ASCII.GetBytes(response);
+        }
+    }
+}

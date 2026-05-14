@@ -1,0 +1,16 @@
+﻿namespace SA_TEST.Router
+{
+    // Lớp quản lý danh sách các Route (URL) của ứng dụng
+    internal class WebRouter
+    {
+        // Dictionary lưu trữ cặp [Đường dẫn, Hàm thực thi]
+        public Dictionary<string, Func<string>> routes =
+            new Dictionary<string, Func<string>>();
+
+        // Thêm một route mới vào hệ thống
+        public void addRoute(string url, Func<string> action)
+        {
+            routes[url] = action;
+        }
+    }
+}

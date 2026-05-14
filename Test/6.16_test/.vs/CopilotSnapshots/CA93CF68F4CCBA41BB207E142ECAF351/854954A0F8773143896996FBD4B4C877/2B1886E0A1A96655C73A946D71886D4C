@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace _6._16_test.Models
+{
+    internal class ChatRoom
+    {
+        public int Id { get; set; }
+        public List<Message> Messages { get; set; } = new List<Message>();
+        public DateTime LastActivity { get; set; } = DateTime.Now;
+
+        // Logic check Online: Nếu hoạt động cuối cùng cách đây dưới 3 phút thì là Online
+        public bool IsOnline => (DateTime.Now - LastActivity).TotalMinutes < 3;
+
+        // Phương thức kiểm tra và dọn dẹp tin nhắn nếu phòng đã Offline theo yêu cầu đề bài
+        public void CheckStatus()
+        {
+            if (!IsOnline)
+            {
+                Messages.Clear();
+            }
+        }
+    }
+}

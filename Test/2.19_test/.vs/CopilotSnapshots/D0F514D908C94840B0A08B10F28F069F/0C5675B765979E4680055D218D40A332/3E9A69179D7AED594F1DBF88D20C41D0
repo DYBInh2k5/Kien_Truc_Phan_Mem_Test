@@ -1,0 +1,13 @@
+﻿namespace SA_TEST.Router
+{
+    internal class WebRouter
+    {
+        public Dictionary<string, Func<string>> routes =
+            new Dictionary<string, Func<string>>();
+
+        public void addRoute(string url, Func<string> action)
+        {
+            routes[url] = action;
+        }
+    }
+}

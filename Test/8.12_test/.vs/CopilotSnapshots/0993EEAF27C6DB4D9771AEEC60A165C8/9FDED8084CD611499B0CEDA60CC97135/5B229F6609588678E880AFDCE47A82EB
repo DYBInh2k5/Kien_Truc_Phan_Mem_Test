@@ -1,0 +1,83 @@
+﻿SA TEST - Submission & Viva Guide
+
+Mục đích
+- Tài liệu này mô tả chi tiết quy định nộp bài, cấu trúc thư mục bắt buộc và kịch bản trình bày (màn hình chạy + code) để bạn chuẩn bị vấn đáp.
+
+1) Attendance (Hiện diện)
+- Phải có mặt tại phòng Lab/lớp học trong buổi nộp và vấn đáp. Vắng không phép có thể dẫn tới không được chấm.
+
+2) Submission structure (Cấu trúc nộp trên hệ thống)
+- Bắt buộc nộp đúng 3 thư mục ở root của zip:
+  - `Results-screenshots` : 3-5 ảnh chụp màn hình giao diện đang chạy (Home, Login success, Login fail, Chat room, Online/Offline).
+  - `Code-DesignPatterns` : 3-5 ảnh chụp đoạn code minh họa áp dụng Design Patterns (Singleton, Builder).
+  - `ProjectCode` : Toàn bộ source code project (đi kèm folder `data`, `html`, `css` nếu có).
+- Thiếu hoặc đặt sai tên folder sẽ ảnh hưởng điểm.
+
+3) File naming (Đặt tên file bằng tiếng Anh ngắn gọn, rõ ràng)
+- Ví dụ: `login_success.png`, `chat_room_online.png`, `singleton_pattern.png`, `builder_pattern.png`, `project_source.zip`.
+
+4) Kiểm tra chạy ứng dụng (Application functionality)
+- Bắt buộc chạy được tại `http://localhost:8080`.
+- Các lệnh cơ bản (từ thư mục project):
+  - `dotnet build`
+  - `dotnet run`
+- Mở Console: kiểm tra các log như `[SUCCESS] Loaded users from: ...` và `Number of accounts: 2`.
+
+5) Kịch bản trình bày (Màn hình chạy + Màn hình code)
+- Trình tự thực hiện khi trình bày:
+  1. Mở Console server, cho giảng viên xem log khởi động và log load `accounts.json`.
+  2. Mở trình duyệt: vào `http://localhost:8080` (Home page) — nói ngắn về nội dung trang.
+  3. Click `Login` -> điền `nntu` / `56789` -> submit. 
+     - Trình bày: server tạo token và trả `Set-Cookie`, trình duyệt redirect đến `/chat`.
+     - Mở Developer Tools (Network/Storage) để cho giảng viên xem Header `Set-Cookie` và Cookie `token` đã được lưu.
+  4. Ở `/chat`: hiển thị danh sách phòng cùng trạng thái `ONLINE`/`OFFLINE`. Giải thích: so sánh `Now - LastActivity <= 3 phút` để xác định online.
+  5. Vào 1 phòng (`/chat/1`): hiển thị lịch sử tin nhắn (time, username, message) và khung gửi tin. Thực hiện gửi 1 tin nhắn -> server nhận POST -> cập nhật `LastActivity` -> redirect lại để hiển thị trang có tin nhắn mới.
+  6. Minh họa phòng `OFFLINE` bằng cách mô phỏng (nêu cách kiểm tra hoặc sửa `LastActivity` tạm thời) và cho thấy lịch sử bị xóa.
+
+6) Màn hình code cần trình bày (và những nội dung cần giải thích ngắn gọn)
+- `Program.cs`:
+  - Mô tả: Socket server, lắng nghe cổng 8080, Accept connection, mỗi connection khởi 1 Thread.
+  - Nêu cách parse HTTP: tách Header/Body bằng `\r\n\r\n` để lấy Method, Path, Cookie và Body.
+- `Router.cs`:
+  - Mô tả: Điều hướng các route: `/`, `/login` (GET/POST), `/chat`, `/chat/:id` (GET/POST).
+  - Giải thích: cách xử lý Redirect (302) và cách set Cookie (`Set-Cookie` header).
+- `JsonAccountSingleton.cs`:
+  - Mô tả: Singleton đọc `data/accounts.json` một lần, lưu vào `List<User>`.
+  - Giải thích lợi ích: tránh đọc nhiều lần, dữ liệu dùng chung giữa các Thread.
+- `ChatBuilder.cs`:
+  - Mô tả: Builder tạo HTML cho trang chat (title, body, form).
+  - Giải thích lợi ích: tách biệt UI và logic, dễ thay theme.
+- `ChatRoom.cs`:
+  - Mô tả: lưu `Messages`, `LastActivity` và hàm `IsOnline()` kiểm tra 3 phút và xóa lịch sử khi offline.
+- `User.cs`, `Message.cs`:
+  - Model đơn giản cho dữ liệu.
+
+7) Các câu hỏi hay gặp (và câu trả lời mẫu ngắn gọn)
+- Q: "Cookie token được tạo ở đâu?" 
+  - A: Tạo trong `HandleLogin` (Guid.NewGuid()) và trả header `Set-Cookie`.
+- Q: "Làm sao server biết user đã đăng nhập?" 
+  - A: Dựa vào header `Cookie` gửi kèm; code kiểm tra sự tồn tại `token=` (đơn giản cho bài lab).
+- Q: "Làm thế nào để xác định phòng online?" 
+  - A: So sánh `DateTime.Now - LastActivity <= TimeSpan.FromMinutes(3)`; nếu lớn hơn thì gọi `Messages.Clear()`.
+- Q: "Phần parse HTTP có an toàn/hoàn chỉnh không?" 
+  - A: Đây là bản mini-server phục vụ học tập: parse thủ công đủ cho GET/POST form urlencoded; production cần thư viện chuẩn.
+- Q: "Singleton thread-safe không?" 
+  - A: Hiện implementation là simple Singleton. Vì chỉ đọc JSON một lần lúc khởi tạo, trong ngữ cảnh lab này là đủ; nếu cần thread-safe có thể dùng lock hoặc Lazy<T>.
+
+8) Academic Integrity (Liêm chính học thuật)
+- Không nộp code giống người khác. Nếu bài giống hoặc là sản phẩm AI mà không hiểu, có thể bị 0 điểm.
+
+9) Checklist trước khi nộp
+- [ ] Build thành công (`dotnet build`).
+- [ ] Server chạy, truy cập `http://localhost:8080` được.
+- [ ] Chụp ảnh màn hình theo yêu cầu và đặt tên đúng.
+- [ ] Chụp ảnh code (Singleton, Builder) vào `Code-DesignPatterns`.
+- [ ] Đóng gói `ProjectCode` cùng `data` folder.
+
+10) Ghi chú kỹ thuật ngắn (debug nhanh nếu không login)
+- Mở Console server, kiểm tra log "[SUCCESS] Loaded users" hoặc lỗi file JSON.
+- Nếu log báo `accounts.json NOT FOUND`, đảm bảo file `data/accounts.json` có trong thư mục build (project csproj đã cấu hình copy).
+- Kiểm tra gửi form: developer tools -> Network -> chọn request POST `/login` -> kiểm tra Request Payload và Response headers (Set-Cookie).
+
+
+File này đã được tạo để in hoặc dán vào phần nộp bài làm tài liệu kèm theo. Chúc bạn vấn đáp tốt và nộp bài thành công.
