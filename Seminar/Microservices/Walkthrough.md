@@ -20,15 +20,7 @@ Hệ thống của bạn bao gồm 3 cổng mạng độc lập đang chạy ng�
 2. Gửi lệnh `GET /api/users/2`.
 3. Hệ thống phản hồi tức thời thông tin User `Bob` qua REST JSON.
 
-**Kết quả JSON trả về thực tế:**
-```json
-{
-  "id": 2,
-  "name": "Bob",
-  "email": "bob@example.com"
-}
-```
-*(Mẹo: Bạn hãy mở trực tiếp `http://localhost:8001/docs` trên máy tính để demo thực tế bước này cho Giảng viên xem nhé!)*
+![Video Demo: User Service REST API](demo_user.webp)
 
 ## 3. Demo Order Service (Port 8002) 🛒 (Main Feature)
 Đây là Service trung tâm trình diễn toàn bộ sức mạnh của mạng **gRPC**. Khi bạn tạo lệnh xuất hoá đơn ở đây, nó sẽ không kết nối với mạng HTTP bình thường, mà sử dụng mạng gRPC tốc độ cao gọi trực tiếp sang **User Service (Port 8001)** thông qua cổng ngầm `50051`.
