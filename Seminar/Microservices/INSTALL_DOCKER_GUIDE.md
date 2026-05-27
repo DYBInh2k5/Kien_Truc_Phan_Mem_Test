@@ -52,7 +52,7 @@ Bây giờ máy tính của bạn đã chính thức được trang bị hệ th
 
 1. Di dời Terminal vào thẳng thư mục chứa Code Seminar của bạn:
    ```bash
-   cd D:\Downloads\SA-main\SA-main\Seminar\Microservices
+   cd "d:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Seminar\Microservices"
    ```
 2. **Kích nổ hệ thống:** Gõ lệnh này để Docker bắt tay vào tự download thư viện, tạo file con Python ảo và liên kết mạng gRPC cho 2 dịch vụ Order và User:
    ```bash

@@ -8,8 +8,8 @@ Tài liệu này là "Vũ khí bí mật" dự phòng cho buổi Seminar. Khi Gi
 **❓ Câu hỏi của Thầy Cô:** *"Sẽ ra sao nếu mạng ảo bị nghẽn, hoặc thằng `User Service` tự nhiên bị sập chết? Lúc đó `Order Service` cứ đứng chờ mãi và treo luôn cả hệ thống à?"*
 
 **💡 Trả lời:**
-> "Dạ không thưa thầy/cô. Trong file code `main.py` của con Order Service, nhóm em ĐÃ thiết lập cơ chế **Timeout (Thời gian chờ tối đa)**.
-> Cụ thể ở dòng code gRPC: `await stub.GetUser(..., timeout=5.0)`. Nếu quá 5 giây mà mạng rớt hoặc User Service chết không trả lời, gRPC sẽ tự động cắt đứt kết nối và Order Service sẽ báo về màn hình lỗi *'503 Service Unavailable: User Service Offline'* chứ hệ thống tuyệt đối không bị dính vòng lặp chờ vô tận (Infinite Hang) gây sập lây chuyền ạ!"
+> "Dạ không thưa thầy/cô. Trong file code [service2_order/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service2_order/main.py#L57) dòng 57, nhóm em đã thiết lập cơ chế **Timeout (Thời gian chờ tối đa)**.
+> Cụ thể ở dòng 57: `response = await stub.GetUser(request, timeout=GRPC_TIMEOUT)`, và tham số `GRPC_TIMEOUT = 5` được định nghĩa ở dòng 23. Nếu quá 5 giây mà mạng rớt hoặc User Service chết không trả lời, gRPC Client sẽ tự động ném ra ngoại lệ `grpc.aio.AioRpcError` (bắt lỗi ở dòng 65). Order Service sẽ bắt lỗi này và gán thông tin user là `'Service timeout'` chứ hệ thống tuyệt đối không bị treo vĩnh viễn gây sập lây chuyền ạ!"
 
 ---
 
@@ -17,9 +17,8 @@ Tài liệu này là "Vũ khí bí mật" dự phòng cho buổi Seminar. Khi Gi
 **❓ Câu hỏi của Thầy Cô:** *"Tại sao em phải cực khổ setup Protobuf và gRPC làm gì? Sao không để 2 Service gọi REST API (JSON) cho lẹ?"*
 
 **💡 Trả lời:**
-> "Dạ đúng là REST API thì dễ setup hơn, nhưng trong môi trường Microservices thực tế, khi các Server nội bộ chat với nhau hàng triệu lần mỗi giây, thì REST bộc lộ 2 điểm yếu chí mạng:
-> 1. REST gửi data bằng cục chữ JSON rất nặng. Còn gRPC nén data thành số Nhị phân (Binary) siêu nhẹ.
-> 2. gRPC chạy trên nền HTTP/2, hỗ trợ truyền dữ liệu ống nước liên tục (Streaming RPC), giải quyết bài toán tốn RAM mà REST không làm được. Nhóm em muốn ứng dụng công nghệ hiệu suất cao nhất thưa thầy/cô!"
+> "Dạ đúng là REST API thì dễ setup hơn, nhưng trong môi trường Microservices thực tế, khi các Server nội bộ giao tiếp với nhau liên tục, REST bộc lộ nhược điểm là payload JSON rất cồng kềnh.
+> Nhóm em dùng gRPC bằng cách định nghĩa hợp đồng trong file [proto/service.proto](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/proto/service.proto#L24-L30) (Dòng 24 - 30). Khi biên dịch, gRPC sẽ mã hóa dữ liệu thành các gói tin **Nhị phân (Binary)** siêu nhẹ và truyền tải qua giao thức `HTTP/2` tiên tiến. Điều này giúp giảm độ trễ truyền dữ liệu nội bộ giữa User Service và Order Service lên tới 7-10 lần so với việc dùng REST API thông thường."
 
 ---
 
@@ -27,9 +26,8 @@ Tài liệu này là "Vũ khí bí mật" dự phòng cho buổi Seminar. Khi Gi
 **❓ Câu hỏi của Thầy Cô:** *"Tại sao cổng của Microservices em giấu đi hết mà lại đẻ ra cái thằng API Gateway làm gì cho rườm rà?"*
 
 **💡 Trả lời:**
-> "Dạ đó là mô hình bảo vệ vòng ngoài (Facade/Proxy) ạ!
-> Thay vì vứt trần trụi các Microservices ra môi trường Internet để Hacker dễ dàng tấn công ddos hoặc chọc ngoáy, em khóa chúng nó lại dưới đáy mạng Docker nội bộ. Người dùng chỉ có 1 cánh cửa duy nhất là đi qua `API Gateway (Cổng 8000)`. 
-> Tại cánh cửa này, em gắn cơ chế **Authentication (Token JWT)**. Anh phải đăng nhập lấy thẻ Token thì em mới mở đường Proxy cho anh đi tiếp. Ngoài ra Gateway còn đóng vai trò **Ghi Log** theo dõi mọi hành vi truy cập nữa ạ!"
+> "Dạ đó là để áp dụng mẫu thiết kế bảo vệ tập trung (Facade/Reverse Proxy Gateway) ạ!
+> Các Microservices bên trong sẽ được cô lập hoàn toàn dưới mạng nội bộ Docker. Người dùng chỉ giao tiếp qua cổng `8000` của API Gateway. Tại file [service3_gateway/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service3_gateway/main.py#L42-L46) dòng 42 - 46, chúng em dùng hàm `verify_token` để kiểm tra Token JWT. Nếu Token không đúng hoặc không có, Gateway sẽ chặn đứng ngay tại cửa ngõ. Chỉ khi có Token hợp lệ, Gateway mới tiến hành gọi `httpx.get` (ở dòng 60) để chuyển tiếp yêu cầu đến các Service bên dưới."
 
 ---
 
@@ -37,9 +35,8 @@ Tài liệu này là "Vũ khí bí mật" dự phòng cho buổi Seminar. Khi Gi
 **❓ Câu hỏi của Thầy Cô:** *"Dự án em đang dùng Database giả (Dictionary lưu trên RAM). Giả sử giờ có 1 triệu Đơn hàng thì em nâng cấp hệ thống này thế nào?"*
 
 **💡 Trả lời:**
-> "Dạ mô hình Microservices này sinh ra là để dễ dàng mở rộng (Scale).
-> Nếu nâng cấp lên Thực Tế, em sẽ thay cái biến Dictionary kia bằng 2 cụm Database tách biệt hoàn toàn: Ví dụ User Service dùng `PostgreSQL` (để bảo toàn cấu trúc dữ liệu), còn Order Service lưu thông tin thanh toán khổng lồ em sẽ dùng `MongoDB` (NoSQL để tốc độ lưu siêu nhanh). 
-> Cuối cùng, nếu Order Service bị tắc nghẽn, em chỉ cần gõ lệnh Docker sinh ra thêm 5 cái Container Order Service nữa chạy song song thông qua Load Balancer là gánh được 1 triệu User ạ."
+> "Dạ hiện tại do mô hình Seminar nhỏ nên nhóm em dùng mock dữ liệu dạng biến Dictionary `USERS` tại [service1_user/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service1_user/main.py#L12) dòng 12 và `ORDERS` tại [service2_order/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service2_order/main.py#L15) dòng 15.
+> Nếu nâng cấp lên thực tế, nhóm em sẽ thiết lập cơ sở dữ liệu riêng cho từng dịch vụ để đảm bảo nguyên lý **Data Isolation** (Ví dụ: dùng `PostgreSQL` lưu thông tin User tại Service 1 và `MongoDB` lưu trữ các Document Đơn Hàng lớn tại Service 2). Khi cần tải cao, chúng em chỉ cần viết lệnh Docker để nhân bản nhiều instance của Service chạy phía sau một Load Balancer là hệ thống có thể gánh hàng triệu yêu cầu đồng thời."
 
 ---
 

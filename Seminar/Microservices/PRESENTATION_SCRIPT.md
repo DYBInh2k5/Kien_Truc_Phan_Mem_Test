@@ -49,34 +49,38 @@ Link Slide: https://gamma.app/docs/Untitled-qnvon3gjvvbmyio
 
 ## 🛑 Slide 5: Kĩ thuật Unary RPC (1-1)
 - **Hình ảnh hiển thị trên Slide**:
-  - Chụp màn hình đoạn code `GetUser` trong file `service.proto`.
-  - Chụp màn hình code `await stub.GetUser(...)` bên `main.py` của Order.
+  - Code định nghĩa RPC `GetUser` trong file [proto/service.proto](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/proto/service.proto#L26) (Dòng 26).
+  - Code xử lý GetUser của Server tại [service1_user/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service1_user/main.py#L22-L33) (Dòng 22 - 33).
+  - Code gọi gRPC Client của Order Service tại [service2_order/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service2_order/main.py#L52-L62) (Dòng 52 - 62).
 - **Thoại thuyết trình**:
-  > "Để hiện thực nó, đầu tiên là Unary RPC - phương thức gọi 1-1. Order Service đóng vai Client, gõ cửa sang nhà User Service gửi `user_id` và ngay lập tức nhận về kết quả là Tên Khách Hàng."
+  > "Để hiện thực giao tiếp, đầu tiên nhóm em sử dụng Unary RPC - phương thức gọi 1-1. Ở file proto/service.proto dòng 26, dịch vụ UserService định nghĩa hàm GetUser. Khi có request, phía Order Service đóng vai trò Client tại service2_order/main.py dòng 57 sẽ gọi await stub.GetUser() để truyền ID sang User Service và ngay lập tức nhận về kết quả là Tên Khách Hàng."
 
 ---
 
 ## 🛑 Slide 6: Kĩ thuật Streaming RPC (Cho Dữ liệu Lớn)
 - **Hình ảnh hiển thị trên Slide**:
-  - Chụp màn hình góc Code `StreamUsers` trả về dạng `yield`.
+  - Code StreamUsers của Server dùng `yield` tại [service1_user/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service1_user/main.py#L36-L39) (Dòng 36 - 39).
+  - Code Client đọc Stream liên tục bằng `async for` tại [service2_order/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service2_order/main.py#L95-L96) (Dòng 95 - 96).
 - **Thoại thuyết trình**:
-  > "Nhưng giả sử cần lấy một triệu danh sách User thì gRPC xử lý ra sao? Khác với HTTP REST bắt đợi 1 giây tải xong rồi trả về 1 cục khổng lồ, gRPC Streaming mở một cái ống dẫn liên tục (pipeline). User Service đọc được data nào là xả ngay sang Order Service qua luồng Stream đó. Nhờ thế, bộ nhớ RAM không bao giờ bị nghẽn (OOM)."
+  > "Nhưng giả sử cần truyền tải danh sách User cực lớn thì gRPC xử lý ra sao? Khác với HTTP REST bắt đợi load xong toàn bộ rồi trả về một khối JSON nặng nề, gRPC Server Streaming mở một đường ống dẫn liên tục. Tại service1_user/main.py dòng 38, chúng em dùng lệnh yield để bắn từng phần tử User về ngay khi đọc được. Phía Client tại service2_order/main.py dòng 95 sử dụng cấu trúc async for response in stub.StreamUsers() để nhận dữ liệu thời gian thực mà không bị nghẽn RAM."
 
 ---
 
 ## 🛑 Slide 7: Cơ chế Bảo mật tập trung với API Gateway (Điểm Bonus)
 - **Hình ảnh hiển thị trên Slide**:
-  - Chụp code kiểm tra Token (JWT Auth) tại Gateway.
+  - Code Middleware ghi log tại [service3_gateway/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service3_gateway/main.py#L18-L28) (Dòng 18 - 28).
+  - Code xác thực verify_token và proxy tại [service3_gateway/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service3_gateway/main.py#L42-L65) (Dòng 42 - 65).
 - **Thoại thuyết trình**:
-  > "Để đảm bảo an ninh hệ thống, em xây dựng thêm API Gateway ở phía trước. Tất cả các Microservices bên trong sẽ được giấu hoàn toàn khỏi Internet. Người dùng bắt buộc phải xuất trình thẻ Token hợp lệ ở Gateway thì mới được Gateway Ủy quyền (Proxy) truyền lệnh vào trong cho Order Service. Nếu sai Token, Gateway sẽ tự động chặn đứng."
+  > "Để đảm bảo an ninh, nhóm em xây dựng thêm API Gateway làm chốt chặn duy nhất hướng ra Internet. Tại file service3_gateway/main.py dòng 18-28, Middleware ghi nhận và đo thời gian xử lý của mọi request. Tiếp đó tại dòng 42, hàm verify_token bắt buộc phải xác thực Token JWT khớp thì mới tiến hành chuyển tiếp Proxy (httpx.get ở dòng 60) yêu cầu vào các Service nội bộ bên dưới."
 
 ---
 
 ## 🛑 Slide 8: Docker Compose & Cơ chế Chịu Lỗi (Fault Tolerance)
 - **Hình ảnh hiển thị trên Slide**:
-  - Chụp cấu hình `docker-compose.yml` nhắm vào chữ `USER_SERVICE_URL=user-service:50051`
+  - File cấu hình [docker-compose.yml](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/docker-compose.yml#L42) (Dòng 42: USER_SERVICE_URL).
+  - Code cấu hình gRPC Timeout tại [service2_order/main.py](file:///d:/HSU/2533Semester%203%282025-2026%29/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Seminar/Microservices/service2_order/main.py#L23) (Dòng 23) và lúc truyền vào GetUser (Dòng 57).
 - **Thoại thuyết trình**:
-  > "Toàn bộ cụm Gateway, Order và User được bọc gói tinh gọn trong Docker. Điểm hay của Docker Compose là tính năng Service Discovery. Trong Code em không cấu hình Hard Code IP `127.0.0.1`, em gọi đích danh tên nhãn `user-service`. DNS nội bộ của Docker sẽ phân giải nó. Đồng thời em gắn thêm `Timeout=5s` chặn việc Order Service bị treo chết vĩnh viễn nếu kết nối đứt gãy giữa chừng."
+  > "Để vận hành mượt mà, chúng em bọc cả 3 Service vào Docker Compose. Tại docker-compose.yml dòng 42, chúng em cấu hình cổng gRPC thông qua tên nhãn user-service:50051 thay vì IP cứng. Ngoài ra, để tránh hiện tượng sập lây chuyền (Cascading Failure), tại service2_order/main.py dòng 23, chúng em định nghĩa cờ GRPC_TIMEOUT = 5 giây để ngắt kết nối lập tức nếu User Service không phản hồi."
 
 ---
 
