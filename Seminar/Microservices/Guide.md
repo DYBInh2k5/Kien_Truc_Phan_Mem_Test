@@ -27,29 +27,43 @@ Seminar/Microservices/
 
 - Đã cài đặt [Docker](https://www.docker.com/) và Docker Compose trên máy của bạn.
 
-## Các lệnh thực thi (Commands)
+## 🛠️ Hướng dẫn Vận hành Dự án (Chạy và Tắt)
 
-Do các Microservices này là độc lập nên ta dùng **Docker Compose** để build chung 1 lần:
+Vì hệ thống được thiết kế theo cấu trúc Microservices gồm nhiều thành phần độc lập, chúng ta sử dụng **Docker Compose** để quản lý, build và chạy đồng thời toàn bộ hệ thống bằng một câu lệnh duy nhất.
 
-**B1. Khởi động các services:**
+### 1. Cách KHỞI ĐỘNG hệ thống (Docker Compose)
+Mở cửa sổ **Terminal** hoặc **Command Prompt / PowerShell** trong thư mục dự án `Seminar/Microservices/` và thực hiện:
 
-Mở Terminal / Command Prompt trong thư mục `Seminar/Microservices/` và chạy:
-```bash
-docker-compose up --build
-```
-*Lưu ý: Bạn có thể thêm cờ `-d` ở cuối để chạy ngầm (detached mode).*
+* **Bước 1: Chạy lệnh build và khởi động ngầm:**
+  ```bash
+  docker-compose up -d --build
+  ```
+  *Giải thích ý nghĩa lệnh:*
+  * `-d` (Detached mode): Chạy ngầm các container dưới nền, giúp terminal của bạn không bị khóa và có thể tiếp tục gõ lệnh khác.
+  * `--build`: Ép buộc Docker biên dịch (compile) lại mã nguồn mới nhất cùng các chú thích code tiếng Việt vừa cập nhật.
 
-Lúc này, Docker sẽ nạp các file Proto, tự động sinh code ra file `_pb2.py` và `_pb2_grpc.py`, cài đặt các package trong `requirements.txt` và chạy 3 cổng (8000, 8001, 8002).
+* **Bước 2: Kiểm tra xem các Service đã sẵn sàng chưa:**
+  * Bạn có thể xem log hoạt động thời gian thực của 3 Service bằng lệnh:
+    ```bash
+    docker-compose logs -f
+    ```
+    *(Nhấn `Ctrl + C` để thoát màn hình xem log mà không làm tắt server).*
+  * Hoặc gõ lệnh để kiểm tra danh sách container đang chạy:
+    ```bash
+    docker ps
+    ```
+    *(Nếu hiện đủ 3 container `python_gateway_service`, `python_user_service`, `python_order_service` là thành công).*
 
-**B2. Kiểm tra log khởi động:**
+### 2. Cách TẮT hệ thống (Docker Compose)
+Sau khi kết thúc buổi thuyết trình hoặc muốn giải phóng tài nguyên CPU/RAM cho máy tính:
+1. Mở Terminal tại thư mục `Seminar/Microservices/`.
+2. Chạy câu lệnh:
+   ```bash
+   docker-compose down
+   ```
+   *Lệnh này sẽ tự động dừng tất cả các container, xóa chúng khỏi bộ nhớ tạm và xóa mạng nội bộ ảo `micro-network` một cách sạch sẽ.*
 
-Đảm bảo logs hiện lên thông báo:
-```text
-python_user_service    | INFO:root:gRPC Server started on port 50051
-python_user_service    | INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-...
-python_order_service   | INFO:     Uvicorn running on http://0.0.0.0:8002 (Press CTRL+C to quit)
-```
+---
 
 ## Cách Test / Sử dụng (Demo gRPC)
 
