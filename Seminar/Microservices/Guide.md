@@ -32,9 +32,20 @@ Seminar/Microservices/
 Vì hệ thống được thiết kế theo cấu trúc Microservices gồm nhiều thành phần độc lập, chúng ta sử dụng **Docker Compose** để quản lý, build và chạy đồng thời toàn bộ hệ thống bằng một câu lệnh duy nhất.
 
 ### 1. Cách KHỞI ĐỘNG hệ thống (Docker Compose)
-Mở cửa sổ **Terminal** hoặc **Command Prompt / PowerShell** trong thư mục dự án `Seminar/Microservices/` và thực hiện:
 
-* **Bước 1: Chạy lệnh build và khởi động ngầm:**
+* **Bước 1: Di chuyển (cd) vào thư mục chạy dự án**
+  Mở **PowerShell** hoặc **Command Prompt** và copy lệnh dưới đây (đã bọc trong dấu ngoặc kép `""` để tránh lỗi khoảng trắng của Windows/PowerShell):
+  
+  * Nếu copy đường dẫn tuyệt đối (chạy được từ mọi nơi trên máy của bạn):
+    ```powershell
+    cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Seminar\Microservices"
+    ```
+  * Hoặc nếu bạn đang ở thư mục gốc khi vừa tải Git về (`Kien_Truc_Phan_Mem_Test-main`):
+    ```powershell
+    cd "Kien_Truc_Phan_Mem_Test-main\Seminar\Microservices"
+    ```
+
+* **Bước 2: Chạy lệnh build và khởi động ngầm:**
   ```bash
   docker-compose up -d --build
   ```
@@ -42,7 +53,7 @@ Mở cửa sổ **Terminal** hoặc **Command Prompt / PowerShell** trong thư m
   * `-d` (Detached mode): Chạy ngầm các container dưới nền, giúp terminal của bạn không bị khóa và có thể tiếp tục gõ lệnh khác.
   * `--build`: Ép buộc Docker biên dịch (compile) lại mã nguồn mới nhất cùng các chú thích code tiếng Việt vừa cập nhật.
 
-* **Bước 2: Kiểm tra xem các Service đã sẵn sàng chưa:**
+* **Bước 3: Kiểm tra xem các Service đã sẵn sàng chưa:**
   * Bạn có thể xem log hoạt động thời gian thực của 3 Service bằng lệnh:
     ```bash
     docker-compose logs -f
@@ -56,8 +67,11 @@ Mở cửa sổ **Terminal** hoặc **Command Prompt / PowerShell** trong thư m
 
 ### 2. Cách TẮT hệ thống (Docker Compose)
 Sau khi kết thúc buổi thuyết trình hoặc muốn giải phóng tài nguyên CPU/RAM cho máy tính:
-1. Mở Terminal tại thư mục `Seminar/Microservices/`.
-2. Chạy câu lệnh:
+1. Mở cửa sổ Terminal / PowerShell mới và di chuyển vào thư mục dự án:
+   ```powershell
+   cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Seminar\Microservices"
+   ```
+2. Chạy câu lệnh tắt:
    ```bash
    docker-compose down
    ```
