@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Đơn hàng - Software Architecture Project</title>
+    <!-- Modern Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Link to premium styling -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-cubes-stacked brand-icon"></i>
+                <div class="brand-text">
+                    <h2>OMS Project</h2>
+                    <span>Software Architecture</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="dashboard-tab">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-target="users-tab">
+                    <i class="fa-solid fa-users-gear"></i> Quản lý Users
+                </a>
+                <a href="#" class="nav-item" data-target="orders-tab">
+                    <i class="fa-solid fa-cart-shopping"></i> Đặt hàng & Tra cứu
+                </a>
+                <a href="#" class="nav-item" data-target="patterns-tab">
+                    <i class="fa-solid fa-diagram-project"></i> Design Patterns
+                </a>
+            </nav>
+
+            <div class="user-profile" id="sidebar-profile">
+                <div class="avatar">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div class="profile-info">
+                    <h4 id="user-display-name">Chưa đăng nhập</h4>
+                    <span id="user-display-role">Khách</span>
+                </div>
+                <button class="logout-btn" id="btn-logout" title="Đăng xuất">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1 id="page-title">Bảng điều khiển</h1>
+                <div class="header-actions">
+                    <div id="connection-indicator" class="status-indicator">
+                        <span class="dot green"></span>
+                        <span class="text">SQLite Connected (Singleton)</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="tab-viewport">
+                <!-- 1. DASHBOARD TAB -->
+                <div class="tab-pane active" id="dashboard-tab">
+                    <div class="welcome-banner">
+                        <div class="banner-text">
+                            <h3>Chào mừng bạn đến với OMS Dashboard!</h3>
+                            <p>Hệ thống ứng dụng kiến trúc 3-Tiers và áp dụng 5 mẫu thiết kế mẫu mực (Creational, Structural, Behavioral).</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">Tổng số người dùng</span>
+                                <i class="fa-solid fa-users stat-icon blue"></i>
+                            </div>
+                            <h2 class="stat-value" id="dashboard-total-users">-</h2>
+                            <span class="stat-desc">Dữ liệu thời gian thực từ SQLite</span>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">Đơn hàng đang xử lý</span>
+                                <i class="fa-solid fa-clock stat-icon orange"></i>
+                            </div>
+                            <h2 class="stat-value" id="dashboard-pending-orders">-</h2>
+                            <span class="stat-desc">State Pattern: Pending</span>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">Đơn hàng đã hoàn tất</span>
+                                <i class="fa-solid fa-truck-fast stat-icon green"></i>
+                            </div>
+                            <h2 class="stat-value" id="dashboard-shipped-orders">-</h2>
+                            <span class="stat-desc">State Pattern: Shipped</span>
+                        </div>
+                    </div>
+
+                    <!-- Auth Section Overlay when not logged in -->
+                    <div id="auth-section" class="card auth-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-key header-icon"></i> Xác thực tài khoản</h3>
+                        </div>
+                        <div class="auth-tabs">
+                            <button class="auth-tab-btn active" id="tab-login-btn">Đăng Nhập</button>
+                            <button class="auth-tab-btn" id="tab-register-btn">Đăng Ký</button>
+                        </div>
+                        
+                        <!-- Login Form -->
+                        <form id="form-login" class="auth-form active">
+                            <div class="form-group">
+                                <label for="login-username">Tên đăng nhập</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" id="login-username" placeholder="Nhập admin hoặc user..." required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Mật khẩu</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="login-password" placeholder="Nhập 123..." required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn primary-btn btn-block">
+                                <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng Nhập
+                            </button>
+                        </form>
+
+                        <!-- Register Form -->
+                        <form id="form-register" class="auth-form">
+                            <div class="form-group">
+                                <label for="reg-username">Tên đăng nhập mới</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user-plus input-icon"></i>
+                                    <input type="text" id="reg-username" placeholder="Nhập username..." required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-email">Thư điện tử (Email)</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" id="reg-email" placeholder="example@domain.com" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-password">Mật khẩu bảo mật</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="reg-password" placeholder="Nhập mật khẩu..." required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn success-btn btn-block">
+                                <i class="fa-solid fa-user-plus"></i> Đăng Ký Tài Khoản
+                            </button>
+                        </form>
+                        <div id="auth-alert" class="alert error-alert hidden"></div>
+                    </div>
+                </div>
+
+                <!-- 2. USERS TAB -->
+                <div class="tab-pane" id="users-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-users"></i> Danh sách thành viên (SQLite)</h3>
+                            <span class="badge" id="user-count-badge">0 Users</span>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table" id="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên người dùng</th>
+                                        <th>Email</th>
+                                        <th>Loại tài khoản</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. ORDERS TAB -->
+                <div class="tab-pane" id="orders-tab">
+                    <div class="orders-grid">
+                        <!-- Left Panel: Place Order Form -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-cart-plus"></i> Đặt hàng qua Facade</h3>
+                            </div>
+                            <form id="form-order">
+                                <div class="form-group">
+                                    <label for="order-product-id">Sản phẩm</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-box input-icon"></i>
+                                        <select id="order-product-id" required>
+                                            <option value="1">MacBook Pro M3 (Product ID: 1)</option>
+                                            <option value="2">iPhone 15 Pro Max (Product ID: 2)</option>
+                                            <option value="3">Bàn phím Leopold FC900 (Product ID: 3)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-type">Phương thức vận chuyển (Factory Method)</label>
+                                    <div class="shipping-options">
+                                        <label class="shipping-radio">
+                                            <input type="radio" name="order_type" value="standard" checked>
+                                            <div class="radio-content">
+                                                <i class="fa-solid fa-truck"></i>
+                                                <div class="text">
+                                                    <strong>Giao hàng thường</strong>
+                                                    <span>Phí ship: $2.5</span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                        <label class="shipping-radio">
+                                            <input type="radio" name="order_type" value="express">
+                                            <div class="radio-content">
+                                                <i class="fa-solid fa-bolt"></i>
+                                                <div class="text">
+                                                    <strong>Giao hàng hỏa tốc</strong>
+                                                    <span>Phí ship: $15.0</span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-address">Địa chỉ giao hàng</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-location-dot input-icon"></i>
+                                        <input type="text" id="order-address" placeholder="Nhập địa chỉ nhận hàng..." required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn primary-btn btn-block">
+                                    <i class="fa-solid fa-circle-check"></i> Tiến hành đặt hàng (Facade Process)
+                                </button>
+                            </form>
+                            <div id="order-alert" class="alert hidden"></div>
+                        </div>
+
+                        <!-- Right Panel: Orders Table and Search -->
+                        <div class="right-panel">
+                            <!-- Order Search -->
+                            <div class="card search-card">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm đơn hàng (Iterator)</h3>
+                                </div>
+                                <div class="search-box">
+                                    <input type="number" id="search-id" placeholder="Nhập ID đơn hàng (ví dụ: 101)...">
+                                    <button class="btn info-btn" id="btn-search-order">Tìm</button>
+                                </div>
+                                <div id="search-result" class="search-result-container hidden">
+                                    <!-- Search result details -->
+                                </div>
+                            </div>
+
+                            <!-- List of Orders -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-list-ol"></i> Tất cả đơn hàng (Iterator)</h3>
+                                    <button class="btn btn-sm secondary-btn" id="btn-refresh-orders">
+                                        <i class="fa-solid fa-rotate"></i> Làm mới
+                                    </button>
+                                </div>
+                                <div class="table-container">
+                                    <table class="data-table" id="orders-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Chi tiết sản phẩm</th>
+                                                <th>Trạng thái (State)</th>
+                                                <th>Mã vận đơn</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Dynamic rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. PATTERNS TAB -->
+                <div class="tab-pane" id="patterns-tab">
+                    <div class="patterns-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-gears text-blue"></i> 1. Singleton Pattern</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Được sử dụng tại file <code>singleton.py</code> cho lớp <strong>DatabaseConnection</strong>.</p>
+                                <div class="code-box">
+                                    <pre><code>db1 = DatabaseConnection()
+db2 = DatabaseConnection()
+print(db1 is db2) # True (Thread-safe Lock)</code></pre>
+                                </div>
+                                <p class="benefit"><i class="fa-solid fa-check"></i> Tránh Race Condition, đảm bảo toàn bộ hệ thống đọc/ghi trên cùng một tệp SQLite <code>orders.db</code>.</p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-industry text-purple"></i> 2. Factory Method</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Được sử dụng tại <code>factory.py</code>. Trả về lớp con cụ thể của <strong>Order</strong>.</p>
+                                <div class="code-box">
+                                    <pre><code>order = OrderFactory.create_order(product_id, order_type)
+cost = order.get_shipping_cost() # Standard ($2.5) hoặc Express ($15.0)</code></pre>
+                                </div>
+                                <p class="benefit"><i class="fa-solid fa-check"></i> Giúp mở rộng thêm các lớp vận chuyển khác (như Drone, Cargo) mà không sửa đổi cốt lõi Controller.</p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-shield-halved text-green"></i> 3. Facade Pattern</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Được sử dụng tại <code>facade.py</code>. Cung cấp một giao diện đơn giản nhất cho luồng nghiệp vụ.</p>
+                                <div class="code-box">
+                                    <pre><code>facade = OrderFacade()
+result = facade.place_order(product_id, type, address)
+# Ngầm gọi: Inventory.check() -> Payment.process() -> Shipping.arrange()</code></pre>
+                                </div>
+                                <p class="benefit"><i class="fa-solid fa-check"></i> Tách biệt hoàn toàn tầng điều hướng (Controller) khỏi sự phức tạp của 3 subsystem nghiệp vụ độc lập.</p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-arrows-spin text-orange"></i> 4. State Pattern</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Được sử dụng tại <code>state.py</code> để quản lý trạng thái của đơn hàng.</p>
+                                <div class="code-box">
+                                    <pre><code># PendingState -> (proceed) -> PaidState -> (proceed) -> ShippedState
+context.proceed() # Chuyển trạng thái thông minh không dùng if/else</code></pre>
+                                </div>
+                                <p class="benefit"><i class="fa-solid fa-check"></i> Tránh Spaghetti Code lồng if/else dài dòng khi cập nhật luồng nghiệp vụ đơn hàng.</p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-arrow-down-1-9 text-teal"></i> 5. Iterator Pattern</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Được sử dụng tại <code>iterator.py</code> cho collection <strong>OrderCollection</strong>.</p>
+                                <div class="code-box">
+                                    <pre><code># Triển khai __iter__ và __next__ để duyệt qua orders
+order_db = OrderCollection()
+for o in order_db:
+    print(o["details"])</code></pre>
+                                </div>
+                                <p class="benefit"><i class="fa-solid fa-check"></i> Cho phép Controller duyệt qua danh sách các đơn hàng trả về mà không cần biết cấu trúc danh sách mảng nội bộ.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script loading -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
