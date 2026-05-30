@@ -11,8 +11,10 @@ Tài liệu này tích hợp toàn bộ các báo cáo thiết kế, hướng d�
 2. [PHẦN 2: THIẾT KẾ KIẾN TRÚC & SƠ ĐỒ HỆ THỐNG (DIAGRAMS)](#phần-2-thiết-kế-kiến-trúc--sơ-đồ-hệ-thống-diagrams)
 3. [PHẦN 3: PHÂN TÍCH CHI TIẾT 5 DESIGN PATTERNS ÁP DỤNG](#phần-3-phân-tích-chi-tiết-5-design-patterns-áp-dụng)
 4. [PHẦN 4: HƯỚNG DẪN TRIỂN KHAI & VẬN HÀNH (RUN GUIDE)](#phần-4-hướng-dẫn-triển-khai--vận-hành-run-guide)
-5. [PHẦN 5: KỊCH BẢN NỘI DUNG 13 SLIDE THUYẾT TRÌNH BẢO VỆ](#phần-5-kịch-bản-nội dung-13-slide-thuyết-trình-bảo-vệ)
+5. [PHẦN 5: KỊCH BẢN NỘI DUNG 13 SLIDE THUYẾT TRÌNH BẢO VỆ](#phần-5-kịch-bản-nội-dung-13-slide-thuyết-trình-bảo-vệ)
 6. [PHẦN 6: BỘ CÂU HỎI PHẢN BIỆN BẢO VỆ GỢI Ý (Q&A)](#phần-6-bộ-câu-hỏi-phản-biện-bảo-vệ-gợi-ý-qa)
+7. [PHẦN 7: TÀI LIỆU API ĐẦY ĐỦ CHI TIẾT (API DOCUMENTATION)](#phần-7-tài-liệu-api-đầy-đủ-chi-tiết-api-documentation)
+8. [PHẦN 8: HƯỚNG DẪN SỬA LỖI VÀ XỬ LÝ SỰ CỐ (TROUBLESHOOTING GUIDE)](#phần-8-hướng-dẫn-sửa-lỗi-và-xử-lý-sự-cố-troubleshooting-guide)
 
 ---
 
@@ -517,3 +519,72 @@ Cụm Microservices độc lập viết bằng C# chạy trên 3 cổng khác nh
 
 ### ❓ Câu 4: Facade Pattern có vai trò gì trong quy trình Đặt hàng (Place Order) của hệ thống?
 *   **Trả lời**: Quy trình đặt đơn hàng liên kết nhiều hành động phức tạp: kiểm kho (`InventorySystem`), thanh toán tiền (`PaymentSystem`), và giao vận (`ShippingSystem`). Nếu Controller gọi trực tiếp cả 3 lớp này thì Controller sẽ bị phụ thuộc chặt chẽ (Tight Coupling). Chúng em sử dụng `OrderFacade` để làm trung gian điều phối tất cả các hệ thống này. Controller chỉ cần gọi đúng một phương thức `place_order` của Facade là xong, giúp mã nguồn ở tầng Controller tối giản và độc lập.
+
+---
+
+## PHẦN 7: TÀI LIỆU API ĐẦY ĐỦ CHI TIẾT (API DOCUMENTATION)
+
+### 7.1 WEB API COMPONENT (Python FastAPI - Cổng 8000)
+
+*   **Đăng nhập (Login)**:
+    *   *Endpoint*: `POST /api/auth/login`
+    *   *Request Body*: `{"username": "admin", "password": "123"}`
+    *   *Response (200 OK)*: `{"message": "Đăng nhập thành công!", "token": "fake_jwt_1", "user": {"id": 1, "username": "admin", "email": "admin@example.com", "is_admin": true}}`
+
+*   **Xem danh sách người dùng**:
+    *   *Endpoint*: `GET /api/users`
+    *   *Response (200 OK)*: Danh sách người dùng trong SQLite.
+
+*   **Đăng ký tài khoản mới**:
+    *   *Endpoint*: `POST /api/users`
+    *   *Request Body*: `{"username": "customer", "password": "123", "email": "customer@example.com"}`
+    *   *Response (200 OK)*: `{"message": "Đăng ký thành công User ID 3!"}`
+
+*   **Đặt hàng (Facade)**:
+    *   *Endpoint*: `POST /api/orders/place`
+    *   *Request Body*: `{"product_id": 1, "order_type": "express", "address": "TPHCM"}`
+    *   *Response (200 OK)*: `{"status": "Success", "order_type": "Express", "final_state": "Shipped", "tracking_code": "...", "order_id": 103}`
+
+*   **Tìm kiếm đơn hàng (Iterator)**:
+    *   *Endpoint*: `GET /api/orders/search/{order_id}`
+    *   *Response (200 OK)*: Dữ liệu đơn hàng chi tiết hoặc thông báo lỗi `{"error": "..."}`.
+
+*   **Xem tất cả đơn hàng (Iterator)**:
+    *   *Endpoint*: `GET /api/orders/`
+    *   *Response (200 OK)*: Mảng JSON toàn bộ đơn hàng trong SQLite.
+
+### 7.2 MICROSERVICES COMPONENT (C# .NET - Cổng 5001, 5002, 5003)
+
+*   **SSO Service**:
+    *   *Xác thực Token*: `GET http://localhost:5001/api/sso/verify?token=sso_token_secure_admin_xyz`
+    *   *Response (200 OK)*: `{"valid": true, "user": "admin", "source": "SSO C# Microservice"}`
+*   **Search Service**:
+    *   *Tìm nâng cao*: `GET http://localhost:5002/api/search/orders/{order_id}`
+    *   *Response (200 OK)*: Đơn hàng nâng cao dạng JSON kèm trường `searched_at`.
+*   **Report Service**:
+    *   *Báo cáo thống kê*: `GET http://localhost:5003/api/report/summary`
+    *   *Response (200 OK)*: `{ "total_orders": 52, "total_revenue": 12450.5, "shipping_summary": [...] }`
+
+---
+
+## PHẦN 8: HƯỚNG DẪN SỬA LỖI VÀ XỬ LÝ SỰ CỐ (TROUBLESHOOTING GUIDE)
+
+### 8.1 Lỗi chạy Script PowerShell (.ps1)
+*   *Lỗi*: Script is disabled on this system.
+*   *Cách sửa*: Chạy lệnh PowerShell:
+    ```powershell
+    powershell -ExecutionPolicy Bypass -File .\run_microservices.ps1
+    ```
+    Hoặc mở PowerShell quyền Admin và gõ: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine`.
+
+### 8.2 Lỗi xung đột cổng chạy (Address already in use)
+*   *Lỗi*: Cổng 8000, 5001, 5002 hoặc 5003 đã bị chiếm dụng.
+*   *Cách sửa*: Tìm PID bằng lệnh: `netstat -ano | findstr :8000` (giả sử cổng 8000), sau đó tắt bằng lệnh: `taskkill /F /PID <PID_số>`.
+
+### 8.3 Lỗi Docker Engine chưa chạy
+*   *Lỗi*: Cannot connect to the Docker daemon.
+*   *Cách sửa*: Hãy khởi chạy phần mềm **Docker Desktop** trên máy tính Windows của bạn và đợi cho biểu tượng chú cá voi chuyển sang màu xanh lá trước khi chạy docker-compose.
+
+### 8.4 Lỗi SQLite database bị khóa (Database is locked)
+*   *Lỗi*: sqlite3.OperationalError: database is locked.
+*   *Cách sửa*: Tắt các ứng dụng xem DB bên ngoài (như DB Browser for SQLite) đang mở tệp `orders.db` ở chế độ ghi, sau đó khởi động lại server API.

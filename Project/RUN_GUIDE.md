@@ -18,45 +18,57 @@ Trước khi khởi chạy dự án, hãy đảm bảo máy tính của bạn đ
 
 ## 🖥️ 2. Hướng Dẫn Chạy Web Component (Python FastAPI + Giao Diện Frontend)
 
-Thành phần này chứa toàn bộ logic Web MVC, Design Patterns và cơ sở dữ liệu SQLite thật.
+Thành phần này chứa toàn bộ logic Web MVC, Design Patterns và cơ sở dữ liệu SQLite thật. Bạn có thể chọn 1 trong 2 phương án khởi chạy dưới đây:
 
-### Bước 1: Mở PowerShell và di chuyển vào thư mục dự án Web
-Chạy lệnh di chuyển thư mục (đã bọc ngoặc kép tránh lỗi khoảng trắng đường dẫn):
-```powershell
-cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc"
-```
+### 🌟 Phương án A: Khởi chạy bằng Docker (Nhanh nhất & Khuyên dùng)
+Nếu máy bạn đã cài Docker Desktop (chạy tương tự như phần Seminar):
+1. Mở PowerShell và di chuyển vào thư mục dự án Web:
+   ```powershell
+   cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc"
+   ```
+2. Khởi chạy container:
+   ```powershell
+   docker-compose up -d --build
+   ```
+   *(Container `mvc_project_web` sẽ tự động tải các thư viện cần thiết và chạy ứng dụng tại cổng 8000. Dữ liệu SQLite `orders.db` sẽ được ghi và đồng bộ trực tiếp xuống thư mục local của bạn).*
 
-### Bước 2: Tạo môi trường ảo Python (Virtual Environment)
-```powershell
-python -m venv venv
-```
+---
 
-### Bước 3: Kích hoạt môi trường ảo
-*   **Trên Windows (PowerShell)**:
-    ```powershell
-    .\venv\Scripts\activate
-    ```
-*   **Trên Windows (Command Prompt)**:
-    ```cmd
-    .\venv\Scripts\activate.bat
-    ```
-*   **Trên macOS/Linux**:
-    ```bash
-    source venv/bin/activate
-    ```
+### 🐍 Phương án B: Khởi chạy thủ công bằng Python local
+Nếu máy bạn có cài đặt sẵn Python và muốn chạy trực tiếp:
+1. Mở PowerShell và di chuyển vào thư mục dự án Web:
+   ```powershell
+   cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc"
+   ```
+2. Tạo môi trường ảo Python (Virtual Environment):
+   ```powershell
+   python -m venv venv
+   ```
+3. Kích hoạt môi trường ảo:
+   *   **Trên Windows (PowerShell)**:
+       ```powershell
+       .\venv\Scripts\activate
+       ```
+   *   **Trên Windows (Command Prompt)**:
+       ```cmd
+       .\venv\Scripts\activate.bat
+       ```
+   *   **Trên macOS/Linux**:
+       ```bash
+       source venv/bin/activate
+       ```
+4. Cài đặt các thư viện cần thiết:
+   ```powershell
+   pip install -r requirements.txt
+   ```
+5. Khởi chạy máy chủ API:
+   ```powershell
+   python main.py
+   ```
 
-### Bước 4: Cài đặt các thư viện cần thiết
-```powershell
-pip install -r requirements.txt
-```
+---
 
-### Bước 5: Khởi chạy máy chủ API
-```powershell
-python main.py
-```
-*Hệ thống sẽ tự động tạo tệp cơ sở dữ liệu SQLite `orders.db` trong thư mục gốc của dự án và nạp dữ liệu mẫu.*
-
-### Bước 6: Sử dụng và Trải nghiệm giao diện
+### Bước 3: Sử dụng và Trải nghiệm giao diện
 *   **Giao diện người dùng (Frontend - View)**: Mở trình duyệt web truy cập địa chỉ: `http://localhost:8000`
 *   **Tài liệu API Swagger**: Mở địa chỉ: `http://localhost:8000/docs`
 
@@ -98,5 +110,10 @@ Bạn có thể mở trình duyệt hoặc sử dụng các công cụ như Post
 
 ## 🛑 4. Hướng Dẫn Tắt Hệ Thống
 
-*   **Tắt Web Python**: Nhấn tổ hợp phím `Ctrl + C` tại cửa sổ Terminal đang chạy `python main.py`.
+*   **Tắt Web Python (Nếu chạy bằng Docker)**:
+    ```powershell
+    cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc"
+    docker-compose down
+    ```
+*   **Tắt Web Python (Nếu chạy bằng Python local)**: Nhấn tổ hợp phím `Ctrl + C` tại cửa sổ Terminal đang chạy `python main.py`.
 *   **Tắt C# Microservices**: Đơn giản chỉ cần click nút **[X]** đóng 3 cửa sổ Console mới mở ra lúc chạy script.
