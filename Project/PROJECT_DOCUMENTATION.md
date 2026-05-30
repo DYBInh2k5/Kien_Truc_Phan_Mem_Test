@@ -15,6 +15,9 @@ Tài liệu này tích hợp toàn bộ các báo cáo thiết kế, hướng d�
 6. [PHẦN 6: BỘ CÂU HỎI PHẢN BIỆN BẢO VỆ GỢI Ý (Q&A)](#phần-6-bộ-câu-hỏi-phản-biện-bảo-vệ-gợi-ý-qa)
 7. [PHẦN 7: TÀI LIỆU API ĐẦY ĐỦ CHI TIẾT (API DOCUMENTATION)](#phần-7-tài-liệu-api-đầy-đủ-chi-tiết-api-documentation)
 8. [PHẦN 8: HƯỚNG DẪN SỬA LỖI VÀ XỬ LÝ SỰ CỐ (TROUBLESHOOTING GUIDE)](#phần-8-hướng-dẫn-sửa-lỗi-và-xử-lý-sự-cố-troubleshooting-guide)
+9. [PHẦN 9: KỊCH BẢN DEMO BẢO VỆ DỰ ÁN CHI TIẾT (DEMO GUIDE)](#phần-9-kịch-bản-demo-bảo-vệ-dự-án-chi-tiết-demo-guide)
+
+---
 
 ---
 
@@ -588,3 +591,37 @@ Cụm Microservices độc lập viết bằng C# chạy trên 3 cổng khác nh
 ### 8.4 Lỗi SQLite database bị khóa (Database is locked)
 *   *Lỗi*: sqlite3.OperationalError: database is locked.
 *   *Cách sửa*: Tắt các ứng dụng xem DB bên ngoài (như DB Browser for SQLite) đang mở tệp `orders.db` ở chế độ ghi, sau đó khởi động lại server API.
+
+---
+
+## PHẦN 9: KỊCH BẢN DEMO BẢO VỆ DỰ ÁN CHI TIẾT (DEMO GUIDE)
+
+### 9.1 Lệnh chạy dự án nhanh nhất
+*   *Chạy Web FastAPI + SQLite (Docker)*:
+    ```powershell
+    cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc"
+    docker-compose up -d --build
+    ```
+*   *Chạy 3 C# Microservices (PowerShell script)*:
+    ```powershell
+    cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\microservices_csharp"
+    powershell -ExecutionPolicy Bypass -File .\run_microservices.ps1
+    ```
+
+### 9.2 Kịch bản các bước Demo trên giao diện (http://localhost:8000)
+1.  **Trình bày giao diện Dashboard & Connection**: Chỉ ra trạng thái "SQLite Connected" ở góc tiêu đề thể hiện Singleton Connection hoạt động tốt.
+2.  **Trình bày Đăng ký & Đăng nhập**: 
+    *   Thử Đăng nhập bằng `admin` / `123`.
+    *   Đăng xuất, chọn tab Đăng ký tài khoản `customer1` / `123` / `customer1@gmail.com`.
+    *   Đăng nhập lại bằng `customer1` mới tạo.
+3.  **Trình bày Quản lý thành viên (Users)**: Vào tab "Quản lý Users" để chứng minh dữ liệu tài khoản mới tạo `customer1` đã được chèn vào SQLite.
+4.  **Trình bày Đặt đơn hàng (Facade + Factory + State)**:
+    *   Vào tab "Đặt hàng & Tra cứu".
+    *   Chọn sản phẩm (MacBook), chọn giao hàng hỏa tốc (Express - $15), điền địa chỉ. Nhấn Đặt hàng.
+    *   Giải thích: `OrderFacade` điều phối các subsystem ngầm, Factory khởi tạo `ExpressOrder`, State cập nhật trạng thái tự động và dữ liệu đơn hàng được lưu vào SQLite.
+5.  **Trình bày Tra cứu đơn hàng & Liệt kê (Iterator)**:
+    *   Nhập ID đơn hàng vừa tạo (ví dụ: `103`) vào ô tìm kiếm -> Nhấn Tìm.
+    *   Nhấn nút làm mới bảng "Tất cả đơn hàng".
+    *   Giải thích: Logic duyệt và tìm kiếm áp dụng Iterator Pattern trên `OrderCollection`.
+6.  **Trình bày C# Microservices**: Mở trình duyệt xem dữ liệu JSON của 3 API C# tại các cổng 5001, 5002, 5003 đang chạy độc lập.
+7.  **Trình bày tính bền vững (SQLite Persistence)**: Tắt Docker Compose và bật lại, chỉ ra tất cả các tài khoản và đơn hàng mới tạo vẫn còn hiển thị nguyên vẹn.
