@@ -45,6 +45,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnSearchOrder = document.getElementById("btn-search-order");
     const searchResult = document.getElementById("search-result");
 
+    // C# Report elements
+    const btnLoadCsharpReport = document.getElementById("btn-load-csharp-report");
+    const csharpTotalOrders = document.getElementById("csharp-total-orders");
+    const csharpReportSystem = document.getElementById("csharp-report-system");
+    const csharpTotalRevenue = document.getElementById("csharp-total-revenue");
+    const csharpReportTime = document.getElementById("csharp-report-time");
+    const csharpDataSource = document.getElementById("csharp-data-source");
+    const authSourceIndicator = document.getElementById("auth-source-indicator");
+
     // --- 1. Tab Navigation System ---
     navItems.forEach(item => {
         item.addEventListener("click", (e) => {
@@ -112,6 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 token = data.token;
                 localStorage.setItem("token", token);
                 localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("authSource", data.source || "SQLite Local Database (Fallback)");
                 
                 currentUser = data.user;
                 updateUserProfileUI();
@@ -159,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnLogout.addEventListener("click", () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        localStorage.removeItem("authSource");
         token = null;
         currentUser = null;
         updateUserProfileUI();
@@ -309,6 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     btnRefreshOrders.addEventListener("click", fetchOrders);
+    btnLoadCsharpReport.addEventListener("click", fetchCsharpReport);
 
     // --- 10. Dashboard Stats Aggregator ---
     async function updateDashboardStats() {
@@ -328,8 +340,48 @@ document.addEventListener("DOMContentLoaded", () => {
             
             dbPendingOrders.innerText = pending;
             dbShippedOrders.innerText = shipped;
+
+            // Tự động tải báo cáo từ C# Microservice
+            fetchCsharpReport();
         } catch (err) {
             console.error("Lỗi cập nhật dashboard:", err);
+        }
+    }
+
+    // --- 11. Fetch C# Microservice Report ---
+    async function fetchCsharpReport() {
+        if (!token) return;
+        
+        csharpTotalOrders.innerText = "Loading...";
+        csharpTotalRevenue.innerText = "Loading...";
+        csharpReportSystem.innerText = "Đang kết nối...";
+        csharpDataSource.innerText = "Đang gọi Proxy...";
+
+        try {
+            const res = await fetch(`${API_BASE}/report/csharp-summary`);
+            const data = await res.json();
+            
+            if (data.error) {
+                csharpTotalOrders.innerText = "Error";
+                csharpTotalRevenue.innerText = "Error";
+                csharpReportSystem.innerText = "Lỗi phản hồi";
+                csharpDataSource.innerText = "N/A";
+            } else {
+                csharpTotalOrders.innerText = data.total_orders;
+                csharpTotalRevenue.innerText = `$${Number(data.total_revenue).toFixed(2)}`;
+                csharpReportSystem.innerText = data.system || "C# Microservice";
+                csharpDataSource.innerText = data.data_source || "C# Report Service";
+                
+                // Hiển thị thời gian cập nhật
+                const now = new Date();
+                csharpReportTime.innerText = `Cập nhật lúc: ${now.toLocaleTimeString()}`;
+            }
+        } catch (err) {
+            console.error("Lỗi lấy báo cáo C#:", err);
+            csharpTotalOrders.innerText = "Offline";
+            csharpTotalRevenue.innerText = "Offline";
+            csharpReportSystem.innerText = "Không thể kết nối C#";
+            csharpDataSource.innerText = "FastAPI Local Cache";
         }
     }
 
@@ -371,10 +423,14 @@ document.addEventListener("DOMContentLoaded", () => {
             userDisplayName.innerText = currentUser.username;
             userDisplayRole.innerText = currentUser.is_admin ? "Administrator" : "User";
             btnLogout.classList.remove("hidden");
+            
+            const authSource = localStorage.getItem("authSource") || "SQLite Local Database (Fallback)";
+            authSourceIndicator.innerText = `Xác thực: ${authSource}`;
         } else {
             userDisplayName.innerText = "Chưa đăng nhập";
             userDisplayRole.innerText = "Khách";
             btnLogout.classList.add("hidden");
+            authSourceIndicator.innerText = "Chưa xác thực";
         }
     }
 

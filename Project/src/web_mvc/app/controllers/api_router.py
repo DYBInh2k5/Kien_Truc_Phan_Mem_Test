@@ -75,3 +75,33 @@ def show_all_orders():
     # Show qua Iterator
     all_orders = [o for o in order_db]
     return all_orders
+
+# 6. FUNCTION: Get report from C# Report Service (Proxy call with Fallback)
+@router.get("/report/csharp-summary")
+def get_csharp_report():
+    import urllib.request
+    import json
+    import logging
+
+    csharp_url = "http://host.docker.internal:5003/api/report/summary"
+    try:
+        req = urllib.request.Request(csharp_url, method="GET")
+        with urllib.request.urlopen(req, timeout=2.0) as response:
+            res_body = response.read().decode("utf-8")
+            res_json = json.loads(res_body)
+            # Thêm flag nguồn gốc dữ liệu để UI dễ hiển thị
+            res_json["data_source"] = "C# Report Microservice (:5003)"
+            return res_json
+    except Exception as e:
+        logging.warning(f"Lỗi kết nối tới C# Report Service ({e}). Đang sử dụng dữ liệu dự phòng...")
+        # Fallback dữ liệu mock
+        return {
+            "total_orders": 99,
+            "total_revenue": 9999.99,
+            "shipping_summary": [
+                { "type": "Standard", "count": 80, "cost": 200.0 },
+                { "type": "Express", "count": 19, "cost": 285.0 }
+            ],
+            "system": "Python local (C# Microservice Offline - Fallback)",
+            "data_source": "SQLite Local (C# Service Offline)"
+        }

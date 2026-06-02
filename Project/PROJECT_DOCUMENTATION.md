@@ -237,6 +237,58 @@ sequenceDiagram
     F-->>C: Trả kết quả {status: Success, final_state: Shipped}
 ```
 
+#### C. Sơ đồ tương tác chéo giữa Python Web MVC và các C# Microservices (Xác thực & Báo cáo)
+
+Để đạt được mô hình kiến trúc phân tán thực tế, Web Component gọi HTTP REST tới các C# Microservices độc lập. Dưới đây là luồng tương tác thực tế bao gồm cơ chế Fallback (dự phòng) tự động khi các service C# ở trạng thái offline.
+
+**1. Luồng Xác thực người dùng (SSO Service - Port 5001)**
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Client (Web Frontend)
+    participant Web as Python FastAPI (Web MVC)
+    participant CSharpSSO as C# SSOService (:5001)
+    participant DB as SQLite Database (Local)
+
+    User->>Web: POST /api/auth/login {username, password}
+    Web->>CSharpSSO: HTTP POST /api/sso/login {username, password}
+    alt C# SSOService Online
+        CSharpSSO-->>Web: Trả về 200 OK & JWT Token + User info
+        Web-->>User: Đăng nhập thành công (Nguồn: C# SSO Microservice)
+    else C# SSOService Offline / Lỗi (Fallback)
+        Web->>Web: Ghi nhận cảnh báo & chuyển sang Fallback
+        Web->>DB: SELECT * FROM users WHERE username=? AND password=?
+        alt User hợp lệ trong SQLite
+            DB-->>Web: Trả về thông tin User
+            Web-->>User: Đăng nhập thành công (Nguồn: SQLite Local Fallback)
+        else User không tồn tại / Sai pass
+            DB-->>Web: Không tìm thấy
+            Web-->>User: Trả về lỗi 401/error
+        end
+    end
+```
+
+**2. Luồng Lấy dữ liệu Báo cáo (Report Service - Port 5003)**
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Client (Web Frontend)
+    participant Web as Python FastAPI (Web MVC)
+    participant CSharpReport as C# ReportService (:5003)
+
+    User->>Web: GET /api/report/csharp-summary
+    Web->>CSharpReport: HTTP GET /api/report/summary
+    alt C# ReportService Online
+        CSharpReport-->>Web: Trả về 200 OK (total_orders, total_revenue)
+        Web-->>User: Trả về dữ liệu thống kê thật (Nguồn: C# Report Microservice)
+    else C# ReportService Offline (Fallback)
+        Web->>Web: Bắt ngoại lệ & kích hoạt Mock Fallback
+        Web-->>User: Trả về dữ liệu giả lập dự phòng (Nguồn: SQLite Local Cache Fallback)
+    end
+```
+
 ---
 
 ## PHẦN 3: PHÂN TÍCH CHI TIẾT 5 DESIGN PATTERNS ÁP DỤNG

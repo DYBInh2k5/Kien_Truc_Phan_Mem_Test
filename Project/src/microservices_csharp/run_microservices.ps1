@@ -9,15 +9,15 @@ Set-Location $ScriptPath
 
 # 1. Chạy SSOService (Cổng 5001)
 Write-Host "Khởi chạy SSOService (Cổng 5001) trong cửa sổ mới..." -ForegroundColor Yellow
-Start-Process cmd -ArgumentList "/k dotnet run --project SSOService"
+Start-Process cmd -ArgumentList "/k dotnet run --project SSOService" -WorkingDirectory $ScriptPath
 
 # 2. Chạy SearchService (Cổng 5002)
 Write-Host "Khởi chạy SearchService (Cổng 5002) trong cửa sổ mới..." -ForegroundColor Yellow
-Start-Process cmd -ArgumentList "/k dotnet run --project SearchService"
+Start-Process cmd -ArgumentList "/k dotnet run --project SearchService" -WorkingDirectory $ScriptPath
 
 # 3. Chạy ReportService (Cổng 5003)
 Write-Host "Khởi chạy ReportService (Cổng 5003) trong cửa sổ mới..." -ForegroundColor Yellow
-Start-Process cmd -ArgumentList "/k dotnet run --project ReportService"
+Start-Process cmd -ArgumentList "/k dotnet run --project ReportService" -WorkingDirectory $ScriptPath
 
 Write-Host "`n[Thành Công] Đã khởi chạy cả 3 C# Microservices!" -ForegroundColor Green
 Write-Host "Vui lòng kiểm tra các cửa sổ Console mới mở để xem Log." -ForegroundColor Gray

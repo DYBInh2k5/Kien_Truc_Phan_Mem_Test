@@ -103,6 +103,42 @@
                         </div>
                     </div>
 
+                    <!-- C# Microservice Report Card -->
+                    <div class="card" style="margin-top: 24px; border-color: rgba(6, 182, 212, 0.3);">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-server text-teal"></i> Thống kê tích hợp từ C# Report Microservice (Port 5003)</h3>
+                            <button class="btn btn-sm info-btn" id="btn-load-csharp-report">
+                                <i class="fa-solid fa-rotate"></i> Lấy báo cáo C#
+                            </button>
+                        </div>
+                        <div class="stats-grid" style="margin-bottom: 0;">
+                            <div class="stat-card" style="background-color: rgba(15, 23, 42, 0.4);">
+                                <div class="stat-header">
+                                    <span class="stat-title">Tổng đơn hàng (C#)</span>
+                                    <i class="fa-solid fa-folder stat-icon teal"></i>
+                                </div>
+                                <h2 class="stat-value" id="csharp-total-orders">-</h2>
+                                <span class="stat-desc" id="csharp-report-system">Microservice Offline</span>
+                            </div>
+                            <div class="stat-card" style="background-color: rgba(15, 23, 42, 0.4);">
+                                <div class="stat-header">
+                                    <span class="stat-title">Tổng doanh thu (C#)</span>
+                                    <i class="fa-solid fa-money-bill-wave stat-icon green"></i>
+                                </div>
+                                <h2 class="stat-value" id="csharp-total-revenue">-</h2>
+                                <span class="stat-desc" id="csharp-report-time">Chưa cập nhật</span>
+                            </div>
+                            <div class="stat-card" style="background-color: rgba(15, 23, 42, 0.4);">
+                                <div class="stat-header">
+                                    <span class="stat-title">Nguồn xác thực & Dữ liệu</span>
+                                    <i class="fa-solid fa-database stat-icon blue"></i>
+                                </div>
+                                <h2 class="stat-value" id="csharp-data-source" style="font-size: 15px; margin-top: 10px; color: var(--info); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chưa gọi</h2>
+                                <span class="stat-desc" id="auth-source-indicator">Xác thực: SQLite Local</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Auth Section Overlay when not logged in -->
                     <div id="auth-section" class="card auth-card">
                         <div class="card-header">
