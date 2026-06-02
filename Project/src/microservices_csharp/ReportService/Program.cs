@@ -8,11 +8,11 @@ var app = builder.Build();
 app.MapGet("/api/report/summary", () => {
     // Giả lập dữ liệu thống kê từ database
     return Results.Ok(new {
-        total_orders = 52,
-        total_revenue = 12450.50,
+        total_orders = 152,
+        total_revenue = 35420.00,
         shipping_summary = new[] {
-            new { type = "Standard", count = 38, cost = 95.0 },
-            new { type = "Express", count = 14, cost = 210.0 }
+            new { type = "Standard", count = 112, cost = 280.0 },
+            new { type = "Express", count = 40, cost = 600.0 }
         },
         system = "C# Statistical Report Microservice",
         generated_at = DateTime.Now

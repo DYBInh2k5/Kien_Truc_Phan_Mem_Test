@@ -55,12 +55,19 @@ class DatabaseConnection:
         if cursor.fetchone()[0] == 0:
             cursor.execute("INSERT INTO users (username, password, email, is_admin) VALUES ('admin', '123', 'admin@example.com', 1)")
             cursor.execute("INSERT INTO users (username, password, email, is_admin) VALUES ('user', '123', 'user@example.com', 0)")
+            cursor.execute("INSERT INTO users (username, password, email, is_admin) VALUES ('john_doe', '123', 'john@example.com', 0)")
+            cursor.execute("INSERT INTO users (username, password, email, is_admin) VALUES ('alice_smith', '123', 'alice@example.com', 0)")
+            cursor.execute("INSERT INTO users (username, password, email, is_admin) VALUES ('bob_johnson', '123', 'bob@example.com', 0)")
+            cursor.execute("INSERT INTO users (username, password, email, is_admin) VALUES ('moderator', '123', 'moderator@example.com', 1)")
             
         # Chèn dữ liệu mẫu cho orders nếu chưa có
         cursor.execute("SELECT COUNT(*) FROM orders")
         if cursor.fetchone()[0] == 0:
-            cursor.execute("INSERT INTO orders (id, details, status, tracking_code) VALUES (101, 'Laptop XYZ', 'Shipped', 'TRACK_999')")
-            cursor.execute("INSERT INTO orders (id, details, status, tracking_code) VALUES (102, 'Bàn Phím Cơ', 'Pending', 'TRACK_333')")
+            cursor.execute("INSERT INTO orders (id, details, status, tracking_code) VALUES (101, 'MacBook Pro M3 (Product ID: 1) (Express) - Address: 123 Nguyen Hue, Q1', 'Shipped', 'TRACK_999')")
+            cursor.execute("INSERT INTO orders (id, details, status, tracking_code) VALUES (102, 'iPhone 15 Pro Max (Product ID: 2) (Standard) - Address: 456 Le Loi, Q1', 'Pending', 'TRACK_333')")
+            cursor.execute("INSERT INTO orders (id, details, status, tracking_code) VALUES (103, 'Bàn phím Leopold FC900 (Product ID: 3) (Standard) - Address: 789 CMT8, Q3', 'Paid', 'TRACK_222')")
+            cursor.execute("INSERT INTO orders (id, details, status, tracking_code) VALUES (104, 'MacBook Pro M3 (Product ID: 1) (Standard) - Address: 12 Vo Van Kiet, Q5', 'Shipped', 'TRACK_555')")
+            cursor.execute("INSERT INTO orders (id, details, status, tracking_code) VALUES (105, 'iPhone 15 Pro Max (Product ID: 2) (Express) - Address: 99 Nguyen Trai, Q5', 'Pending', 'TRACK_444')")
             
         conn.commit()
         conn.close()
