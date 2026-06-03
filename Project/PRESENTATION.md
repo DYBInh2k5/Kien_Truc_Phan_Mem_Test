@@ -8,6 +8,7 @@
 *   **Môn học**: Kiến Trúc Phần Mềm (Software Architecture)
 *   **Giảng viên hướng dẫn**: [Tên Giảng Viên]
 *   **Nhóm thực hiện**: [Tên các thành viên]
+*   **Đường dẫn Slide thuyết trình (Gamma App)**: [Gamma Presentation Link](https://gamma.app/docs/HE-THONG-QUAN-LY-ON-HANG-OMS-fafqe6v198xhdqx)
 *   **Lời thoại người nói**:
     "Kính thưa quý thầy cô trong Hội đồng phản biện. Hôm nay, nhóm chúng em xin phép được trình bày báo cáo dự án môn học Kiến trúc phần mềm với đề tài: Hệ thống Quản lý Đơn hàng (OMS). Trong dự án này, chúng em tập trung giải quyết bài toán nghiệp vụ phức tạp của thương mại điện tử bằng cách kết hợp kiến trúc phân tầng n-Tier truyền thống với cụm Microservices hiện đại, đồng thời áp dụng 5 mẫu thiết kế (Design Patterns) kinh điển nhằm đạt được một hệ thống có tính Loose Coupling (kết nối lỏng lẻo), dễ bảo trì và dễ dàng mở rộng trong tương lai. Sau đây, chúng em xin đi vào chi tiết bài toán thực tế."
 

@@ -9,6 +9,7 @@
 *   **Môn học**: Kiến Trúc Phần Mềm (Software Architecture)
 *   **Giảng viên hướng dẫn**: [Tên Giảng Viên]
 *   **Nhóm thực hiện**: [Tên các thành viên]
+*   **Đường dẫn Slide thuyết trình (Gamma App)**: [Gamma Presentation Link](https://gamma.app/docs/HE-THONG-QUAN-LY-ON-HANG-OMS-fafqe6v198xhdqx)
 
 ---
 
