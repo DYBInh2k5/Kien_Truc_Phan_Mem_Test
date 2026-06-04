@@ -310,6 +310,10 @@ document.addEventListener("DOMContentLoaded", () => {
                             <span class="label">Mã vận đơn (Facade):</span>
                             <span class="value"><code>${data.tracking_code}</code></span>
                         </div>
+                        <div class="result-row">
+                            <span class="label">Nguồn tìm kiếm:</span>
+                            <span class="value" style="color: var(--accent-light); font-weight: 500;"><i class="fa-solid fa-database"></i> ${data.search_source || 'N/A'}</span>
+                        </div>
                     </div>
                 `;
             }

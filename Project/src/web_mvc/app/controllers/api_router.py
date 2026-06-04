@@ -47,7 +47,23 @@ def place_order(order_request: OrderRequest):
 # 4. FUNCTION: Search/Find (Áp dụng Iterator)
 @router.get("/orders/search/{order_id}")
 def search_order(order_id: int):
-    # Lấy dữ liệu từ SQLite đưa vào OrderCollection để duyệt qua Iterator
+    import urllib.request
+    import json
+    import logging
+
+    # 1. Thử gọi C# Search Microservice (Cổng 5002)
+    search_url = f"http://host.docker.internal:5002/api/search/orders/{order_id}"
+    try:
+        req = urllib.request.Request(search_url, method="GET")
+        with urllib.request.urlopen(req, timeout=2.0) as response:
+            res_body = response.read().decode("utf-8")
+            res_json = json.loads(res_body)
+            res_json["search_source"] = "C# Search Microservice (:5002)"
+            return res_json
+    except Exception as e:
+        logging.warning(f"Không kết nối được C# Search Service ({e}). Thử tìm kiếm cục bộ qua Iterator...")
+
+    # 2. Cơ chế DỰ PHÒNG (Fallback): Sử dụng Iterator Pattern trên SQLite cục bộ
     db = DatabaseConnection()
     orders_raw = db.query("SELECT * FROM orders")
     
@@ -58,7 +74,9 @@ def search_order(order_id: int):
     # Search logic qua ITERATOR Pattern
     order = order_db.find_order(order_id)
     if not order:
-        return {"error": f"Không tìm thấy đơn hàng {order_id}"}
+        return {"error": f"Không tìm thấy đơn hàng {order_id} (Đã kiểm tra cả C# Search và SQLite)"}
+    
+    order["search_source"] = "SQLite Local (Iterator Pattern Fallback)"
     return order
 
 # 5. FUNCTION: Show "Object-Information"

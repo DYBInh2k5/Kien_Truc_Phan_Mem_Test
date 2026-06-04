@@ -30,9 +30,9 @@ graph TD
     end
 
     Client -- HTTP/REST --> Controller
-    Controller -- gRPC / REST --> SSO
-    Service -- gRPC / REST --> Search
-    Service -- gRPC / REST --> Report
+    Controller -- HTTP/REST --> SSO
+    Service -- HTTP/REST --> Search
+    Service -- HTTP/REST --> Report
     Repository -.-> DB[(Main Database)]
 ```
 

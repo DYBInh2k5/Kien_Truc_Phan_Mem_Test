@@ -649,31 +649,45 @@ Cụm Microservices độc lập viết bằng C# chạy trên 3 cổng khác nh
 ## PHẦN 9: KỊCH BẢN DEMO BẢO VỆ DỰ ÁN CHI TIẾT (DEMO GUIDE)
 
 ### 9.1 Lệnh chạy dự án nhanh nhất
-*   *Chạy Web FastAPI + SQLite (Docker)*:
+*   **Chạy Web FastAPI + SQLite (Docker)**:
     ```powershell
     cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc"
     docker-compose up -d --build
     ```
-*   *Chạy 3 C# Microservices (PowerShell script)*:
+*   **Chạy 3 C# Microservices (PowerShell script)**:
     ```powershell
     cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\microservices_csharp"
     powershell -ExecutionPolicy Bypass -File .\run_microservices.ps1
     ```
 
 ### 9.2 Kịch bản các bước Demo trên giao diện (http://localhost:8000)
-1.  **Trình bày giao diện Dashboard & Connection**: Chỉ ra trạng thái "SQLite Connected" ở góc tiêu đề thể hiện Singleton Connection hoạt động tốt.
-2.  **Trình bày Đăng ký & Đăng nhập**: 
-    *   Thử Đăng nhập bằng `admin` / `123`.
-    *   Đăng xuất, chọn tab Đăng ký tài khoản `customer1` / `123` / `customer1@gmail.com`.
-    *   Đăng nhập lại bằng `customer1` mới tạo.
-3.  **Trình bày Quản lý thành viên (Users)**: Vào tab "Quản lý Users" để chứng minh dữ liệu tài khoản mới tạo `customer1` đã được chèn vào SQLite.
-4.  **Trình bày Đặt đơn hàng (Facade + Factory + State)**:
-    *   Vào tab "Đặt hàng & Tra cứu".
-    *   Chọn sản phẩm (MacBook), chọn giao hàng hỏa tốc (Express - $15), điền địa chỉ. Nhấn Đặt hàng.
-    *   Giải thích: `OrderFacade` điều phối các subsystem ngầm, Factory khởi tạo `ExpressOrder`, State cập nhật trạng thái tự động và dữ liệu đơn hàng được lưu vào SQLite.
-5.  **Trình bày Tra cứu đơn hàng & Liệt kê (Iterator)**:
-    *   Nhập ID đơn hàng vừa tạo (ví dụ: `103`) vào ô tìm kiếm -> Nhấn Tìm.
-    *   Nhấn nút làm mới bảng "Tất cả đơn hàng".
-    *   Giải thích: Logic duyệt và tìm kiếm áp dụng Iterator Pattern trên `OrderCollection`.
-6.  **Trình bày C# Microservices**: Mở trình duyệt xem dữ liệu JSON của 3 API C# tại các cổng 5001, 5002, 5003 đang chạy độc lập.
-7.  **Trình bày tính bền vững (SQLite Persistence)**: Tắt Docker Compose và bật lại, chỉ ra tất cả các tài khoản và đơn hàng mới tạo vẫn còn hiển thị nguyên vẹn.
+
+#### 📍 Bước 1: Giới thiệu giao diện & Kết nối DB Singleton
+*   **Thao tác**: Cuộn trang web, chỉ vào header của Dashboard hiển thị `SQLite Connected (Singleton)`.
+*   **Lời thoại**: *"Đây là giao diện chính của Hệ thống Quản lý Đơn hàng (OMS). Ở góc bên phải tiêu đề, hệ thống hiển thị trạng thái kết nối Database được thiết lập thông qua Singleton Pattern để đảm bảo ứng dụng dùng duy nhất một Instance kết nối SQLite trong suốt vòng đời chạy."*
+
+#### 📍 Bước 2: Đăng ký & Đăng nhập tài khoản cục bộ (Local Fallback)
+*   **Thao tác**: Nhấn Đăng xuất, sang tab Đăng ký tạo tài khoản `customer_test`/`123`, sau đó sang tab Đăng nhập để truy cập.
+*   **Lời thoại**: *"Khi các C# Microservices chưa online, hệ thống tự động chuyển hướng xác thực xuống database SQLite cục bộ. Giao diện hiển thị rõ nguồn xác thực là SQLite Local Database Fallback."*
+
+#### 📍 Bước 3: Xem danh sách thành viên (User Management)
+*   **Thao tác**: Nhấp tab **Quản lý Users** trên Sidebar bên trái, chỉ ra tài khoản `customer_test` vừa tạo nằm ở cuối bảng.
+*   **Lời thoại**: *"Dữ liệu tài khoản mới đăng ký đã được ghi nhận thành công và hiển thị thời gian thực từ database SQLite."*
+
+#### 📍 Bước 4: Tạo đơn hàng mới (Facade + Factory + State Pattern)
+*   **Thao tác**: Vào tab **Đặt hàng & Tra cứu**, chọn sản phẩm (iPhone), chọn giao hàng hỏa tốc (Express - ship $15.0), nhập địa chỉ, nhấn Đặt hàng.
+*   **Lời thoại**: *"Khi click Đặt hàng, Facade Pattern điều phối Kho, Thanh toán và Vận chuyển ngầm; Factory Method khởi tạo Class ExpressOrder để tính phí ship $15.0; và State Pattern quản lý vòng đời trạng thái đơn hàng (Pending -> Paid -> Shipped) tự động."*
+
+#### 📍 Bước 5: Tra cứu đơn hàng (Proxy C# Search & Fallback Iterator)
+*   **Thao tác**:
+    *   *C# Search Service Online*: Tìm ID `101` hoặc `102` -> Nhãn hiển thị **"Nguồn tìm kiếm: C# Search Microservice (:5002)"**.
+    *   *C# Search Service Offline*: Tìm ID `106` (đơn hàng vừa tạo) -> Nhãn hiển thị **"Nguồn tìm kiếm: SQLite Local (Iterator Pattern Fallback)"**.
+*   **Lời thoại**: *"Tìm kiếm đơn hàng ưu tiên Proxy gọi C# Search Service cổng 5002. Nếu service offline, hệ thống tự động fallback sử dụng Iterator Pattern duyệt tìm trong database SQLite cục bộ."*
+
+#### 📍 Bước 6: Demo liên thông dữ liệu chéo (SSO & Report)
+*   **Thao tác**: Đăng nhập tài khoản `admin`/`123`. Lúc này nhãn đổi thành **"Xác thực: C# SSO Microservice (:5001)"**. Bấm Dashboard, dữ liệu doanh thu báo cáo tổng hợp hiển thị rõ nguồn từ **"C# Report Microservice (:5003)"**.
+*   **Lời thoại**: *"Khi cụm C# hoạt động, Web Component sẽ gọi REST API liên thông xác thực SSO và thống kê báo cáo doanh thu trực tiếp từ các microservice C# cổng 5001 & 5003."*
+
+#### 📍 Bước 7: Minh chứng tính bền vững dữ liệu (Persistence)
+*   **Thao tác**: Tắt Docker Compose (`docker-compose down`) và bật lại. Tải lại trang Web, đăng nhập tài khoản `customer_test` và chứng minh các đơn hàng cũ vẫn tồn tại nguyên vẹn.
+*   **Lời thoại**: *"Dữ liệu được lưu trữ bền vững vật lý tại tệp SQLite orders.db chứ không lưu tạm trên RAM, đảm bảo thông tin không bị mất đi khi restart hệ thống."*
