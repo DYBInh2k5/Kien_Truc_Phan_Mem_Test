@@ -277,6 +277,13 @@ document.addEventListener("DOMContentLoaded", () => {
         
         searchResult.classList.add("hidden");
 
+        // Client-side validation for non-numeric or negative input
+        if (isNaN(id) || parseInt(id) <= 0) {
+            searchResult.innerHTML = `<div class="alert error-alert"><i class="fa-solid fa-triangle-exclamation"></i> Vui lòng nhập mã đơn hàng là số nguyên dương hợp lệ!</div>`;
+            searchResult.classList.remove("hidden");
+            return;
+        }
+
         try {
             const res = await fetch(`${API_BASE}/orders/search/${id}`);
             const data = await res.json();
@@ -284,8 +291,9 @@ document.addEventListener("DOMContentLoaded", () => {
             searchResult.innerHTML = "";
             searchResult.classList.remove("hidden");
 
-            if (data.error) {
-                searchResult.innerHTML = `<div class="alert error-alert"><i class="fa-solid fa-triangle-exclamation"></i> ${data.error}</div>`;
+            if (data.error || data.detail) {
+                const errMsg = data.error || (data.detail && data.detail[0] ? data.detail[0].msg : "Lỗi xác thực.");
+                searchResult.innerHTML = `<div class="alert error-alert"><i class="fa-solid fa-triangle-exclamation"></i> ${errMsg}</div>`;
             } else {
                 // Class badge state style
                 let badgeClass = "status-pending";
@@ -323,7 +331,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    btnRefreshOrders.addEventListener("click", fetchOrders);
+    btnRefreshOrders.addEventListener("click", async () => {
+        btnRefreshOrders.disabled = true;
+        const originalText = btnRefreshOrders.innerHTML;
+        btnRefreshOrders.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        await fetchOrders();
+        btnRefreshOrders.disabled = false;
+        btnRefreshOrders.innerHTML = originalText;
+    });
+
     btnLoadCsharpReport.addEventListener("click", fetchCsharpReport);
 
     // --- 10. Dashboard Stats Aggregator ---
@@ -354,7 +370,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- 11. Fetch C# Microservice Report ---
     async function fetchCsharpReport() {
-        if (!token) return;
+        if (!token) {
+            alert("Vui lòng đăng nhập trước khi tải báo cáo!");
+            return;
+        }
+        
+        btnLoadCsharpReport.disabled = true;
+        const originalText = btnLoadCsharpReport.innerHTML;
+        btnLoadCsharpReport.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...';
         
         csharpTotalOrders.innerText = "Loading...";
         csharpTotalRevenue.innerText = "Loading...";
@@ -365,7 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await fetch(`${API_BASE}/report/csharp-summary`);
             const data = await res.json();
             
-            if (data.error) {
+            if (data.error || data.detail) {
                 csharpTotalOrders.innerText = "Error";
                 csharpTotalRevenue.innerText = "Error";
                 csharpReportSystem.innerText = "Lỗi phản hồi";
@@ -386,6 +409,9 @@ document.addEventListener("DOMContentLoaded", () => {
             csharpTotalRevenue.innerText = "Offline";
             csharpReportSystem.innerText = "Không thể kết nối C#";
             csharpDataSource.innerText = "FastAPI Local Cache";
+        } finally {
+            btnLoadCsharpReport.disabled = false;
+            btnLoadCsharpReport.innerHTML = originalText;
         }
     }
 
