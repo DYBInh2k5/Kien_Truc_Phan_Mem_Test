@@ -4,18 +4,25 @@ from app.patterns.singleton import DatabaseConnection
 
 class AuthService:
     """
-    BUSINESS LOGIC LAYER: Xác thực người dùng và Quản lý Users (CRUD) thông qua SQLite DB.
+    BUSINESS LOGIC LAYER (Tầng xử lý nghiệp vụ)
+    
+    Chịu trách nhiệm thực thi các quy trình nghiệp vụ liên quan đến người dùng:
+    - Đăng nhập (Xác thực chéo qua SSO Microservice C# với cơ chế dự phòng SQLite).
+    - Lấy danh sách thành viên (CRUD Users).
+    - Đăng ký người dùng mới.
     """
 
-    # --- FUNCTION: Login ---
+    # ==========================================
+    # CHỨC NĂNG: ĐĂNG NHẬP (Với cơ chế Tích hợp chéo & Fallback)
+    # ==========================================
     @staticmethod
     def login(credentials: UserLogin) -> dict:
         import urllib.request
         import json
         import logging
 
-        # 1. Thử gọi C# SSO Microservice (Cổng 5001)
-        # Sử dụng host.docker.internal để gọi từ bên trong Docker Container ra máy Windows host
+        # 1. Bước 1: Thử gửi yêu cầu xác thực tới C# SSO Microservice (Cổng 5001)
+        # Sử dụng host.docker.internal để Container Python kết nối chéo ra cổng máy host Windows
         sso_url = "http://host.docker.internal:5001/api/sso/login"
         req_data = json.dumps({"username": credentials.username, "password": credentials.password}).encode("utf-8")
         req = urllib.request.Request(
@@ -25,15 +32,16 @@ class AuthService:
             method="POST"
         )
         try:
-            # Thiết lập timeout 2.0s để không gây trễ giao diện nếu service C# chưa bật
+            # Thiết lập thời gian chờ tối đa (timeout) là 2.0s để không làm đơ UI nếu C# Service chưa bật
             with urllib.request.urlopen(req, timeout=2.0) as response:
                 res_body = response.read().decode("utf-8")
                 res_json = json.loads(res_body)
+                # Trả về kết quả thành công và Token nhận được từ C# SSO Service
                 return {
                     "message": "Đăng nhập thành công qua C# SSO!", 
                     "token": res_json.get("token"),
                     "user": {
-                        "id": 999, # ID đại diện SSO
+                        "id": 999, # ID ảo đại diện cho phiên đăng nhập SSO
                         "username": res_json.get("user", {}).get("username", credentials.username),
                         "email": res_json.get("user", {}).get("email", "admin@sso.csharp"),
                         "is_admin": True
@@ -41,9 +49,11 @@ class AuthService:
                     "source": "C# SSO Microservice (:5001)"
                 }
         except Exception as e:
+            # Nếu xảy ra lỗi kết nối HTTP, tiến hành ghi nhật ký cảnh báo và rơi vào luồng dự phòng cục bộ
             logging.warning(f"Không kết nối được C# SSO Service ({e}). Tự động Fallback sang SQLite cục bộ...")
 
-        # 2. Cơ chế DỰ PHÒNG (Fallback): Sử dụng database SQLite cục bộ như trước
+        # 2. Bước 2 (Fallback): Cơ chế dự phòng khi C# SSO Offline
+        # Truy vấn trực tiếp cơ sở dữ liệu SQLite cục bộ để đối chiếu thông tin đăng nhập
         db = DatabaseConnection()
         users = db.query(
             "SELECT * FROM users WHERE username = ? AND password = ?", 
@@ -65,9 +75,15 @@ class AuthService:
             }
         return {"error": "Tài khoản hoặc mật khẩu không chính xác."}
 
-    # --- FUNCTION: Managing Users ---
+    # ==========================================
+    # CHỨC NĂNG: LẤY DANH SÁCH USER
+    # ==========================================
     @staticmethod
     def get_all_users() -> list[User]:
+        """
+        Truy vấn danh sách người dùng từ SQLite cục bộ.
+        - Chuyển đổi dữ liệu thô (raw Row) sang mô hình User của Pydantic để chuẩn hóa đầu ra.
+        """
         db = DatabaseConnection()
         users_raw = db.query("SELECT * FROM users")
         users = []
@@ -80,18 +96,27 @@ class AuthService:
             ))
         return users
 
+    # ==========================================
+    # CHỨC NĂNG: ĐĂNG KÝ USER MỚI
+    # ==========================================
     @staticmethod
     def register_user(new_user: UserCreate) -> dict:
+        """
+        Đăng ký một người dùng mới vào database SQLite.
+        - Bước 1: Kiểm tra xem username đã tồn tại trong database chưa để tránh xung đột dữ liệu.
+        - Bước 2: Thực thi chèn dòng mới vào bảng `users`.
+        """
         db = DatabaseConnection()
-        # Kiểm tra trùng username
+        # Kiểm tra trùng lặp tên tài khoản
         existing = db.query("SELECT * FROM users WHERE username = ?", (new_user.username,))
         if existing:
-            return {"error": "Tên tài khoản đã tồn tại!"}
+            return {"error": "Tên tài khoản đã tồn tại trên hệ thống!"}
             
+        # Chèn người dùng mới mặc định là tài khoản thường (is_admin = 0)
         new_id = db.execute(
             "INSERT INTO users (username, password, email, is_admin) VALUES (?, ?, ?, ?)",
             (new_user.username, new_user.password, new_user.email, 0)
         )
         if new_id != -1:
             return {"message": f"Đăng ký thành công User ID {new_id}!"}
-        return {"error": "Lỗi hệ thống khi đăng ký."}
+        return {"error": "Lỗi hệ thống trong quá trình đăng ký."}

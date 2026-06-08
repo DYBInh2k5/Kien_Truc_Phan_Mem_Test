@@ -5,19 +5,34 @@ import logging
 
 class DatabaseConnection:
     """
-    SINGLETON PATTERN (THREAD-SAFE)
-    Đảm bảo chỉ có duy nhất một kết nối Database (hoặc đối tượng quản lý kết nối)
-    được tạo ra và dùng chung cho toàn bộ ứng dụng, tránh lãng phí tài nguyên và Race Condition.
-    Kết nối thực tế tới SQLite DB file.
+    SINGLETON PATTERN (Creational Design Pattern - Nhóm Khởi tạo)
+    
+    1. Mục đích:
+       - Đảm bảo một Class chỉ có DUY NHẤT một thực thể (Instance) được tạo ra.
+       - Cung cấp một điểm truy cập toàn cục duy nhất đến kết nối cơ sở dữ liệu SQLite (orders.db).
+       
+    2. Lý do áp dụng cho SQLite:
+       - SQLite là hệ quản trị cơ sở dữ liệu file cục bộ, nếu có quá nhiều kết nối mở/ghi đồng thời
+         từ các luồng HTTP Request khác nhau sẽ dễ gây ra lỗi "Database is locked".
+       - Bằng việc áp dụng Singleton, ta chỉ dùng một đối tượng quản lý kết nối chung, giúp tiết kiệm tài nguyên.
+       
+    3. Cơ chế Thread-safe (An toàn đa luồng):
+       - Sử dụng `threading.Lock()` làm chốt chặn khi khởi tạo.
+       - Áp dụng kỹ thuật kiểm tra kép **Double-Checked Locking**:
+         + Lần 1: Kiểm tra ngoài khối Lock để xem đã có instance chưa. Nếu có rồi thì bỏ qua rất nhanh (không nghẽn hiệu năng).
+         + Lần 2: Nằm trong khối Lock. Nếu luồng đầu tiên đang giữ khóa lock khởi tạo xong, luồng thứ 2 sau khi chờ khóa xong
+           vào đến lần kiểm tra này sẽ thấy instance đã được tạo và không khởi tạo đè lên nữa.
     """
     _instance = None
-    _lock = threading.Lock()
-    _db_file = "orders.db"
+    _lock = threading.Lock() # Khóa đồng bộ đa luồng cho khởi tạo instance
+    _db_file = "orders.db"   # Đường dẫn tệp tin cơ sở dữ liệu SQLite vật lý
 
     def __new__(cls):
-        # Double-Checked Locking (Kiểm tra kép)
+        # Bước kiểm tra 1 (Double-Checked Locking): Tối ưu hóa hiệu năng, tránh nghẽn luồng khi không cần thiết
         if cls._instance is None:
+            # Chỉ chiếm khóa khi chưa có instance nào được tạo
             with cls._lock:
+                # Bước kiểm tra 2: Đảm bảo chắc chắn duy nhất luồng vào trước được tạo đối tượng kết nối
                 if cls._instance is None:
                     logging.info("Khởi tạo instance DatabaseConnection (Singleton) lần đầu...")
                     cls._instance = super(DatabaseConnection, cls).__new__(cls)
@@ -25,11 +40,15 @@ class DatabaseConnection:
         return cls._instance
 
     def _init_db(self):
-        """Khởi tạo cấu trúc các bảng và dữ liệu mẫu nếu chưa có"""
+        """
+        Khởi tạo cấu trúc các bảng và dữ liệu mẫu nếu chưa tồn tại trong SQLite.
+        Sử dụng kết nối tạm thời để thiết lập dữ liệu ban đầu.
+        """
+        # check_same_thread=False cho phép kết nối được gọi từ bất kỳ luồng request nào của FastAPI
         conn = sqlite3.connect(self._db_file, check_same_thread=False)
         cursor = conn.cursor()
         
-        # 1. Tạo bảng users
+        # 1. Tạo bảng users quản lý thành viên (Xác thực chéo giữa FastAPI và C# SSO)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,7 +59,7 @@ class DatabaseConnection:
             )
         """)
         
-        # 2. Tạo bảng orders
+        # 2. Tạo bảng orders quản lý thông tin đơn hàng
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS orders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,7 +69,7 @@ class DatabaseConnection:
             )
         """)
         
-        # Chèn dữ liệu mẫu cho users nếu chưa có
+        # Chèn dữ liệu mẫu cho users nếu database trống
         cursor.execute("SELECT COUNT(*) FROM users")
         if cursor.fetchone()[0] == 0:
             cursor.execute("INSERT INTO users (username, password, email, is_admin) VALUES ('admin', '123', 'admin@example.com', 1)")
@@ -60,7 +79,7 @@ class DatabaseConnection:
             cursor.execute("INSERT INTO users (username, password, email, is_admin) VALUES ('bob_johnson', '123', 'bob@example.com', 0)")
             cursor.execute("INSERT INTO users (username, password, email, is_admin) VALUES ('moderator', '123', 'moderator@example.com', 1)")
             
-        # Chèn dữ liệu mẫu cho orders nếu chưa có
+        # Chèn dữ liệu mẫu cho orders nếu database trống
         cursor.execute("SELECT COUNT(*) FROM orders")
         if cursor.fetchone()[0] == 0:
             cursor.execute("INSERT INTO orders (id, details, status, tracking_code) VALUES (101, 'MacBook Pro M3 (Product ID: 1) (Express) - Address: 123 Nguyen Hue, Q1', 'Shipped', 'TRACK_999')")
@@ -74,9 +93,13 @@ class DatabaseConnection:
         logging.info("Khởi tạo Database SQLite thành công với dữ liệu mẫu.")
 
     def query(self, sql: str, params: tuple = ()) -> list[dict]:
-        """Thực thi câu lệnh SELECT và trả về danh sách dict"""
+        """
+        Thực thi câu lệnh truy vấn SELECT.
+        - Trả về: danh sách các dòng kết quả, mỗi dòng dạng dict (cột -> giá trị).
+        - Đảm bảo đóng kết nối ngay sau khi hoàn thành truy vấn để giải phóng tài nguyên.
+        """
         conn = sqlite3.connect(self._db_file, check_same_thread=False)
-        conn.row_factory = sqlite3.Row  # Cho phép lấy cột bằng tên
+        conn.row_factory = sqlite3.Row  # Cho phép lấy cột bằng tên (ví dụ: row["username"]) thay vì chỉ số (row[0])
         cursor = conn.cursor()
         try:
             cursor.execute(sql, params)
@@ -89,7 +112,11 @@ class DatabaseConnection:
             conn.close()
 
     def execute(self, sql: str, params: tuple = ()) -> int:
-        """Thực thi INSERT, UPDATE, DELETE và trả về id của dòng vừa tác động (nếu có)"""
+        """
+        Thực thi các câu lệnh thay đổi dữ liệu (INSERT, UPDATE, DELETE).
+        - Trả về: ID của dòng vừa được chèn vào (lastrowid) hoặc -1 nếu lỗi.
+        - Tự động Commit nếu thành công hoặc Rollback giao dịch nếu xảy ra ngoại lệ.
+        """
         conn = sqlite3.connect(self._db_file, check_same_thread=False)
         cursor = conn.cursor()
         last_id = -1
@@ -99,7 +126,7 @@ class DatabaseConnection:
             last_id = cursor.lastrowid
         except Exception as e:
             logging.error(f"Lỗi thực thi SQL: {e}")
-            conn.rollback()
+            conn.rollback() # Hoàn tác giao dịch nếu có lỗi
         finally:
             conn.close()
         return last_id

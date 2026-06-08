@@ -1,194 +1,191 @@
-# CẨM NANG HƯỚNG DẪN DEMO DỰ ÁN CHI TIẾT (STEP-BY-STEP DEMO GUIDE)
+# 🎯 CẨM NANG HƯỚNG DẪN DEMO DỰ ÁN CHI TIẾT (ULTIMATE LIVE DEMO GUIDE)
 ## HỆ THỐNG QUẢN LÝ ĐƠN HÀNG (OMS) - SOFTWARE ARCHITECTURE
 
-Tài liệu này là cẩm nang hướng dẫn thao tác thực tế (click-by-click) dùng trong buổi bảo vệ bài tập lớn. Tài liệu chia thành 3 phần: Chuẩn bị môi trường, Kịch bản thao tác chi tiết (Thao tác - Màn hình - Lời thoại - Mục tiêu) và các mẹo xử lý tình huống phát sinh nhanh.
+Tài liệu này là cẩm nang hướng dẫn thao tác thực tế (click-by-click) cùng kịch bản thuyết minh chi tiết từng giây, cách thiết lập màn hình và các mẹo đối chiếu mã nguồn trực tiếp dành cho nhóm sinh viên trong buổi bảo vệ trước Hội đồng chấm thi.
 
 ---
 
-## 🛠️ PHẦN 1: CHUẨN BỊ TRƯỚC BUỔI DEMO (PREREQUISITES)
+## 🛠️ PHẦN 1: CHUẨN BỊ TRƯỚC BUỔI DEMO (SETUP & RUN ENVIRONMENT)
 
-Trước khi thầy cô gọi nhóm lên máy chiếu, hãy đảm bảo:
-1.  **Docker Desktop** đã được bật (Biểu tượng cá voi ở góc màn hình có màu xanh lá).
-2.  Đã tắt tất cả các ứng dụng đang chiếm dụng các cổng mạng: `8000` (Web), `5001` (C# SSO), `5002` (C# Search), `5003` (C# Report).
-3.  Mở sẵn 2 cửa sổ **PowerShell** bằng quyền **Administrator** để sẵn sàng gõ lệnh.
+Trước khi Hội đồng gọi tên nhóm lên trình bày, hãy chuẩn bị sẵn sàng môi trường như sau:
 
----
+### 1. Kiểm tra phần mềm nền tảng
+*   Đảm bảo **Docker Desktop** đã khởi động (Icon con cá voi ở khay hệ thống hiển thị màu xanh lá cây `running`).
+*   Tắt các ứng dụng chạy ngầm có thể chiếm dụng các cổng mạng: `8000` (Web FastAPI), `5001` (C# SSO), `5002` (C# Search), `5003` (C# Report).
 
-## 🚀 PHẦN 2: CÁC BƯỚC KHỞI CHẠY HỆ THỐNG NHANH
+### 2. Các bước khởi chạy hệ thống (Gõ sẵn trên Terminal)
+Mở sẵn **2 cửa sổ PowerShell (Administrator)** ở chế độ song song trên màn hình:
 
-Gõ lần lượt các lệnh sau vào 2 cửa sổ PowerShell đã chuẩn bị:
+*   **Cửa sổ 1 (FastAPI Web chính)**: Chạy lệnh dưới đây để dựng Container Docker chứa Web API:
+    ```powershell
+    cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc"
+    docker-compose up -d --build
+    ```
+    *Cách kiểm tra*: Mở trình duyệt truy cập `http://localhost:8000`. Nếu giao diện Premium Dark Mode hiển thị là thành công.
 
-### 🖥️ Bước A: Khởi chạy Web Server chính (FastAPI + SQLite)
-Mở cửa sổ PowerShell thứ nhất, chạy lệnh:
-```powershell
-cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc"
-docker-compose up -d --build
-```
-> [!NOTE]
-> Hệ thống sẽ mất khoảng 5-10 giây để khởi động Container. Sau khi chạy xong, bạn có thể kiểm tra xem web đã online chưa bằng cách truy cập: `http://localhost:8000`.
-
-### ⚡ Bước B: Khởi chạy Cụm C# Microservices (.NET Core)
-Mở cửa sổ PowerShell thứ hai, chạy lệnh:
-```powershell
-cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\microservices_csharp"
-powershell -ExecutionPolicy Bypass -File .\run_microservices.ps1
-```
-> [!IMPORTANT]
-> Script này sẽ tự động biên dịch và mở **3 cửa sổ Command Prompt (CMD)** chạy song song các cổng `5001`, `5002`, và `5003`. **Tuyệt đối không tắt 3 cửa sổ CMD này** trong suốt quá trình demo.
+*   **Cửa sổ 2 (Cụm C# Microservices)**: Chạy lệnh tự động khởi chạy 3 dịch vụ:
+    ```powershell
+    cd "D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\microservices_csharp"
+    powershell -ExecutionPolicy Bypass -File .\run_microservices.ps1
+    ```
+    *Lưu ý quan trọng*: Lệnh này sẽ tự động biên dịch (.NET Restore & Build) và mở lên **3 cửa sổ Command Prompt (CMD) màu đen** lắng nghe các cổng `5001`, `5002` và `5003`. **Tuyệt đối không tắt các cửa sổ CMD này** vì đó là log hoạt động thời gian thực của Microservices.
 
 ---
 
-## 🎭 PHẦN 3: KỊCH BẢN DEMO TỪNG BƯỚC CHI TIẾT (LIVE DEMO SCRIPT)
+## 🎭 PHẦN 2: KỊCH BẢN DEMO TỪNG BƯỚC CHI TIẾT (LIVE DEMO SCRIPT)
 
-Mở trình duyệt Web tại địa chỉ: **`http://localhost:8000`**
-
+### 🗺️ Luồng Demo Tổng Quan (Mermaid Flow)
 ```mermaid
-graph TD
-    A[BẮT ĐẦU: Khách chưa đăng nhập] --> B[PHẦN 1: Demo Offline - SQLite Cục bộ]
-    B --> B1[1. Xem kết nối DB Singleton]
-    B1 --> B2[2. Đăng ký & Đăng nhập Local]
-    B2 --> B3[3. Đặt đơn hàng mới - Facade/Factory/State]
-    B3 --> B4[4. Tìm kiếm ID 106 - Iterator Fallback]
+flowchart TD
+    A[1. Mở trang Web http://localhost:8000] --> B[2. Chỉ Badge: SQLite Connected Singleton]
+    B --> C[3. Tắt Microservices: Demo Offline Fallback]
+    C --> C1[Đăng ký & Đăng nhập cục bộ]
+    C1 --> C2[Đặt đơn hàng hỏa tốc: Facade + Factory + State]
+    C2 --> C3[Tra cứu đơn hàng 106: Iterator Fallback]
     
-    B4 --> C[PHẦN 2: Demo Online - Liên thông C# Microservices thực tế]
-    C --> C1[5. Đăng nhập SSO C# - Xác thực tài khoản thật cổng 5001]
-    C1 --> C2[6. Báo cáo thống kê động - C# Report tính toán cổng 5003]
-    C2 --> C3[7. Tìm đơn hàng mới tạo - C# Search quét SQLite cổng 5002]
+    C3 --> D[4. Bật Microservices: Demo Online Integration]
+    D --> D1[Đăng nhập SSO C# cổng 5001]
+    D1 --> D2[Lấy báo cáo doanh thu dynamic cổng 5003]
+    D2 --> D3[Tìm đơn hàng 106 qua C# Search cổng 5002]
     
-    C3 --> D[PHẦN 3: Minh chứng bền vững Dữ liệu]
-    D --> D1[8. Tắt/Bật Docker Web - Dữ liệu SQLite giữ nguyên]
-    D1 --> E[KẾT THÚC: Trả lời câu hỏi Phản biện]
+    D3 --> E[5. Đối chiếu dữ liệu thật bằng DB Browser / VS Code]
+    E --> F[6. Khởi động lại Docker Web: Dữ liệu SQLite vẫn được bảo toàn]
 ```
 
 ---
 
-### 📦 GIAI ĐOẠN 1: TRÌNH DIỄN HỆ THỐNG OFFLINE (CƠ CHẾ DỰ PHÒNG - FALLBACK)
-*(Giai đoạn này chứng minh tính sẵn sàng cao của hệ thống: Khi Microservices C# bị tắt hoặc lỗi, Web chính vẫn hoạt động trơn tru bằng database nội bộ).*
+### GIAI ĐOẠN 1: TRÌNH DIỄN HỆ THỐNG OFFLINE (CƠ CHẾ DỰ PHÒNG - FALLBACK)
+*(Giai đoạn này nhằm gây ấn tượng mạnh với Hội đồng về tính sẵn sàng cao (High Availability) và khả năng cô lập lỗi của hệ thống: Khi cụm C# Microservices gặp sự cố, Web API chính vẫn phục vụ khách hàng bình thường).*
 
-#### 📍 Bước 1: Giới thiệu giao diện & Kết nối DB Singleton
-*   **Thao tác**: Cuộn trang web, chỉ vào header của Dashboard.
-*   **Kết quả màn hình**: Góc phải trang web hiển thị trạng thái: `SQLite Connected (Singleton)`.
-*   **Lời thoại thuyết trình**: 
-    > *"Kính chào thầy cô và hội đồng phản biện. Đây là giao diện chính của Hệ thống Quản lý Đơn hàng (OMS). Ở góc bên phải tiêu đề, hệ thống hiển thị dòng trạng thái kết nối Database. Kết nối này được thiết lập thông qua **Singleton Pattern** để đảm bảo ứng dụng chỉ dùng duy nhất một Instance kết nối SQLite trong suốt vòng đời chạy, tiết kiệm tài nguyên và chống Race Condition."*
-*   **Mục tiêu chứng minh**: Giải thích vai trò và cách cài đặt **Singleton Pattern** trong file `singleton.py`.
+#### 📍 Bước 1: Mở trang Web và Giới thiệu Kết nối Database Singleton
+*   **Thao tác**: Mở trình duyệt tại `http://localhost:8000`. Trỏ chuột vào góc phải thanh tiêu đề nơi có nhãn **`SQLite Connected (Singleton)`**.
+*   **Hiện tượng trên màn hình**: Nhãn trạng thái hiển thị màu xám/xanh dương dịu, báo hiệu hệ thống đã liên kết với file dữ liệu SQLite vật lý.
+*   **🎤 Lời thoại thuyết trình**:
+    > *"Kính thưa quý thầy cô trong Hội đồng. Đây là giao diện chính của ứng dụng quản lý đơn hàng. Ở góc phải thanh tiêu đề, thầy cô có thể thấy huy hiệu **'SQLite Connected (Singleton)'**. 
+    > 
+    > Để quản lý kết nối cơ sở dữ liệu SQLite một cách tối ưu, chúng em đã áp dụng **Singleton Pattern** tại lớp [DatabaseConnection](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/singleton.py#L6) của file `singleton.py`. Lớp này sử dụng kỹ thuật khóa đa luồng **Double-Checked Locking** để đảm bảo toàn bộ Web API chỉ dùng duy nhất một thực thể kết nối SQLite trong suốt vòng đời chạy, giúp loại bỏ nguy cơ nghẽn tài nguyên và lỗi khóa ghi đọc của SQLite."*
 
-#### 📍 Bước 2: Đăng ký & Đăng nhập tài khoản cục bộ (Local Database Fallback)
+#### 📍 Bước 2: Đăng ký & Đăng nhập cục bộ (Offline Fallback)
 *   **Thao tác**:
     1. Nhấn nút **Đăng xuất (Logout)** trên Sidebar nếu tài khoản đang đăng nhập sẵn. Giao diện Login Form sẽ xuất hiện.
-    2. Nhấp vào tab **Đăng Ký** trên form đăng nhập. Nhập:
-       * *Tên tài khoản*: `customer_test`
-       * *Email*: `test@gmail.com`
-       * *Mật khẩu*: `123`
-    3. Nhấn **Đăng ký**. Hệ thống hiển thị Alert màu xanh lá: `Đăng ký thành công User ID 7!`.
-    4. Nhấp lại tab **Đăng Nhập**. Nhập `customer_test` và mật khẩu `123`, nhấn **Đăng Nhập**.
-*   **Kết quả màn hình**: Giao diện đăng nhập thành công. Nhãn trên Sidebar hiển thị:
-    * *Tên người dùng*: `customer_test`
-    * *Quyền hạn*: `User`
-    * *Trạng thái xác thực*: `Xác thực: SQLite Local Database (Fallback)`.
-*   **Lời thoại thuyết trình**:
-    > *"Lúc này cụm Microservice SSO C# chưa được kết nối trực tiếp, hệ thống đã tự động chuyển hướng xác thực xuống bảng `users` của SQLite cục bộ. Chúng em vừa tạo thành công tài khoản mới và đăng nhập. Nhãn trạng thái báo rõ nguồn xác thực là SQLite Local Fallback."*
-*   **Mục tiêu chứng minh**: Minh chứng tính năng quản lý thành viên (CRUD Users) và cơ chế Fallback của tính năng Đăng nhập.
-
-#### 📍 Bước 3: Xem danh sách thành viên (User Management)
-*   **Thao tác**: Nhấp vào tab **Quản lý Users** trên Sidebar bên trái.
-*   **Kết quả màn hình**: Bảng hiển thị danh sách tất cả các tài khoản lấy lên từ SQLite, tài khoản `customer_test` vừa tạo nằm ở dòng dưới cùng.
-*   **Lời thoại thuyết trình**:
-    > *"Khi vào tab Quản lý Users, Controller gọi Service lấy danh sách từ database SQLite thực tế, tài khoản `customer_test` chúng em vừa đăng ký đã được ghi nhận thành công dưới cơ sở dữ liệu."*
-
-#### 📍 Bước 4: Tạo đơn hàng mới (Áp dụng Facade + Factory + State Pattern)
-*   **Thao tác**:
-    1. Nhấp vào tab **Đặt hàng & Tra cứu** trên Sidebar.
-    2. Tại form đặt hàng bên trái:
-       * *Sản phẩm*: Chọn `iPhone 15 Pro Max`.
-       * *Phương thức vận chuyển*: Chọn **Giao hàng hỏa tốc (Express)** (Hệ thống tính phí ship $15.0).
-       * *Địa chỉ*: Nhập `99 Vo Van Tan, Q3`.
-    3. Nhấn nút **Tiến hành đặt hàng (Facade Process)**.
-*   **Kết quả màn hình**: Hộp thoại Alert màu xanh lá xuất hiện thông báo: `Đặt hàng thành công! Mã đơn: 106. Mã vận đơn (Facade): TRACK_EXPRESS_...` (Lưu ý nhớ mã đơn này, ví dụ là `106`).
-*   **Lời thoại thuyết trình**:
-    > *"Khi em click nút Đặt hàng, một quy trình nghiệp vụ phức tạp sẽ được kích hoạt thông qua **Facade Pattern**. Lớp Facade này làm trung gia điều phối 3 hệ thống con: Kiểm kho (Inventory), Thanh toán (Payment) và Vận chuyển (Shipping). 
+    2. Click vào tab **Đăng Ký** trên form. Nhập tài khoản: `khachhang_demo`, Email: `demo@hsu.edu.vn`, Mật khẩu: `123`. Nhấn **Đăng ký**.
+    3. Nhấp lại tab **Đăng Nhập**. Nhập `khachhang_demo` và mật khẩu `123`. Nhấn **Đăng Nhập**.
+*   **Hiện tượng trên màn hình**: 
+    * Xuất hiện Alert màu xanh thông báo đăng ký thành công User mới kèm ID.
+    * Đăng nhập thành công, Sidebar hiển thị trạng thái màu vàng: **`Xác thực: SQLite Local Database (Fallback)`**.
+*   **🎤 Lời thoại thuyết trình**:
+    > *"Hiện tại, do cụm Microservices C# phía sau đang offline (chưa được bật hoặc gặp sự cố mạng), hệ thống Web chính viết bằng FastAPI đã tự động kích hoạt cơ chế **Fallback (dự phòng cục bộ)** cài đặt tại phương thức [AuthService.login](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/services/auth_service.py#L12). 
     > 
-    > Facade sẽ gọi **Factory Method Pattern** để khởi tạo đơn hàng hỏa tốc (`ExpressOrder`), tự động áp mức phí ship $15.0. 
-    > 
-    > Sau đó, **State Pattern** (`OrderContext`) sẽ quản lý vòng đời trạng thái của đơn hàng tự động chuyển từ `Pending` sang `Paid` và sang `Shipped` sau khi thanh toán thành công. Cuối cùng, dữ liệu được ghi vào SQLite."*
-*   **Mục tiêu chứng minh**: Nắm rõ cách 3 patterns (Facade, Factory Method, State) phối hợp với nhau trong một API đặt hàng tại `api_router.py`.
+    > Thay vì báo lỗi sập hệ thống, FastAPI tự động chuyển hướng truy vấn xuống bảng `users` của SQLite cục bộ để xác thực. Như thầy cô thấy, tài khoản `khachhang_demo` vừa được đăng ký mới và đăng nhập hoàn toàn trơn tru."*
 
-#### 📍 Bước 5: Tra cứu đơn hàng bằng ID (Áp dụng Iterator Pattern Fallback)
+#### 📍 Bước 3: Xem danh sách Users & Đặt hàng mới (Facade + Factory + State)
 *   **Thao tác**:
-    1. Nhìn sang phần **Tra cứu đơn hàng** bên phải, nhập ID đơn hàng vừa tạo: `106`. Nhấn nút **Tìm**.
-    2. Nhấn nút **Làm mới danh sách** ở bảng bên dưới để cập nhật đơn hàng 106 vào danh sách.
-*   **Kết quả màn hình**:
-    * Khung kết quả hiển thị thông tin đơn hàng 106 kèm dòng: **`Nguồn tìm kiếm: SQLite Local (Iterator Pattern Fallback)`**.
-    * Bảng danh sách đơn hàng xuất hiện thêm đơn hàng 106 ở cuối bảng.
-*   **Lời thoại thuyết trình**:
-    > *"Chúng em tiến hành tra cứu đơn hàng 106 vừa đặt. Hệ thống duyệt qua cơ sở dữ liệu bằng **Iterator Pattern** trên lớp `OrderCollection` để tìm kiếm đơn hàng. Nhãn hiển thị nguồn dữ liệu tìm kiếm báo rõ là SQLite Local Fallback do hệ thống tìm kiếm C# đang chạy offline."*
-*   **Mục tiêu chứng minh**: Cách hoạt động của lớp Iterator `OrderCollection`.
+    1. Click tab **Quản lý Users** trên Sidebar để xác nhận user mới đã nằm trong bảng SQLite.
+    2. Click tab **Đặt hàng & Tra cứu** trên Sidebar.
+    3. Điền thông tin đặt đơn hàng:
+       * *Sản phẩm*: Chọn `MacBook Pro M3`.
+       * *Vận chuyển*: Chọn **Giao hàng hỏa tốc (Express)** (Chi phí ship tự động nhảy lên $15.0).
+       * *Địa chỉ*: Nhập `8 Nguyen Van Chiem, Q1`.
+    4. Nhấn nút **Tiến hành đặt hàng (Facade Process)**.
+*   **Hiện tượng trên màn hình**:
+    * Trong bảng danh sách Users xuất hiện dòng chứa `khachhang_demo`.
+    * Đặt đơn hàng thành công, hiển thị mã đơn hàng dạng số (ví dụ: `106`) và mã vận đơn chứa chữ `TRACK_EXPRESS_...`
+*   **🎤 Lời thoại thuyết trình**:
+    > *"Tiếp theo, chúng em tiến hành đặt đơn hàng mới. Quy trình đặt hàng này tích hợp đồng thời 3 Design Patterns để tách biệt trách nhiệm:
+    > 
+    > 1. Đầu tiên, Controller gọi tới lớp [OrderFacade](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/facade.py#L23) (**Facade Pattern**). Lớp mặt tiền này bao bọc quy trình phức tạp gồm: kiểm tra kho, xử lý thanh toán và giao hàng.
+    > 2. Facade gọi tới [OrderFactory](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/factory.py#L33) (**Factory Method Pattern**) để tự động tạo đúng đối tượng đơn hàng hỏa tốc `ExpressOrder` và áp mức phí ship $15.0.
+    > 3. Trạng thái vòng đời đơn hàng được luân chuyển tuần tự thông qua lớp [OrderContext](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/state.py#L36) (**State Pattern**) từ trạng thái `Pending` (Chờ thanh toán) sang `Paid` (Đã thanh toán) và `Shipped` (Đang giao hàng) ngay khi hoàn tất quy trình mà không hề dùng lệnh rẽ nhánh if/else."*
+
+#### 📍 Bước 4: Tìm kiếm đơn hàng cục bộ bằng Iterator Pattern Fallback
+*   **Thao tác**: Nhập mã đơn hàng vừa tạo (ví dụ: `106`) vào ô **Tra cứu đơn hàng** bên phải màn hình. Nhấn **Tìm**.
+*   **Hiện tượng trên màn hình**: Kết quả thông tin đơn hàng hiển thị kèm nhãn màu vàng: **`Nguồn tìm kiếm: SQLite Local (Iterator Pattern Fallback)`**.
+*   **🎤 Lời thoại thuyết trình**:
+    > *"Khi em nhấn nút Tìm kiếm đơn hàng 106, hệ thống nhận thấy C# Search Service đang offline. Lúc này cơ chế dự phòng cục bộ kích hoạt: Nạp toàn bộ đơn hàng trong SQLite vào bộ sưu tập [OrderCollection](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/iterator.py#L3) (**Iterator Pattern**). Bộ duyệt này tự động chạy vòng lặp tuần tự để tìm kiếm và trả về thông tin đơn hàng mà không để lộ cấu trúc lưu trữ nội bộ ra ngoài."*
 
 ---
 
-### 🌐 GIAI ĐOẠN 2: TRÌNH DIỄN HỆ THỐNG ONLINE (LIÊN THÔNG C# MICROSERVICES THỰC TẾ)
-*(Giai đoạn này chứng minh khả năng giao tiếp phân tán và đồng bộ dữ liệu thời gian thực: Khi cụm C# được khởi chạy, Web Component sẽ tự động chuyển sang cấu trúc tích hợp chéo và phân phối tải nghiệp vụ).*
+### GIAI ĐOẠN 2: TRÌNH DIỄN HỆ THỐNG ONLINE (LIÊN THÔNG C# MICROSERVICES THỰC TẾ)
+*(Giai đoạn này chứng minh tính kết nối thời gian thực chéo nền tảng giữa Web FastAPI Python và cụm Microservices C# .NET Core thông qua việc đọc/ghi chung SQLite Database).*
 
-#### 📍 Bước 6: Đăng nhập SSO bằng C# Microservice (Đăng nhập tài khoản thật)
+#### 📍 Bước 5: Đăng nhập SSO bằng C# Microservice (Cổng 5001)
 *   **Thao tác**:
-    1. Nhấn nút **Đăng xuất (Logout)** trên Sidebar để quay lại màn hình Login.
-    2. Sử dụng tài khoản `customer_test` vừa tạo ở Bước 2 với mật khẩu `123` (hoặc tài khoản `bob_johnson` / `123` có sẵn trong database).
-    3. Nhấn **Đăng Nhập**.
-*   **Kết quả màn hình**: 
-    * Sidebar cập nhật thông tin tài khoản thành công.
-    * Dòng trạng thái đổi thành: **`Xác thực: C# SSO Microservice (:5001)`** với màu xanh lá nổi bật.
-*   **Lời thoại thuyết trình**:
-    > *"Bây giờ cụm C# Microservices đã được bật, khi em đăng nhập bằng tài khoản `customer_test` mới tạo, FastAPI sẽ đóng vai trò Proxy gửi yêu cầu xác thực trực tiếp sang **C# SSO Service** ở cổng 5001. 
+    1. Nhấn nút **Đăng xuất (Logout)** trên Sidebar.
+    2. Đăng nhập lại bằng tài khoản `khachhang_demo` vừa đăng ký ở Giai đoạn 1 với mật khẩu `123`. Nhấn **Đăng Nhập**.
+*   **Hiện tượng trên màn hình**: Sidebar cập nhật thông tin thành công và nhãn trạng thái đổi thành màu xanh lá cây nổi bật: **`Xác thực: C# SSO Microservice (:5001)`**.
+*   **🎤 Lời thoại thuyết trình**:
+    > *"Bây giờ cụm dịch vụ C# Microservices đã hoạt động ổn định. Khi em thực hiện đăng nhập lại bằng tài khoản `khachhang_demo` vừa tạo, FastAPI đã đóng vai trò làm Proxy, gửi yêu cầu HTTP POST chứa thông tin đăng nhập trực tiếp tới cổng 5001 của **C# SSOService**. 
     > 
-    > Dịch vụ C# SSO không dùng tài khoản code cứng, mà đã kết nối trực tiếp vào file SQLite `orders.db` dùng chung để kiểm tra thông tin tài khoản thật. Hệ thống xác thực thành công và trả về token xác thực tập trung. Sidebar hiển thị rõ nguồn xác thực từ C# SSO."*
-*   **Mục tiêu chứng minh**: Luồng gọi chéo HTTP API giữa Python và C# và khả năng đọc chung database SQLite để xác thực tài khoản thật.
+    > Dịch vụ C# SSO không dùng tài khoản code cứng, mà đã kết nối trực tiếp vào tệp SQLite `orders.db` dùng chung để kiểm tra thông tin tài khoản thật do Python Web vừa ghi nhận ở Giai đoạn 1. SSO xác nhận thành công và cấp Token bảo mật tập trung."*
 
-#### 📍 Bước 7: Xem số liệu thống kê thời gian thực từ C# Report Microservice (Báo cáo động)
-*   **Thao tác**: Click chọn tab **Dashboard** (Hoặc nhấp vào nút **Lấy báo cáo C#** ở khu vực thống kê).
-*   **Kết quả màn hình**:
-    * Thống kê Tổng đơn hàng hiển thị số lượng đơn hàng thực tế trong Database SQLite (ví dụ: `6` hoặc `10` đơn hàng).
-    * Tổng doanh thu hiển thị số tiền được tính toán động (giá các sản phẩm cộng với phí vận chuyển).
-    * Dòng nguồn dữ liệu Dashboard hiển thị: **`C# Report Microservice (:5003)`**.
-*   **Lời thoại thuyết trình**:
-    > *"Ở màn hình Dashboard, dữ liệu báo cáo tài chính được kết nối trực tiếp với **C# Report Service** cổng 5003. Dịch vụ C# sẽ thực hiện truy vấn động bảng `orders` từ SQLite, bóc tách phương thức vận chuyển và sản phẩm để tính toán ra tổng số đơn và doanh thu thực tế. Khi chúng em đặt thêm đơn hàng, số liệu này sẽ tăng lên tương ứng thay vì dùng dữ liệu giả lập."*
+#### 📍 Bước 6: Lấy báo cáo thống kê chéo từ C# Report Service (Cổng 5003)
+*   **Thao tác**: Click chọn tab **Dashboard** trên Sidebar (Hoặc nhấp vào nút **Lấy báo cáo C#** ở thẻ Dashboard).
+*   **Hiện tượng trên màn hình**: Số lượng đơn hàng và doanh thu cập nhật tự động khớp hoàn toàn với SQLite thực tế. Nhãn hiển thị nguồn dữ liệu Dashboard chuyển thành màu xanh lá: **`C# Report Microservice (:5003)`**.
+*   **🎤 Lời thoại thuyết trình**:
+    > *"Ở màn hình Dashboard thống kê, khi em nhấn nút 'Lấy báo cáo C#', FastAPI gửi yêu cầu GET tới **C# ReportService** cổng 5003. Dịch vụ C# sẽ thực thi câu lệnh SQL để đọc và tính toán động doanh thu (bằng giá trị sản phẩm cộng phí ship tương ứng) trực tiếp từ SQLite và trả về kết quả thời gian thực cho trang Web."*
 
-#### 📍 Bước 8: Tra cứu đơn hàng thật qua C# Search Microservice
-*   **Thao tác**:
-    1. Click tab **Đặt hàng & Tra cứu**.
-    2. Tại ô tra cứu đơn hàng, nhập ID đơn hàng vừa tạo ở Bước 4 (ví dụ: `106`). Nhấn **Tìm**.
-*   **Kết quả màn hình**: Khung kết quả tra cứu hiển thị thông tin sản phẩm kèm dòng nhãn: **`Nguồn tìm kiếm: C# Search Microservice (:5002)`** màu xanh lá cây và dòng chi tiết chứa chữ `(Đã xác minh qua C# Search)`.
-*   **Lời thoại thuyết trình**:
-    > *"Khi em tra cứu đơn hàng vừa đặt, FastAPI sẽ chuyển tiếp yêu cầu đến **C# Search Microservice** ở cổng 5002. C# Search Service quét dữ liệu trong SQLite và tìm thấy đơn hàng thật, trả về kết quả kèm chuỗi chữ xác nhận. Điều này chứng minh sự liên thông dữ liệu 100% giữa cụm microservice C# và database của ứng dụng chính."*
+#### 📍 Bước 7: Tìm kiếm đơn hàng nâng cao qua C# Search Service (Cổng 5002)
+*   **Thao tác**: Click tab **Đặt hàng & Tra cứu**. Nhập ID đơn hàng vừa tạo ở Giai đoạn 1 (ví dụ: `106`) vào ô tìm kiếm. Nhấn **Tìm**.
+*   **Hiện tượng trên màn hình**: Kết quả hiển thị thông tin đơn hàng, tại mục Chi tiết có ghi chữ `(Đã xác minh qua C# Search)` và nhãn nguồn tìm kiếm chuyển thành màu xanh lá: **`Nguồn tìm kiếm: C# Search Microservice (:5002)`**.
+*   **🎤 Lời thoại thuyết trình**:
+    > *"Tương tự với chức năng tra cứu đơn hàng, FastAPI đã chuyển tiếp yêu cầu đến **C# SearchService** ở cổng 5002. C# Search quét bảng `orders` của SQLite và tìm thấy đơn hàng 106, tự động đính kèm chữ xác minh và gửi về cho client hiển thị."*
 
 ---
 
-### 💾 GIAI ĐOẠN 3: MINH CHỨNG TÍNH BỀN VỮNG DỮ LIỆU (PERSISTENCE)
-*(Giai đoạn này chứng minh dữ liệu được lưu xuống ổ đĩa vật lý của DB SQLite chứ không phải lưu tạm trên RAM).*
+### GIAI ĐOẠN 3: MINH CHỨNG TÍNH BỀN VỮNG DỮ LIỆU (PERSISTENCE)
+*(Giai đoạn này giúp bạn ghi điểm tuyệt đối về tính toàn vẹn dữ liệu).*
 
-#### 📍 Bước 9: Tắt Server Web Docker và Khởi động lại
+#### 📍 Bước 8: Tắt Container Docker và khởi động lại để chứng minh dữ liệu lưu thật
 *   **Thao tác**:
-    1. Quay lại cửa sổ PowerShell thứ nhất (chạy Docker), gõ lệnh tắt server:
+    1. Quay lại **Cửa sổ PowerShell thứ nhất** (chạy Docker), gõ lệnh tắt server:
        ```powershell
        docker-compose down
        ```
-    2. F5 lại trình duyệt `http://localhost:8000` $\rightarrow$ Màn hình báo lỗi không thể kết nối (Server đã chết hoàn toàn).
+    2. F5 lại trình duyệt $\rightarrow$ Màn hình báo lỗi không thể truy cập (Server đã tắt hoàn toàn).
     3. Chạy lại lệnh mở server:
        ```powershell
        docker-compose up -d
        ```
-    4. Quay lại trình duyệt F5 tải lại trang $\rightarrow$ Đăng nhập bằng tài khoản `customer_test` đã tạo ở giai đoạn 1.
-    5. Vào tab **Quản lý Users** và tab **Đặt hàng & Tra cứu**.
-*   **Kết quả màn hình**:
-    * Tài khoản `customer_test` đăng nhập thành công bình thường.
-    * Trong danh sách Users vẫn tồn tại tài khoản `customer_test`.
-    * Trong danh sách Đơn hàng vẫn tồn tại đơn hàng `106` đã tạo.
-*   **Lời thoại thuyết trình**:
-    > *"Để chứng minh tính bền vững của dữ liệu, chúng em vừa hạ máy chủ Web Docker xuống và khởi động lại. Khi truy cập lại, toàn bộ thông tin tài khoản đăng ký mới và các đơn hàng đã đặt vẫn được bảo toàn nguyên vẹn trong tệp `orders.db` SQLite vật lý được kết nối qua Singleton, chứng minh hệ thống đạt chuẩn persistence và không bị mất dữ liệu khi restart."*
+    4. Quay lại trình duyệt F5 tải lại trang. Tiến hành đăng nhập bằng tài khoản `khachhang_demo` / `123`.
+    5. Click vào tab **Quản lý Users** và kiểm tra đơn hàng tại tab **Đặt hàng & Tra cứu**.
+*   **Hiện tượng trên màn hình**:
+    * Đăng nhập thành công, tài khoản `khachhang_demo` vẫn có trong bảng quản lý Users.
+    * Đơn hàng `106` đã đặt trước đó vẫn nằm ở cuối danh sách đơn hàng.
+*   **🎤 Lời thoại thuyết trình**:
+    > *"Để chứng minh hệ thống đạt chuẩn bền vững dữ liệu (Persistence) và dữ liệu không chỉ được lưu tạm trên bộ nhớ đệm RAM, chúng em đã hạ hoàn toàn Container chạy Web Python xuống và khởi động lại. Khi truy cập lại trang Web, toàn bộ thông tin người dùng đăng ký mới và đơn hàng 106 trước đó vẫn tồn tại nguyên vẹn, chứng minh dữ liệu được ghi nhận bền vững xuống file SQLite vật lý trên ổ đĩa."*
 
 ---
 
-## 💡 PHẦN 4: MẸO NHỎ GIÚP ĐẠT ĐIỂM TỐI ĐA (TIPS FOR A+)
+## 💾 PHẦN 3: HƯỚNG DẪN ĐỐI CHIẾU DỮ LIỆU BẰNG PHẦN MỀM THỨ BA
+*(Hội đồng chấm thi rất thích khi sinh viên sử dụng công cụ quản trị bên thứ ba để chứng minh tính trung thực của cơ sở dữ liệu).*
 
-1.  **Chủ động nêu tên các Pattern**: Khi thao tác đến bước nào, hãy nhấn mạnh ngay tên Pattern áp dụng ở bước đó (ví dụ: *"Đây là Singleton"*, *"Chỗ này chạy Facade"*). Thầy cô rất thích sinh viên định vị được Pattern trong code.
-2.  **Mở sẵn mã nguồn**: Mở sẵn phần code của các file pattern: `singleton.py`, `facade.py`, `state.py`, `factory.py`, `iterator.py` trên VS Code. Nếu thầy cô hỏi: *"Code Singleton của em nằm ở đâu?"*, hãy Alt-Tab chuyển ngay sang VS Code và chỉ vào đoạn code `_lock` và `Double-Checked Locking`.
-3.  **Tự tin giải thích Fallback**: Nhấn mạnh rằng hệ thống được thiết kế theo tư duy **Microservices phân tán** (Loose Coupling), các dịch vụ không làm sập lẫn nhau. Nếu dịch vụ C# chết, khách hàng vẫn đặt hàng và đăng ký bình thường qua SQLite nội bộ của Python Web.
-4.  **Giải thích đồng bộ dữ liệu thời gian thực**: Trình bày rõ ràng rằng cụm C# Microservices được viết bằng .NET Core sử dụng thư viện `Microsoft.Data.Sqlite` để truy cập trực tiếp và chia sẻ file database `orders.db` với Python FastAPI, giúp loại bỏ hoàn toàn việc sử dụng dữ liệu giả lập và biến đây thành một hệ thống phân tán thực thụ.
+Nếu thầy cô yêu cầu: *"Hãy mở Database lên cho tôi xem dữ liệu thực tế có khớp không?"*, bạn hãy làm theo các bước sau:
+
+1.  **Cách 1: Sử dụng DB Browser for SQLite (Khuyên dùng)**:
+    *   Mở phần mềm **DB Browser for SQLite** đã chuẩn bị ở phần cài đặt.
+    *   Bấm **Open Database** (hoặc nhấn tổ hợp phím `Ctrl + O`).
+    *   Dẫn đến đường dẫn file SQLite chung của dự án:
+        `D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc\orders.db`
+    *   Chọn tab **Browse Data** ở trên cùng.
+    *   Tại mục **Table**, chọn bảng `users` $\rightarrow$ Chỉ cho thầy cô thấy tài khoản `khachhang_demo` vừa đăng ký.
+    *   Chọn bảng `orders` $\rightarrow$ Chỉ cho thầy cô thấy dòng đơn hàng `106` với chi tiết địa chỉ và mã vận đơn tương ứng.
+
+2.  **Cách 2: Sử dụng Extension Database Client của VS Code**:
+    *   Nhấp vào biểu tượng **Database Client** ở thanh Activity Bar bên trái VS Code (Nếu bạn đã cài extension thay thế thành công).
+    *   Nhấp chuột phải vào kết nối SQLite `orders.db` $\rightarrow$ Chọn **Open Table** cho bảng `orders`.
+
+---
+
+## 🛡️ PHẦN 4: MẸO PHÒNG THỦ & TRẢ LỜI CÂU HỎI NHANH (DEFENSE TRICKS)
+
+Để tránh bị động khi bị thầy cô hỏi bất chợt, bạn nên chuẩn bị trước các tab mã nguồn trên VS Code theo sơ đồ sau:
+
+| Tên Mẫu Thiết Kế | Đường dẫn file cần mở sẵn | Dòng cần chỉ ra khi thầy cô hỏi |
+| :--- | :--- | :--- |
+| **Singleton** | [singleton.py](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/singleton.py) | Dòng 17-25: Kiểm tra kép Double-Checked Locking và đồng bộ đa luồng bằng `cls._lock`. |
+| **Factory Method** | [factory.py](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/factory.py) | Lớp cha trừu tượng `Order` và hàm `create_order` phân loại đơn Standard/Express. |
+| **Facade** | [facade.py](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/facade.py) | Dòng 34-70: Hàm `place_order` gọi tuần tự check kho $\rightarrow$ thanh toán $\rightarrow$ giao vận. |
+| **State** | [state.py](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/state.py) | Lớp `OrderContext` chứa biến trạng thái hiện tại và gọi `next_step` để tự cập nhật trạng thái. |
+| **Iterator** | [iterator.py](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/iterator.py) | Cài đặt các hàm `__iter__` và `__next__` để duyệt qua mảng chứa các đơn hàng. |
+| **C# SSO Service** | [SSOService/Program.cs](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/microservices_csharp/SSOService/Program.cs) | Dòng 41-77: Nhận thông tin từ FastAPI và thực thi câu lệnh truy vấn SQLite để xác thực. |
+| **C# Report Service** | [ReportService/Program.cs](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/microservices_csharp/ReportService/Program.cs) | Dòng 41-110: Hàm `summary` thực thi truy vấn tất cả đơn hàng, bóc tách và tính tổng doanh thu động. |

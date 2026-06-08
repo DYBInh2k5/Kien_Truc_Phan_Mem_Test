@@ -3,11 +3,15 @@ using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cấu hình cổng 5003 cho Report Service
+// Cấu hình cổng 5003 cho Report Service lắng nghe trên mọi card mạng (0.0.0.0)
+// Cho phép FastAPI Web Component gửi yêu cầu HTTP Proxy lấy báo cáo động.
 builder.WebHost.UseUrls("http://0.0.0.0:5003");
 
 var app = builder.Build();
 
+/// <summary>
+/// Hàm phân giải đường dẫn cơ sở dữ liệu SQLite chung (orders.db).
+/// </summary>
 string GetDatabaseConnectionString()
 {
     string currentDir = Directory.GetCurrentDirectory();
@@ -38,6 +42,9 @@ string GetDatabaseConnectionString()
     return $"Data Source={dbPath}";
 }
 
+// ==========================================
+// ENDPOINT: LẤY BÁO CÁO THỐNG KÊ DOANH THU ĐỘNG
+// ==========================================
 app.MapGet("/api/report/summary", () => {
     var connectionString = GetDatabaseConnectionString();
     int totalOrders = 0;
@@ -51,16 +58,21 @@ app.MapGet("/api/report/summary", () => {
     try
     {
         connection.Open();
+        
+        // Truy vấn lấy ra chuỗi chi tiết (details) của toàn bộ đơn hàng trong database
         var query = "SELECT details FROM orders";
         using var command = new SqliteCommand(query, connection);
         using var reader = command.ExecuteReader();
+        
+        // Bắt đầu quét qua từng dòng đơn hàng
         while (reader.Read())
         {
             totalOrders++;
             var details = reader.GetString(0);
             
+            // Phân tích loại đơn hàng: Chứa chuỗi "(Express)" hoặc "Express"
             bool isExpress = details.Contains("(Express)") || details.Contains("Express");
-            double shippingCost = isExpress ? 15.0 : 2.5;
+            double shippingCost = isExpress ? 15.0 : 2.5; // Phí ship tương ứng của từng loại đơn
             
             if (isExpress)
             {
@@ -73,20 +85,22 @@ app.MapGet("/api/report/summary", () => {
                 standardCostSum += shippingCost;
             }
 
+            // Phân tích giá sản phẩm từ chuỗi chi tiết để tính tổng doanh thu động thực tế
             double productPrice = 0;
             if (details.Contains("Product ID: 1"))
             {
-                productPrice = 2000.00;
+                productPrice = 2000.00; // MacBook Pro M3
             }
             else if (details.Contains("Product ID: 2"))
             {
-                productPrice = 1200.00;
+                productPrice = 1200.00; // iPhone 15 Pro Max
             }
             else if (details.Contains("Product ID: 3"))
             {
-                productPrice = 150.00;
+                productPrice = 150.00;  // Leopold FC900
             }
 
+            // Doanh thu của đơn hàng = Giá sản phẩm + Phí vận chuyển
             totalRevenue += (productPrice + shippingCost);
         }
         Console.WriteLine($"[Report Service] Generated statistics for {totalOrders} orders via SQLite database query.");
@@ -97,6 +111,7 @@ app.MapGet("/api/report/summary", () => {
         return Results.Json(new { error = $"C# Report Service lỗi hệ thống: {ex.Message}" }, statusCode: 500);
     }
 
+    // Trả về kết quả thống kê tài chính chi tiết
     return Results.Ok(new {
         total_orders = totalOrders,
         total_revenue = totalRevenue,

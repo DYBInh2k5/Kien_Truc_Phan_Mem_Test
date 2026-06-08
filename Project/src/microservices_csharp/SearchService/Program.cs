@@ -3,11 +3,15 @@ using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cấu hình cổng 5002 cho Search Service
+// Cấu hình cổng 5002 cho Search Service lắng nghe trên mọi card mạng (0.0.0.0)
+// Phục vụ việc tiếp nhận các yêu cầu gọi tra cứu đơn hàng chéo nền tảng từ FastAPI.
 builder.WebHost.UseUrls("http://0.0.0.0:5002");
 
 var app = builder.Build();
 
+/// <summary>
+/// Hàm phân giải đường dẫn cơ sở dữ liệu SQLite chung (orders.db).
+/// </summary>
 string GetDatabaseConnectionString()
 {
     string currentDir = Directory.GetCurrentDirectory();
@@ -38,12 +42,17 @@ string GetDatabaseConnectionString()
     return $"Data Source={dbPath}";
 }
 
+// ==========================================
+// ENDPOINT: TRA CỨU ĐƠN HÀNG THEO ID
+// ==========================================
 app.MapGet("/api/search/orders/{id:int}", (int id) => {
     var connectionString = GetDatabaseConnectionString();
     using var connection = new SqliteConnection(connectionString);
     try
     {
         connection.Open();
+        
+        // Thực thi truy vấn SQLite lấy thông tin đơn hàng khớp với ID truyền vào
         var query = "SELECT id, details, status, tracking_code FROM orders WHERE id = @id";
         using var command = new SqliteCommand(query, connection);
         command.Parameters.AddWithValue("@id", id);
@@ -57,6 +66,8 @@ app.MapGet("/api/search/orders/{id:int}", (int id) => {
             var trackingCode = reader.GetString(3);
 
             Console.WriteLine($"[Search Service] Order ID {id} found in SQLite.");
+            
+            // Trả về JSON thành công kèm nhãn xác minh của C# Search để UI hiển thị badge nhận biết
             return Results.Ok(new {
                 id = orderId,
                 details = details + " (Đã xác minh qua C# Search)",
