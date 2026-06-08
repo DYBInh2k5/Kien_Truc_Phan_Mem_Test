@@ -4,7 +4,7 @@ using System.IO;
 var builder = WebApplication.CreateBuilder(args);
 
 // Cấu hình cổng chạy 5001 cho SSO Service
-builder.WebHost.UseUrls("http://localhost:5001");
+builder.WebHost.UseUrls("http://0.0.0.0:5001");
 
 var app = builder.Build();
 

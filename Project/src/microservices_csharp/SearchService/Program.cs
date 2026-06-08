@@ -4,7 +4,7 @@ using System.IO;
 var builder = WebApplication.CreateBuilder(args);
 
 // Cấu hình cổng 5002 cho Search Service
-builder.WebHost.UseUrls("http://localhost:5002");
+builder.WebHost.UseUrls("http://0.0.0.0:5002");
 
 var app = builder.Build();
 

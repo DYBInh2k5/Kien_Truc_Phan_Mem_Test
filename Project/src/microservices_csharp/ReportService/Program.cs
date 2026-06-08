@@ -4,7 +4,7 @@ using System.IO;
 var builder = WebApplication.CreateBuilder(args);
 
 // Cấu hình cổng 5003 cho Report Service
-builder.WebHost.UseUrls("http://localhost:5003");
+builder.WebHost.UseUrls("http://0.0.0.0:5003");
 
 var app = builder.Build();
 
