@@ -38,115 +38,160 @@ Hệ thống OMS được xây dựng trên sự kết hợp của:
 
 ## PHẦN 2: THIẾT KẾ KIẾN TRÚC & SƠ ĐỒ HỆ THỐNG (DIAGRAMS)
 
-### 2.1 Sơ đồ Triển khai Kiến trúc (Component / Deployment Diagram)
-Sơ đồ dưới đây mô tả cấu trúc phân tầng của Web Component (FastAPI MVC) và cách nó tương tác với cơ sở dữ liệu SQLite thật cũng như giao tiếp với cụm dịch vụ Microservices viết bằng C# .NET.
+### 2.1 Sơ đồ Kiến trúc & Triển khai Hệ thống (Tích hợp 5+ Design Patterns)
+Sơ đồ dưới đây mô tả chi tiết kiến trúc phân tầng n-Tier (Web Component FastAPI MVC) được đóng gói trong container Docker và cách nó tích hợp **5+ Design Patterns** (Singleton, Factory Method, Facade, State, Iterator, Proxy Gateway) để giao tiếp hiệu quả với cơ sở dữ liệu SQLite và cụm Microservices C# chạy trên máy host.
 
 ```mermaid
-graph TD
-    Client((Client App / Browser))
+graph TB
+    classDef client fill:#d4ebf2,stroke:#1a73e8,stroke-width:2px;
+    classDef container fill:#fcfcfc,stroke:#5f6368,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef component fill:#e8f0fe,stroke:#1a73e8,stroke-width:2px;
+    classDef pattern fill:#fef7e0,stroke:#f9ab00,stroke-width:2px;
+    classDef db fill:#e6f4ea,stroke:#137333,stroke-width:2px;
+    classDef service fill:#fce8e6,stroke:#c5221f,stroke-width:2px;
 
-    subgraph MVC_nLayers_Web_Component
-        Controller[Controllers & Routers]
-        Service[Services Layer]
-        Repository[Repositories / Database]
+    Client((Client App / Browser)):::client
+
+    subgraph Web_Application_Docker_Container ["Web Application Container (FastAPI MVC - Port 8000)"]
         
-        Controller --> Service
-        Service --> Repository
+        subgraph Controller_Layer ["Controller Layer"]
+            api_router[api_router.py<br/><i>(Proxy Gateway Pattern)</i>]:::component
+        end
+
+        subgraph Business_Logic_Service_Layer ["Business Logic & Design Patterns Layer"]
+            facade[OrderFacade<br/><b>[Facade Pattern]</b>]:::pattern
+            
+            subgraph Subsystems ["Internal Subsystems (Facade Hidden)"]
+                inv[InventorySystem]:::component
+                pay[PaymentSystem]:::component
+                ship[ShippingSystem]:::component
+            end
+            
+            factory[OrderFactory<br/><b>[Factory Method Pattern]</b>]:::pattern
+            
+            subgraph Order_Hierarchy ["Order Class Hierarchy"]
+                order[Order (Abstract)]:::component
+                std_order[StandardOrder]:::component
+                exp_order[ExpressOrder]:::component
+            end
+
+            context[OrderContext<br/><b>[State Pattern Context]</b>]:::pattern
+            
+            subgraph State_Hierarchy ["Order State Hierarchy"]
+                state[OrderState (Interface)]:::component
+                pending_st[PendingState]:::component
+                paid_st[PaidState]:::component
+                shipped_st[ShippedState]:::component
+            end
+            
+            collection[OrderCollection<br/><b>[Iterator Pattern]</b>]:::pattern
+        end
+
+        subgraph Repository_Persistence_Layer ["Repository & Persistence Layer"]
+            db_conn[DatabaseConnection<br/><b>[Singleton Pattern]</b>]:::pattern
+        end
     end
 
-    subgraph CSharp_Microservices_Component
-        SSO[Auth SSO Service :5001]
-        Search[Search API Service :5002]
-        Report[Statistical Report Service :5003]
+    subgraph CSharp_Microservices_Cluster ["Host Windows OS (C# Microservices Cluster)"]
+        SSO[Auth SSO Service<br/>Port 5001]:::service
+        Search[Search API Service<br/>Port 5002]:::service
+        Report[Statistical Report Service<br/>Port 5003]:::service
     end
 
-    Client -- HTTP/REST --> Controller
-    Controller -- HTTP/REST --> SSO
-    Service -- HTTP/REST --> Search
-    Service -- HTTP/REST --> Report
-    Repository -.-> DB[(SQLite DB - orders.db)]
+    subgraph Storage_Tier ["Storage Tier"]
+        DB[(SQLite DB<br/>orders.db)]:::db
+    end
+
+    %% Interactions
+    Client -- "1. HTTP Request" --> api_router
+    
+    %% Proxy / Gateway Pattern
+    api_router -- "HTTP POST (Verify SSO Token)" --> SSO
+    api_router -- "HTTP GET (Advanced Search)" --> Search
+    api_router -- "HTTP GET (Dynamic Report Summary)" --> Report
+    
+    %% Controller calling Facade, Iterator, Singleton
+    api_router -- "2. place_order()" --> facade
+    api_router -- "Traverses / Finds Orders" --> collection
+    api_router -- "Reads/Writes User Session" --> db_conn
+    
+    %% Facade orchestrates subsystems
+    facade -- "a. create_order()" --> factory
+    factory --> order
+    order <|-- std_order
+    order <|-- exp_order
+    
+    facade -- "b. check_stock()" --> inv
+    facade -- "c. process_payment()" --> pay
+    facade -- "d. arrange_shipping()" --> ship
+    
+    facade -- "e. proceed() (Updates status)" --> context
+    context o-- state
+    state <|-- pending_st
+    state <|-- paid_st
+    state <|-- shipped_st
+    
+    %% Database Connection (Singleton)
+    db_conn -- "Maintains Connection" --> DB
+    api_router -- "Fallback Local Database Queries" --> db_conn
+    collection -- "Reads records via sqlite3" --> db_conn
 ```
 
 ---
 
-### 2.2 Sơ đồ Class Diagram ban đầu (Chưa áp dụng Design Pattern)
-Khi chưa có Design Pattern, mọi logic nghiệp vụ (kiểm kho, thanh toán, giao hàng) và quản lý trạng thái của Đơn hàng đều bị dồn vào lớp `OrderService` khiến cấu trúc bị thắt nút cổ chai và khó bảo trì.
-
-```mermaid
-classDiagram
-    class OrderController {
-        +placeOrder(productId, type, address)
-        +changeStatus(orderId, status)
-    }
-    class OrderService {
-        +dbConn
-        +inventoryApi
-        +paymentApi
-        +createOrder(productId, type, address)
-        +updateStatus(orderId, newStatus)
-    }
-    class Order {
-        +id
-        +type
-        +status
-        +shipping_cost
-    }
-
-    OrderController --> OrderService
-    OrderService ..> Order : creates/updates
-```
-
----
-
-### 2.3 Sơ đồ Class Diagram cuối cùng (Áp dụng 5 Design Patterns)
-Sơ đồ thiết kế hoàn thiện sau khi tích hợp 5 Design Patterns: Singleton, Factory Method, Facade, State và Iterator.
+### 2.2 Sơ đồ Class Diagram Tổng thể Hệ thống (Áp dụng 5 Design Patterns)
+Sơ đồ thiết kế hoàn thiện biểu diễn cấu trúc của các lớp và mối quan hệ chặt chẽ giữa các thành phần sau khi tích hợp 5 Design Patterns: Singleton, Factory Method, Facade, State và Iterator.
 
 ```mermaid
 classDiagram
     %% ======= DESIGN PATTERNS ======= %%
     class DatabaseConnection {
         <<Singleton>>
-        - _instance : static
+        - _instance : static DatabaseConnection
         - _lock : ThreadLock
-        - _db_file
-        + query(sql, params)
-        + execute(sql, params)
+        - _db_file : str
+        + __new__() : DatabaseConnection
+        + _init_db()
+        + query(sql : str, params : tuple) : list
+        + execute(sql : str, params : tuple) : int
     }
 
     class OrderFactory {
         <<Factory Method>>
-        + create_order(productId, type) : Order
+        + create_order(productId : int, type : str) : Order
     }
 
     class OrderFacade {
         <<Facade>>
-        - inventorySystem
-        - paymentSystem
-        - shippingSystem
-        + place_order(productId, type, address)
+        - inventorySystem : InventorySystem
+        - paymentSystem : PaymentSystem
+        - shippingSystem : ShippingSystem
+        + place_order(productId : int, type : str, address : str) : dict
     }
 
     class OrderState {
         <<State - Interface>>
-        + next_step(context)
-        + get_status_name()
+        + next_step(context : OrderContext)* str
+        + get_status_name()* str
     }
 
     class OrderContext {
         <<State Context>>
-        - state: OrderState
-        + set_state(state)
-        + proceed()
-        + current_status()
+        - state : OrderState
+        + __init__()
+        + set_state(state : OrderState)
+        + proceed() : str
+        + current_status() : str
     }
 
     class OrderCollection {
         <<Iterator>>
-        - _orders
-        + add_order(order_data)
-        + __iter__()
-        + __next__()
-        + find_order(order_id)
+        - _orders : list
+        - _index : int
+        + add_order(order_data : dict)
+        + __iter__() : OrderCollection
+        + __next__() : dict
+        + find_order(order_id : int) : dict
     }
 
     %% ======= CLASSES & MODELS ======= %%
@@ -159,15 +204,27 @@ classDiagram
     
     class Order {
         <<Abstract Model>>
-        + product_id
-        + get_shipping_cost()*
-        + get_order_type()*
+        + product_id : int
+        + get_shipping_cost()* float
+        + get_order_type()* str
     }
     class StandardOrder {
-        + get_shipping_cost() ($2.5)
+        + get_shipping_cost() float ($2.5)
+        + get_order_type() str ("Standard")
     }
     class ExpressOrder {
-        + get_shipping_cost() ($15.0)
+        + get_shipping_cost() float ($15.0)
+        + get_order_type() str ("Express")
+    }
+
+    class InventorySystem {
+        + check_stock(product_id : int) bool
+    }
+    class PaymentSystem {
+        + process_payment(amount : float) bool
+    }
+    class ShippingSystem {
+        + arrange_shipping(product_id : int, address : str) str
     }
     
     Order <|-- StandardOrder
@@ -178,18 +235,120 @@ classDiagram
     OrderState <|-- ShippedState
 
     %% ======= MỐI QUAN HỆ ======= %%
-    OrderController --> OrderFacade : uses to place order
-    OrderController --> OrderCollection : iterates orders
-    OrderController --> DatabaseConnection : access DB
-    OrderFacade --> OrderFactory : creates order class
-    OrderFacade --> OrderContext : runs order state machine
-    OrderFactory ..> Order : instantiates
-    OrderContext o--> OrderState : aggregates status
+    OrderController --> OrderFacade : uses
+    OrderController --> OrderCollection : iterates
+    OrderController --> DatabaseConnection : accesses
+    OrderFacade --> OrderFactory : instantiates Orders
+    OrderFacade --> OrderContext : runs State Machine
+    OrderFacade --> InventorySystem : delegates
+    OrderFacade --> PaymentSystem : delegates
+    OrderFacade --> ShippingSystem : delegates
+    OrderFactory ..> Order : creates
+    OrderContext o--> OrderState : delegates behavior
 ```
 
 ---
 
-### 2.4 Sơ đồ Sequence Diagram: Luồng nghiệp vụ
+### 2.3 Sơ đồ Chi tiết Mẫu thiết kế State (Trước khi áp dụng - Before)
+Khi chưa có State Pattern, logic cập nhật và quản lý trạng thái của Đơn hàng gặp lỗi **Tight Coupling** và vi phạm nguyên lý **Open/Closed Principle (OCP)** của SOLID. Các trạng thái được kiểm soát thông qua biến chuỗi/mã trạng thái (`status: string`) và một chuỗi các câu lệnh `if/else` rẽ nhánh lồng nhau phức tạp bên trong một lớp xử lý nghiệp vụ monolithic (`OrderService`).
+
+```mermaid
+classDiagram
+    class OrderController {
+        +place_order(product_id: int, type: string, address: string)
+        +update_order_status(order_id: int, target_status: string)
+    }
+    
+    class Order {
+        +id: int
+        +product_id: int
+        +type: string
+        +status: string
+        +shipping_cost: float
+        +address: string
+        +tracking_code: string
+    }
+
+    class OrderService_Monolithic {
+        -db_connection: DatabaseConnection
+        +create_order(product_id: int, type: string, address: string): Order
+        +process_payment(order_id: int): bool
+        +arrange_shipping(order_id: int): string
+        +update_status(order_id: int, target_status: string): string
+    }
+
+    note for OrderService_Monolithic "Logic update_status() phụ thuộc vào if/else lồng nhau:\n\nif self.status == 'Pending':\n    if target_status == 'Paid':\n        self.status = 'Paid'\n        # Ghi SQLite...\n    else:\n        raise Exception('Trạng thái không hợp lệ')\nelif self.status == 'Paid':\n    if target_status == 'Shipped':\n        self.status = 'Shipped'\n        # Ghi SQLite...\n    else:\n        raise Exception('Trạng thái không hợp lệ')\nelif self.status == 'Shipped':\n    raise Exception('Không thể chuyển trạng thái thêm')"
+
+    OrderController --> OrderService_Monolithic : Gọi nghiệp vụ đặt & cập nhật
+    OrderService_Monolithic ..> Order : Tạo & trực tiếp thay đổi thuộc tính
+```
+
+**Nhược điểm của thiết kế cũ:**
+1. **Spaghetti Code**: Mã nguồn bị phình to khi thêm trạng thái mới (ví dụ: `Cancelled`, `Refunded`, `Delivered`). Lớp `OrderService` trở thành God Class gánh vác mọi logic chuyển đổi.
+2. **Dễ phát sinh lỗi**: Việc trực tiếp thay đổi thuộc tính `status` ở nhiều nơi làm mất đi tính đóng gói dữ liệu, dễ dẫn đến trạng thái đơn hàng bị cập nhật sai luồng logic nghiệp vụ.
+
+---
+
+### 2.4 Sơ đồ Chi tiết Mẫu thiết kế State (Sau khi áp dụng - After)
+Sau khi áp dụng mẫu thiết kế **State (Behavioral Group)**, mỗi trạng thái của đơn hàng được đóng gói thành một lớp thực thể riêng biệt triển khai từ giao diện `OrderState`. Toàn bộ logic kiểm soát luồng di chuyển trạng thái được phân bổ về từng Class trạng thái cụ thể, loại bỏ hoàn toàn các câu lệnh `if/else` lồng nhau.
+
+```mermaid
+classDiagram
+    class OrderFacade {
+        -inventory: InventorySystem
+        -payment: PaymentSystem
+        -shipping: ShippingSystem
+        +place_order(product_id: int, order_type: string, address: string): dict
+    }
+
+    class OrderContext {
+        -state: OrderState
+        +__init__()
+        +set_state(state: OrderState)
+        +proceed(): string
+        +current_status(): string
+    }
+
+    class OrderState {
+        <<interface>>
+        +next_step(context: OrderContext)* string
+        +get_status_name()* string
+    }
+
+    class PendingState {
+        +next_step(context: OrderContext) string
+        +get_status_name() string
+    }
+
+    class PaidState {
+        +next_step(context: OrderContext) string
+        +get_status_name() string
+    }
+
+    class ShippedState {
+        +next_step(context: OrderContext) string
+        +get_status_name() string
+    }
+
+    OrderFacade --> OrderContext : Điều phối quy trình và vòng đời đơn hàng
+    OrderContext o--> OrderState : Tập hợp trạng thái hiện tại (Aggregation)
+    OrderState <|.. PendingState : Triển khai (Realization)
+    OrderState <|.. PaidState : Triển khai (Realization)
+    OrderState <|.. ShippedState : Triển khai (Realization)
+
+    note for PendingState "next_step(context):\n    context.set_state(PaidState())\n    return 'Pending -> Paid'"
+    note for PaidState "next_step(context):\n    context.set_state(ShippedState())\n    return 'Paid -> Shipped'"
+    note for ShippedState "next_step(context):\n    return 'Đã giao vận chuyển (Trạng thái cuối)'"
+```
+
+**Ưu điểm vượt trội của thiết kế mới:**
+1. **Loose Coupling & Single Responsibility**: Tách biệt rõ ràng. `PendingState` chỉ quản lý việc chuyển sang `PaidState`, `PaidState` chỉ quản lý chuyển sang `ShippedState`.
+2. **Dễ bảo trì và mở rộng (OCP)**: Khi hệ thống cần thêm trạng thái `CancelledState`, ta chỉ cần tạo một Class mới kế thừa từ `OrderState` và thay đổi liên kết chuyển tiếp từ `PendingState` hoặc `PaidState` mà không cần đụng tới code hiện tại của các trạng thái khác.
+3. **Mã nguồn sạch sẽ**: Loại bỏ hoàn toàn khối `if-else` lồng nhau. Việc quản lý chuyển dịch trạng thái thông qua cơ chế đa hình (`Polymorphism`) thay vì kiểm tra giá trị chuỗi thủ công.
+
+---
+
+### 2.5 Sơ đồ Sequence Diagram: Luồng nghiệp vụ
 So sánh sự khác biệt lớn về độ phức tạp khi có và không có các mẫu thiết kế:
 
 #### A. Khi chưa có Facade và State Pattern
