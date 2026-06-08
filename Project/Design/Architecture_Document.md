@@ -1,10 +1,51 @@
 # Tài Liệu Thiết Kế (Architecture Document) - Hệ Thống Quản Lý Đơn Hàng
 
-## 1. Problem Description (Mô tả bài toán)
-Hệ thống quản lý đơn hàng gặp thách thức về tính mở rộng khi nghiệp vụ xử lý đơn hàng phức tạp dần lên (phải tương tác với kho hàng, thanh toán, giao vận, xuất báo cáo...). Quản lý trạng thái đơn hàng (Đang chờ -> Đã thanh toán -> Đã giao) bằng cấu trúc lệnh `if/else` truyền thống dễ gây ra mã nguồn phức tạp (Spaghetti code) và khó bảo trì.
-Ngoài ra, cần đảm bảo ứng dụng có thể ch�## 2. System Diagram (Component / Deployment Diagram with 5+ Design Patterns)
+## 1. Problem Description & Architectural Styles (Mô tả bài toán & Phong cách Kiến trúc)
 
-Sơ đồ triển khai hệ thống chi tiết cho thấy Cụm MVC phục vụ Client được đóng gói trong Docker Container và kết nối với các Microservices nội bộ trên máy host Windows. Đồng thời thể hiện rõ vị trí hoạt động của **5+ Design Patterns** trong kiến trúc.
+### 1.1 Mô tả bài toán thực tế (Problem Description)
+Trong các doanh nghiệp thương mại điện tử hiện nay, hệ thống xử lý đơn hàng (Order Management System - OMS) phải đối mặt với sự phức tạp ngày càng tăng của quy trình nghiệp vụ. Một đơn hàng từ lúc khởi tạo đến lúc hoàn tất cần đi qua hàng loạt bước kiểm tra tồn kho hàng hóa (Inventory System), xử lý giao dịch thanh toán thông qua ngân hàng/ví điện tử (Payment System), và thiết lập vận đơn vận chuyển giao cho đối tác logistics (Shipping System).
+
+Nếu cài đặt theo tư duy lập trình cấu trúc tuần tự hoặc sử dụng các câu lệnh rẽ nhánh `if/else` lồng nhau để quản lý trạng thái đơn hàng (Đang chờ duyệt -> Đã thanh toán -> Đang giao -> Hoàn tất), hệ thống sẽ gặp các vấn đề nghiêm trọng:
+1.  **Mã nguồn Spaghetti**: Logic nghiệp vụ bị phân tán và đan xen chéo, làm cho các class trở nên phình to khó đọc (God Object/Monster Class).
+2.  **Vi phạm nguyên lý OCP (Open/Closed Principle)**: Mỗi khi doanh nghiệp bổ sung trạng thái đơn hàng mới (như Trả hàng, Giao thất bại, Chờ hoàn tiền) hoặc loại hình giao hàng mới (giao hỏa tốc 2h), ta buộc phải chỉnh sửa trực tiếp mã nguồn hiện hữu, dễ dẫn đến các lỗi dây chuyền khó kiểm soát.
+3.  **Tải trọng tập trung và Khó tích hợp**: Hệ thống đơn lẻ (Monolithic) không thể phân tách các dịch vụ phụ trợ như Xác thực, Tìm kiếm nâng cao và Thống kê để chịu tải độc lập hoặc triển khai trên các công nghệ phần cứng tối ưu hơn.
+
+### 1.2 Giải pháp kỹ thuật và Kiến trúc Hệ thống (Architectural Styles)
+Hệ thống OMS được thiết kế kết hợp giữa hai phong cách kiến trúc hiện đại và mạnh mẽ:
+
+#### A. Kiến trúc phân tầng n-Tier (Mô hình MVC) cho Web API
+Web API chính được xây dựng trên nền tảng **Python FastAPI** và cơ sở dữ liệu vật lý **SQLite**, tuân thủ nghiêm ngặt mô hình phân tách trách nhiệm **Model - View - Controller**:
+*   **View (Tầng giao diện)**: Sử dụng Single Page Application (SPA) viết bằng Vanilla HTML, CSS (chủ đề Slate Modern) và Javascript. View không chứa logic nghiệp vụ, giao tiếp với Controller hoàn toàn bất đồng bộ thông qua các yêu cầu AJAX/Fetch API.
+*   **Controller (Tầng điều hướng)**: Tiếp nhận các yêu cầu HTTP Request từ Client, thực hiện kiểm tra dữ liệu đầu vào (Validation) sơ bộ, sau đó chuyển giao yêu cầu cho tầng Service xử lý. Tầng này cũng đảm nhận vai trò định tuyến và làm Proxy Gateway liên thông dữ liệu tới các Microservices.
+*   **Service & Patterns Layer (Tầng xử lý nghiệp vụ)**: Nơi chứa toàn bộ logic xử lý chính của đơn hàng. Đây là nơi 5 Design Patterns được nhúng trực tiếp để module hóa code, cách ly logic và thúc đẩy Loose Coupling (liên kết lỏng).
+*   **Repository (Tầng truy xuất dữ liệu)**: Chịu trách nhiệm giao tiếp trực tiếp với cơ sở dữ liệu SQLite (`orders.db`) để thực hiện các thao tác CRUD dữ liệu người dùng và đơn hàng.
+
+##### Bảng ánh xạ cấu trúc thư mục thực tế (Directory Mapping):
+| Tầng kiến trúc | Thư mục / Tệp tin trên Disk | Nhiệm vụ cụ thể trong dự án |
+| :--- | :--- | :--- |
+| **View** | `Project/src/web_mvc/app/static/` | Gồm `index.html` (giao diện), `style.css` (style Slate), `app.js` (xử lý logic client). |
+| **Controller** | `Project/src/web_mvc/app/controllers/api_router.py` | Định tuyến REST API, kiểm tra phiên đăng nhập và định cấu hình Proxy Gateway. |
+| **Service & Patterns** | `Project/src/web_mvc/app/patterns/` | Chứa 5 patterns: `facade.py`, `factory.py`, `state.py`, `iterator.py`, `singleton.py`. |
+| **Model** | `Project/src/web_mvc/app/models/` | Định nghĩa các lớp dữ liệu và thực thể ánh xạ (ORM/Schema). |
+| **Repository (Data)** | `Project/src/web_mvc/app/patterns/singleton.py` | Lớp `DatabaseConnection` quản lý tập trung toàn bộ truy vấn SQL thô tới tệp `orders.db`. |
+
+#### B. Kiến trúc Microservices phân tán (Distributed Services Architecture)
+Hệ thống OMS tách rời 3 chức năng phụ trợ sang **3 Microservices độc lập** viết bằng ngôn ngữ **C# (.NET 8.0 Minimal APIs)**, chạy trên các cổng (port) riêng biệt nhằm tăng khả năng chịu tải và độc lập bảo trì:
+1.  **Auth SSO Service (Port 5001)**: Quản lý đăng nhập tập trung, kiểm tra thông tin tài khoản trực tiếp từ SQLite và cấp mã phiên (JWT Token).
+2.  **Search API Service (Port 5002)**: Thực hiện tìm kiếm nhanh thông tin đơn hàng theo ID trực tiếp từ database SQLite dùng chung.
+3.  **Statistical Report Service (Port 5003)**: Thu thập toàn bộ dữ liệu đơn hàng trong SQLite, thực hiện phân tích tổng hợp (Aggregations) để tính toán doanh thu thực tế và phân tích xu hướng vận chuyển.
+
+##### Giao thức truyền tin và Cơ chế dự phòng lỗi (Communication & Resiliency)
+*   **Giao thức**: Giao tiếp giữa FastAPI Web Component và C# Microservices được thực hiện bất đồng bộ hoặc đồng bộ qua cổng mạng nội bộ bằng **HTTP/RESTful APIs** với định dạng dữ liệu chuẩn JSON.
+*   **Cơ chế dự phòng (Resiliency / Fallback)**: Để đảm bảo tính sẵn sàng cao, hệ thống triển khai cơ chế **Graceful Degradation** (Suy giảm mượt mà):
+    - Khi **C# SSO Service** hoặc **C# Search Service** offline: Hệ thống tự động kích hoạt **Fallback**, chuyển dịch logic xác thực và tìm kiếm xuống database SQLite cục bộ thông qua các hàm dự phòng chạy bằng **Iterator Pattern**.
+    - Khi **C# Report Service** offline: Hệ thống FastAPI tự động bắt lỗi và trả về dữ liệu thống kê giả lập/cached gần nhất (Mock Fallback) thay vì trả về lỗi 500 cho Client.
+
+---
+
+## 2. System Diagram (Component / Deployment Diagram with 5+ Design Patterns)
+
+Sơ đồ triển khai hệ thống chi tiết cho thấy Cm MVC phục vụ Client được đóng gói trong Docker Container và kết nối với các Microservices nội bộ trên máy host Windows. Đồng thời thể hiện rõ vị trí hoạt động của **5+ Design Patterns** trong kiến trúc.
 
 ```mermaid
 graph TB
@@ -309,6 +350,54 @@ classDiagram
 
 ---
 
+### 4.3 Phân tích học thuật chi tiết 5 Design Patterns áp dụng
+
+#### A. Singleton Pattern (`singleton.py`)
+*   **Ý tưởng cốt lõi & Bài toán giải quyết**: Trong môi trường web đa luồng, việc mỗi luồng tự tạo một kết nối database SQLite vật lý độc lập sẽ nhanh chóng làm cạn kiệt tài nguyên file descriptor và gây ra lỗi `Database is locked`. Mẫu **Singleton** được áp dụng để đảm bảo toàn bộ ứng dụng chỉ duy trì duy nhất một thực thể kết nối database `DatabaseConnection` trong suốt vòng đời chạy.
+*   **Thành phần tham gia**: `DatabaseConnection` chứa thực thể tĩnh duy nhất `_instance`, khóa `_lock` và các phương thức thực thi SQL.
+*   **Đánh giá Ưu và Nhược điểm**:
+    *   *Ưu điểm*: Kiểm soát tập trung tài nguyên kết nối, tiết kiệm RAM, ngăn chặn Race Condition khi ghi SQLite.
+    *   *Nhược điểm*: Tạo ra Global State gây khó khăn khi viết Unit Test độc lập.
+*   **Mối liên hệ SOLID**: Tuân thủ nguyên lý **Single Responsibility Principle (SRP)**: Lớp này chỉ chịu trách nhiệm duy nhất là quản lý kết nối và thực thi các truy vấn SQL an toàn đa luồng.
+
+#### B. Factory Method Pattern (`factory.py`)
+*   **Ý tưởng cốt lõi & Bài toán giải quyết**: Tránh khởi tạo trực tiếp các lớp con cụ thể (`StandardOrder` hoặc `ExpressOrder`) bằng từ khóa New trong tầng nghiệp vụ, giúp độc lập hóa quá trình tạo đối tượng đơn hàng.
+*   **Thành phần tham gia**: `Order` (Abstract Product), `StandardOrder` / `ExpressOrder` (Concrete Products), `OrderFactory` (Creator).
+*   **Đánh giá Ưu và Nhược điểm**:
+    *   *Ưu điểm*: Loại bỏ sự phụ thuộc chằng chit giữa Client và các lớp sản phẩm cụ thể.
+    *   *Nhược điểm*: Số lượng class con tăng lên tương ứng khi mở rộng dịch vụ.
+*   **Mối liên hệ SOLID**:
+    *   Tuân thủ nguyên lý **Open/Closed Principle (OCP)**: Thêm loại hình giao hàng mới chỉ cần viết thêm Class mới kế thừa `Order` mà không cần chỉnh sửa các class giao hàng cũ.
+    *   Tuân thủ nguyên lý **Dependency Inversion Principle (DIP)**: Tầng nghiệp vụ phụ thuộc vào lớp trừu tượng `Order` chứ không phụ thuộc vào lớp cụ thể.
+
+#### C. Facade Pattern (`facade.py`)
+*   **Ý tưởng cốt lõi & Bài toán giải quyết**: Đặt hàng là một quy trình tích hợp phức tạp, liên quan đến 3 hệ thống con độc lập (Subsystems): Kiểm tra tồn kho hàng hóa (`InventorySystem`), xử lý thanh toán cổng ngân hàng (`PaymentSystem`), và thiết lập thông tin đối tác vận chuyển (`ShippingSystem`). Để tránh Controller trực tiếp giao tiếp với cả 3 lớp này gây ra Tight Coupling, **Facade** cung cấp giao diện mặt tiền đơn giản duy nhất để đơn giản hóa giao thức gọi hàm.
+*   **Thành phần tham gia**: `OrderFacade` (Facade Class), `InventorySystem`, `PaymentSystem`, `ShippingSystem` (Subsystems).
+*   **Đánh giá Ưu và Nhược điểm**:
+    *   *Ưu điểm*: Giảm sự phụ thuộc chéo (Loose Coupling) giữa Controller và các Subsystem. Dễ đọc, dễ kiểm thử.
+    *   *Nhược điểm*: Lớp Facade có thể biến thành God Object gánh vác quá nhiều logic tích hợp nếu không thiết kế chia nhỏ.
+*   **Mối liên hệ SOLID**: Tuân thủ nguyên lý **Interface Segregation Principle (ISP)**: Khách hàng chỉ tiếp xúc với giao diện đơn giản nhất có thể mà họ cần (`place_order`), không bị bắt buộc phụ thuộc vào các API chi tiết của từng Subsystem.
+
+#### D. State Pattern (`state.py`)
+*   **Ý tưởng cốt lõi & Bài toán giải quyết**: Tránh quản lý trạng thái bằng câu điều kiện rẽ nhánh `if/else` lồng nhau phức tạp bên trong class nghiệp vụ. **State Pattern** đóng gói mỗi trạng thái của đơn hàng thành các lớp thực thể độc lập, chuyển giao trách nhiệm xử lý chuyển trạng thái cho chính lớp trạng thái hiện hành.
+*   **Thành phần tham gia**: `OrderContext` (Context), `OrderState` (State Interface), `PendingState` / `PaidState` / `ShippedState` (Concrete States).
+*   **Đánh giá Ưu và Nhược điểm**:
+    *   *Ưu điểm*: Loại bỏ hoàn toàn Spaghetti code `if/else`, đóng gói chặt chẽ logic chuyển dịch trạng thái.
+    *   *Nhược điểm*: Làm tăng số lượng lớp con trạng thái trong mã nguồn.
+*   **Mối liên hệ SOLID**:
+    *   Tuân thủ nguyên lý **Single Responsibility Principle (SRP)**: Mỗi class trạng thái chịu trách nhiệm duy nhất cho logic nghiệp vụ chuyển dịch trạng thái của chính nó.
+    *   Tuân thủ nguyên lý **Open/Closed Principle (OCP)**: Bổ sung thêm trạng thái đơn hàng mới chỉ cần viết thêm Class trạng thái mới kế thừa từ `OrderState` mà hoàn toàn không ảnh hưởng đến code của các trạng thái hiện tại.
+
+#### E. Iterator Pattern (`iterator.py`)
+*   **Ý tưởng cốt lõi & Bài toán giải quyết**: Duyệt qua danh sách các đơn hàng mà không để lộ cấu trúc dữ liệu lưu trữ nội bộ của danh sách (như list, array, tree...) cho Client bên ngoài.
+*   **Thành phần tham gia**: `OrderCollection` (Aggregate), Python built-in protocol `__iter__` và `__next__` (Iterator).
+*   **Đánh giá Ưu và Nhược điểm**:
+    *   *Ưu điểm*: Che giấu cấu trúc dữ liệu lưu trữ bên dưới, đơn giản hóa mã nguồn duyệt phần tử ở Client.
+    *   *Nhược điểm*: Duyệt Iterator có thể tốn tài nguyên bộ nhớ hơn so với việc truy cập trực tiếp theo index nếu dữ liệu có kích thước cực lớn.
+*   **Mối liên hệ SOLID**: Tuân thủ nguyên lý **Single Responsibility Principle (SRP)**: Tách rời hoàn toàn trách nhiệm quản lý lưu trữ dữ liệu đơn hàng ra khỏi trách nhiệm duyệt qua các phần tử đơn hàng tuần tự.
+
+---
+
 ## 5. Sequence Diagram: Luồng nghiệp vụ (Sequence: Trạng thái Đơn hàng 1st vs Final)
 
 ### 5.1. Quy trình Đặt hàng lúc CHƯA có Facade và State Pattern
@@ -342,19 +431,6 @@ sequenceDiagram
     C->>F: place_order(product_id, type)
     
     F->>F: inventory.check()
-    F->>F: payment.process()
-    
-    F->>ST: new OrderContext()
-    note over ST: State starts at PendingState
-
-    F->>ST: proceed()
-    note over ST: PendingState upgrades context to PaidState
-    
-    F->>ST: proceed()
-    note over ST: PaidState upgrades context to ShippedState
-    
-    F-->>C: return {status: Success, final_state: Shipped}
-```->>F: inventory.check()
     F->>F: payment.process()
     
     F->>ST: new OrderContext()

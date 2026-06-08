@@ -24,15 +24,44 @@ Tài liệu này tích hợp toàn bộ các báo cáo thiết kế, hướng d�
 ## PHẦN 1: MÔ TẢ BÀI TOÁN & KHÁI QUÁT HỆ THỐNG
 
 ### 1. Mô tả bài toán thực tế (Problem Description)
-Trong các doanh nghiệp thương mại điện tử hiện nay, hệ thống xử lý đơn hàng gặp thách thức lớn về tính bảo trì và mở rộng khi các quy trình nghiệp vụ trở nên phức tạp dần (phải liên kết với kho hàng để kiểm kho, liên kết với ngân hàng để thanh toán, liên kết với các đơn vị vận chuyển để giao hàng). 
+Trong các doanh nghiệp thương mại điện tử hiện nay, hệ thống xử lý đơn hàng (Order Management System - OMS) phải đối mặt với sự phức tạp ngày càng tăng của quy trình nghiệp vụ. Một đơn hàng từ lúc khởi tạo đến lúc hoàn tất cần đi qua hàng loạt bước kiểm tra tồn kho hàng hóa (Inventory System), xử lý giao dịch thanh toán thông qua ngân hàng/ví điện tử (Payment System), và thiết lập vận đơn vận chuyển giao cho đối tác logistics (Shipping System).
 
-Nếu sử dụng mã nguồn theo phong cách cấu trúc tuần tự hoặc dùng các lệnh `if/else` lồng nhau để quản lý trạng thái đơn hàng (Đang chờ duyệt -> Đã thanh toán -> Đang giao -> Hoàn tất), mã nguồn sẽ bị phình to (Spaghetti Code / God Object), dẫn đến cực kỳ khó bảo trì và dễ phát sinh lỗi khi bổ sung các phương thức giao hàng hoặc trạng thái đơn hàng mới.
+Nếu cài đặt theo tư duy lập trình cấu trúc tuần tự hoặc sử dụng các câu lệnh rẽ nhánh `if/else` lồng nhau để quản lý trạng thái đơn hàng (Đang chờ duyệt -> Đã thanh toán -> Đang giao -> Hoàn tất), hệ thống sẽ gặp các vấn đề nghiêm trọng:
+1.  **Mã nguồn Spaghetti**: Logic nghiệp vụ bị phân tán và đan xen chéo, làm cho các class trở nên phình to khó đọc (God Object/Monster Class).
+2.  **Vi phạm nguyên lý OCP (Open/Closed Principle)**: Mỗi khi doanh nghiệp bổ sung trạng thái đơn hàng mới (như Trả hàng, Giao thất bại, Chờ hoàn tiền) hoặc loại hình giao hàng mới (giao hỏa tốc 2h), ta buộc phải chỉnh sửa trực tiếp mã nguồn hiện hữu, dễ dẫn đến các lỗi dây chuyền khó kiểm soát.
+3.  **Tải trọng tập trung và Khó tích hợp**: Hệ thống đơn lẻ (Monolithic) không thể phân tách các dịch vụ phụ trợ như Xác thực, Tìm kiếm nâng cao và Thống kê để chịu tải độc lập hoặc triển khai trên các công nghệ phần cứng tối ưu hơn.
 
-### 2. Giải pháp kỹ thuật
-Hệ thống OMS được xây dựng trên sự kết hợp của:
-*   **Kiến trúc phân tầng n-Tier (MVC)**: Phân tách rõ ràng giữa giao diện người dùng (View), tầng điều hướng (Controller), tầng xử lý nghiệp vụ (Service & Patterns) và tầng cơ sở dữ liệu SQLite (Repository).
-*   **Kiến trúc Microservices**: Tích hợp các cổng dịch vụ độc lập viết bằng C# để xử lý các nghiệp vụ phụ như Xác thực tập trung (SSO), Tìm kiếm nâng cao (Search) và Thống kê báo cáo (Report).
-*   **Áp dụng 5 Design Patterns mẫu mực**: Singleton, Factory Method, Facade, State, và Iterator giúp tối ưu hóa kết nối DB, module hóa logic khởi tạo, tối giản hóa giao thức giao tiếp và tự động quản lý vòng đời đơn hàng sạch sẽ.
+### 2. Giải pháp kỹ thuật và Kiến trúc Hệ thống (Architectural Styles)
+
+Hệ thống OMS được thiết kế kết hợp giữa hai phong cách kiến trúc hiện đại và mạnh mẽ:
+
+#### A. Kiến trúc phân tầng n-Tier (Mô hình MVC) cho Web API
+Web API chính được xây dựng trên nền tảng **Python FastAPI** và cơ sở dữ liệu vật lý **SQLite**, tuân thủ nghiêm ngặt mô hình phân tách trách nhiệm **Model - View - Controller**:
+*   **View (Tầng giao diện)**: Sử dụng Single Page Application (SPA) viết bằng Vanilla HTML, CSS (chủ đề Slate Modern) và Javascript. View không chứa logic nghiệp vụ, giao tiếp với Controller hoàn toàn bất đồng bộ thông qua các yêu cầu AJAX/Fetch API.
+*   **Controller (Tầng điều hướng)**: Tiếp nhận các yêu cầu HTTP Request từ Client, thực hiện kiểm tra dữ liệu đầu vào (Validation) sơ bộ, sau đó chuyển giao yêu cầu cho tầng Service xử lý. Tầng này cũng đảm nhận vai trò định tuyến và làm Proxy Gateway liên thông dữ liệu tới các Microservices.
+*   **Service & Patterns Layer (Tầng xử lý nghiệp vụ)**: Nơi chứa toàn bộ logic xử lý chính của đơn hàng. Đây là nơi 5 Design Patterns được nhúng trực tiếp để module hóa code, cách ly logic và thúc đẩy Loose Coupling (liên kết lỏng).
+*   **Repository (Tầng truy xuất dữ liệu)**: Chịu trách nhiệm giao tiếp trực tiếp với cơ sở dữ liệu SQLite (`orders.db`) để thực hiện các thao tác CRUD dữ liệu người dùng và đơn hàng.
+
+##### Bảng ánh xạ cấu trúc thư mục thực tế (Directory Mapping):
+| Tầng kiến trúc | Thư mục / Tệp tin trên Disk | Nhiệm vụ cụ thể trong dự án |
+| :--- | :--- | :--- |
+| **View** | `Project/src/web_mvc/app/static/` | Gồm `index.html` (giao diện), `style.css` (style Slate), `app.js` (xử lý logic client). |
+| **Controller** | `Project/src/web_mvc/app/controllers/api_router.py` | Định tuyến REST API, kiểm tra phiên đăng nhập và định cấu hình Proxy Gateway. |
+| **Service & Patterns** | `Project/src/web_mvc/app/patterns/` | Chứa 5 patterns: `facade.py`, `factory.py`, `state.py`, `iterator.py`, `singleton.py`. |
+| **Model** | `Project/src/web_mvc/app/models/` | Định nghĩa các lớp dữ liệu và thực thể ánh xạ (ORM/Schema). |
+| **Repository (Data)** | `Project/src/web_mvc/app/patterns/singleton.py` | Lớp `DatabaseConnection` quản lý tập trung toàn bộ truy vấn SQL thô tới tệp `orders.db`. |
+
+#### B. Kiến trúc Microservices phân tán (Distributed Services Architecture)
+Hệ thống OMS tách rời 3 chức năng phụ trợ sang **3 Microservices độc lập** viết bằng ngôn ngữ **C# (.NET 8.0 Minimal APIs)**, chạy trên các cổng (port) riêng biệt nhằm tăng khả năng chịu tải và độc lập bảo trì:
+1.  **Auth SSO Service (Port 5001)**: Quản lý đăng nhập tập trung, kiểm tra thông tin tài khoản trực tiếp từ SQLite và cấp mã phiên (JWT Token).
+2.  **Search API Service (Port 5002)**: Thực hiện tìm kiếm nhanh thông tin đơn hàng theo ID trực tiếp từ database SQLite dùng chung.
+3.  **Statistical Report Service (Port 5003)**: Thu thập toàn bộ dữ liệu đơn hàng trong SQLite, thực hiện phân tích tổng hợp (Aggregations) để tính toán doanh thu thực tế và phân tích xu hướng vận chuyển.
+
+##### Giao thức truyền tin và Cơ chế dự phòng lỗi (Communication & Resiliency)
+*   **Giao thức**: Giao tiếp giữa FastAPI Web Component và C# Microservices được thực hiện bất đồng bộ hoặc đồng bộ qua cổng mạng nội bộ bằng **HTTP/RESTful APIs** với định dạng dữ liệu chuẩn JSON.
+*   **Cơ chế dự phòng (Resiliency / Fallback)**: Để đảm bảo tính sẵn sàng cao, hệ thống triển khai cơ chế **Graceful Degradation** (Suy giảm mượt mà):
+    - Khi **C# SSO Service** hoặc **C# Search Service** offline: Hệ thống tự động kích hoạt **Fallback**, chuyển dịch logic xác thực và tìm kiếm xuống database SQLite cục bộ thông qua các hàm dự phòng chạy bằng **Iterator Pattern**.
+    - Khi **C# Report Service** offline: Hệ thống FastAPI tự động bắt lỗi và trả về dữ liệu thống kê giả lập/cached gần nhất (Mock Fallback) thay vì trả về lỗi 500 cho Client.
 
 ---
 
@@ -452,159 +481,238 @@ sequenceDiagram
 
 ## PHẦN 3: PHÂN TÍCH CHI TIẾT 5 DESIGN PATTERNS ÁP DỤNG
 
-Dưới đây là chi tiết các file cài đặt 5 Design Patterns trong thư mục [Project/src/web_mvc/app/patterns/](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns):
+Dưới đây là phần phân tích sâu về lý thuyết thiết kế, thành phần tham gia (Participants), logic code thực tế và mối liên hệ với các nguyên lý thiết kế SOLID cho 5 Design Patterns áp dụng trong thư mục [Project/src/web_mvc/app/patterns/](file:///d:/HSU/2533Semester%203(2025-2026)/Kiên%20trúc%20phần%20mềm/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns):
 
 ### 3.1 Singleton Pattern (`singleton.py`)
-*   **Mục đích**: Đảm bảo chỉ có duy nhất một kết nối Database Connection được duy trì trong suốt thời gian ứng dụng chạy để thực thi truy vấn tới SQLite.
-*   **Mã nguồn**:
-```python
-import sqlite3
-import threading
-import logging
 
-class DatabaseConnection:
-    _instance = None
-    _lock = threading.Lock()
-    _db_file = "orders.db"
+*   **Phân loại**: Creational Design Pattern (Nhóm Khởi tạo).
+*   **Ý tưởng cốt lõi & Bài toán giải quyết (Intent & Motivation)**:
+    Trong môi trường web đa luồng (Multi-threading), nếu mỗi luồng xử lý của người dùng tự tạo một kết nối database SQLite độc lập, hệ thống sẽ nhanh chóng cạn kiệt tài nguyên file descriptor. Nghiêm trọng hơn, do SQLite ghi dữ liệu bằng cách khóa tệp vật lý độc quyền, việc mở quá nhiều kết nối ghi đồng thời sẽ gây ra lỗi `Database is locked`. Mẫu **Singleton** được áp dụng để đảm bảo toàn bộ ứng dụng chỉ duy trì duy nhất một thực thể kết nối database `DatabaseConnection` trong suốt vòng đời chạy.
+*   **Thành phần tham gia (UML Participants)**:
+    *   `DatabaseConnection`: Lớp Singleton chứa thực thể tĩnh duy nhất `_instance`, cơ chế khóa `_lock` và các phương thức thực thi SQL.
+*   **Mã nguồn và Chi tiết Cài đặt (Code Walkthrough)**:
+    ```python
+    import sqlite3
+    import threading
+    import logging
 
-    def __new__(cls):
-        # Double-Checked Locking (Đảm bảo an toàn luồng)
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    logging.info("Khởi tạo instance DatabaseConnection (Singleton) lần đầu...")
-                    cls._instance = super(DatabaseConnection, cls).__new__(cls)
-                    cls._instance._init_db()
-        return cls._instance
+    class DatabaseConnection:
+        _instance = None
+        _lock = threading.Lock() # Khóa bảo vệ an toàn đa luồng
+        _db_file = "orders.db"
 
-    def _init_db(self):
-        # Tạo bảng và nạp dữ liệu mẫu
-        ...
-```
-*   **Lợi ích**: Ngăn chặn tình trạng tạo quá nhiều kết nối gây cạn kiệt tài nguyên hệ thống, chống Race Condition khi có hàng trăm request gọi API đồng thời nhờ cơ chế khóa Lock bảo vệ.
+        def __new__(cls):
+            # Kỹ thuật Double-Checked Locking (Kiểm tra khóa kép)
+            if cls._instance is None:
+                with cls._lock:
+                    if cls._instance is None:
+                        logging.info("Khởi tạo instance DatabaseConnection (Singleton) lần đầu...")
+                        cls._instance = super(DatabaseConnection, cls).__new__(cls)
+                        cls._instance._init_db()
+            return cls._instance
+
+        def _init_db(self):
+            # Khởi tạo tệp tin SQLite và nạp bảng dữ liệu
+            self.conn = sqlite3.connect(self._db_file, check_same_thread=False)
+            self.conn.row_factory = sqlite3.Row
+            ...
+    ```
+    *Cơ chế hoạt động*: Hàm `__new__` ghi đè constructor của Python. Dòng check `cls._instance is None` đầu tiên giúp tránh việc chiếm dụng khóa Lock một cách không cần thiết nếu thực thể đã tồn tại. Dòng check thứ hai bên trong khối `with cls._lock` đảm bảo rằng ngay cả khi hai luồng đồng thời vượt qua dòng check 1, chỉ có một luồng duy nhất được quyền khởi tạo đối tượng.
+*   **Đánh giá Ưu điểm & Nhược điểm (Pros & Cons)**:
+    *   *Ưu điểm*: Kiểm soát tập trung tài nguyên kết nối, tiết kiệm RAM, ngăn chặn Race Condition tuyệt đối khi ghi dữ liệu SQLite.
+    *   *Nhược điểm*: Tạo ra trạng thái toàn cục (Global State), gây khó khăn khi viết Unit Test độc lập (phải mock kết nối DB).
+*   **Mối liên hệ nguyên lý SOLID**:
+    *   Tuân thủ nguyên lý **Single Responsibility Principle (SRP)**: Lớp này chỉ chịu trách nhiệm duy nhất là quản lý kết nối vật lý và thực thi các câu lệnh SQL an toàn đa luồng xuống SQLite.
 
 ---
 
 ### 3.2 Factory Method Pattern (`factory.py`)
-*   **Mục đích**: Tách biệt logic khởi tạo đối tượng Đơn hàng khỏi mã nguồn gọi nó. Tự động trả về đúng kiểu đơn hàng (`StandardOrder` hoặc `ExpressOrder`) dựa trên tham số vận chuyển.
-*   **Mã nguồn**:
-```python
-from abc import ABC, abstractmethod
 
-class Order(ABC):
-    def __init__(self, product_id: int):
-        self.product_id = product_id
+*   **Phân loại**: Creational Design Pattern (Nhóm Khởi tạo).
+*   **Ý tưởng cốt lõi & Bài toán giải quyết (Intent & Motivation)**:
+    Quy trình tính toán phí vận chuyển của đơn hàng phụ thuộc vào loại hình giao hàng (`Standard` hoặc `Express`). Nếu ở tầng dịch vụ đặt hàng, ta khởi tạo trực tiếp các lớp cụ thể bằng từ khóa New, hệ thống sẽ bị phụ thuộc chặt chẽ (Tight Coupling). Mẫu **Factory Method** định nghĩa một giao diện chung để tạo đối tượng đơn hàng, nhưng cho phép lớp nhà máy `OrderFactory` quyết định lớp cụ thể nào được khởi tạo dựa trên tham số đầu vào.
+*   **Thành phần tham gia (UML Participants)**:
+    *   `Order` (Abstract Product): Lớp trừu tượng định nghĩa các API của đơn hàng.
+    *   `StandardOrder` / `ExpressOrder` (Concrete Products): Thực thi cụ thể phí ship ($2.5 và $15.0).
+    *   `OrderFactory` (Creator): Cung cấp phương thức `create_order` chịu trách nhiệm khởi tạo thực thể.
+*   **Mã nguồn và Chi tiết Cài đặt (Code Walkthrough)**:
+    ```python
+    from abc import ABC, abstractmethod
 
-    @abstractmethod
-    def get_shipping_cost(self) -> float: pass
+    class Order(ABC):
+        def __init__(self, product_id: int):
+            self.product_id = product_id
 
-class StandardOrder(Order):
-    def get_shipping_cost(self) -> float: return 2.5
+        @abstractmethod
+        def get_shipping_cost(self) -> float: pass
 
-class ExpressOrder(Order):
-    def get_shipping_cost(self) -> float: return 15.0
+        @abstractmethod
+        def get_order_type(self) -> str: pass
 
-class OrderFactory:
-    @staticmethod
-    def create_order(product_id: int, order_type: str) -> Order:
-        if order_type.lower() == 'express':
-            return ExpressOrder(product_id)
-        return StandardOrder(product_id)
-```
-*   **Lợi ích**: Tăng tính mở rộng. Khi doanh nghiệp mở thêm các dịch vụ vận chuyển mới (như vận chuyển máy bay, hoả tốc 2h), ta chỉ cần tạo thêm Class kế thừa từ `Order` mà không cần thay đổi bất kỳ dòng code nào ở tầng Controller.
+    class StandardOrder(Order):
+        def get_shipping_cost(self) -> float: return 2.5
+        def get_order_type(self) -> str: return "Standard"
+
+    class ExpressOrder(Order):
+        def get_shipping_cost(self) -> float: return 15.0
+        def get_order_type(self) -> str: return "Express"
+
+        def create_order(product_id: int, order_type: str) -> Order:
+            if order_type.lower() == 'express':
+                return ExpressOrder(product_id)
+            return StandardOrder(product_id)
+    ```
+    *Cơ chế hoạt động*: `OrderFacade` gọi `OrderFactory.create_order(product_id, order_type)`. Facade hoàn toàn không cần biết lớp con cụ thể nào được tạo ra, nó chỉ làm việc với giao diện trừu tượng `Order` và nhận về chi phí vận chuyển tương ứng.
+*   **Đánh giá Ưu điểm & Nhược điểm (Pros & Cons)**:
+    *   *Ưu điểm*: Loại bỏ sự phụ thuộc chằng chịt giữa lớp gọi (Client) và các lớp sản phẩm cụ thể. Thuận tiện khi mở rộng.
+    *   *Nhược điểm*: Khi có thêm nhiều loại vận chuyển mới, số lượng lớp con kế thừa tăng lên làm mã nguồn dài hơn.
+*   **Mối liên hệ nguyên lý SOLID**:
+    *   Tuân thủ nguyên lý **Open/Closed Principle (OCP)**: Thêm loại hình giao hàng mới chỉ cần viết thêm Class mới kế thừa `Order` mà không cần chỉnh sửa các class giao hàng cũ.
+    *   Tuân thủ nguyên lý **Dependency Inversion Principle (DIP)**: Tầng nghiệp vụ phụ thuộc hoàn toàn vào lớp trừu tượng `Order` chứ không phụ thuộc vào các lớp cụ thể.
 
 ---
 
 ### 3.3 Facade Pattern (`facade.py`)
-*   **Mục đích**: Cung cấp một giao diện (Interface) đơn giản cho Controller gọi, che giấu đi sự tương tác phức tạp của 3 subsystem (Inventory, Payment, Shipping).
-*   **Mã nguồn**:
-```python
-class OrderFacade:
-    def __init__(self):
-        self.inventory = InventorySystem()
-        self.payment = PaymentSystem()
-        self.shipping = ShippingSystem()
 
-    def place_order(self, product_id: int, order_type: str, address: str) -> dict:
-        # Tự động kết hợp 3 subsystem + Factory + State máy trạng thái
-        order = OrderFactory.create_order(product_id, order_type)
-        order_process = OrderContext()
-        
-        self.inventory.check_stock(product_id)
-        self.payment.process_payment(order.get_shipping_cost())
-        order_process.proceed() # Pending -> Paid
-        
-        tracking_code = self.shipping.arrange_shipping(product_id, address)
-        order_process.proceed() # Paid -> Shipped
-        
-        return {
-            "status": "Success",
-            "order_type": order.get_order_type(),
-            "final_state": order_process.current_status(),
-            "tracking_code": tracking_code
-        }
-```
-*   **Lợi ích**: Giảm sự phụ thuộc chéo (coupling) giữa hệ thống bên ngoài và các class nội bộ. Controller chỉ cần gọi đúng một hàm duy nhất để hoàn thành chuỗi đặt hàng phức tạp.
+*   **Phân loại**: Structural Design Pattern (Nhóm Cấu trúc).
+*   **Ý tưởng cốt lõi & Bài toán giải quyết (Intent & Motivation)**:
+    Đặt hàng là một quy trình tích hợp phức tạp, liên quan đến 3 hệ thống con độc lập (Subsystems): Kiểm tra tồn kho hàng hóa (`InventorySystem`), xử lý thanh toán cổng ngân hàng (`PaymentSystem`), và thiết lập thông tin gửi đối tác vận chuyển (`ShippingSystem`). Nếu Controller gọi trực tiếp và điều hành trình tự tương tác của cả 3 lớp này, mã nguồn Controller sẽ cực kỳ phức tạp và bị phụ thuộc nặng nề vào sự thay đổi của các hệ thống con. Mẫu **Facade** cung cấp một giao diện mặt tiền đơn giản duy nhất che giấu đi sự phức tạp này.
+*   **Thành phần tham gia (UML Participants)**:
+    *   `OrderFacade`: Lớp mặt tiền điều phối chính.
+    *   `InventorySystem`, `PaymentSystem`, `ShippingSystem`: Các Subsystem con độc lập.
+*   **Mã nguồn và Chi tiết Cài đặt (Code Walkthrough)**:
+    ```python
+    class OrderFacade:
+        def __init__(self):
+            self.inventory = InventorySystem()
+            self.payment = PaymentSystem()
+            self.shipping = ShippingSystem()
+
+        def place_order(self, product_id: int, order_type: str, address: str) -> dict:
+            order = OrderFactory.create_order(product_id, order_type)
+            order_process = OrderContext()
+            
+            # Điều phối các subsystem ngầm bên dưới
+            if not self.inventory.check_stock(product_id):
+                return {"status": "Failed", "reason": "Hết hàng"}
+                
+            if not self.payment.process_payment(order.get_shipping_cost()):
+                return {"status": "Failed", "reason": "Thanh toán thất bại"}
+            order_process.proceed() # Pending -> Paid (State Pattern)
+            
+            tracking_code = self.shipping.arrange_shipping(product_id, address)
+            order_process.proceed() # Paid -> Shipped (State Pattern)
+            
+            return {
+                "status": "Success",
+                "order_type": order.get_order_type(),
+                "final_state": order_process.current_status(),
+                "tracking_code": tracking_code
+            }
+    ```
+    *Cơ chế hoạt động*: Controller chỉ cần gọi đúng một dòng: `OrderFacade().place_order(product_id, order_type, address)`. Toàn bộ quy trình tuần tự kiểm kho -> tính phí ship -> thanh toán -> đổi trạng thái -> giao hàng -> lấy mã vận đơn được Facade phối hợp hoàn thành dưới bóng tối.
+*   **Đánh giá Ưu điểm & Nhược điểm (Pros & Cons)**:
+    *   *Ưu điểm*: Giảm sự phụ thuộc chéo (Loose Coupling) giữa Controller và các Subsystem. Dễ đọc, dễ kiểm thử ở tầng Controller.
+    *   *Nhược điểm*: Nếu quy trình nghiệp vụ thay đổi, lớp Facade bắt buộc phải bị sửa đổi.
+*   **Mối liên hệ nguyên lý SOLID**:
+    *   Tuân thủ nguyên lý **Interface Segregation Principle (ISP)**: Khách hàng chỉ tiếp xúc với giao diện đơn giản nhất có thể mà họ cần (`place_order`), không bị bắt buộc phụ thuộc vào các API chi tiết của từng Subsystem.
 
 ---
 
 ### 3.4 State Pattern (`state.py`)
-*   **Mục đích**: Đóng gói trạng thái của Đơn hàng thành các đối tượng độc lập. Mỗi đối tượng tự quyết định logic chuyển dịch trạng thái tiếp theo mà không cần dùng câu lệnh rẽ nhánh `if/else`.
-*   **Mã nguồn**:
-```python
-class OrderState(ABC):
-    @abstractmethod
-    def next_step(self, context) -> str: pass
 
-class PendingState(OrderState):
-    def next_step(self, context) -> str:
-        context.set_state(PaidState())
-        return "Pending -> Paid"
+*   **Phân loại**: Behavioral Design Pattern (Nhóm Hành vi).
+*   **Ý tưởng cốt lõi & Bài toán giải quyết (Intent & Motivation)**:
+    Một đơn hàng trải qua nhiều trạng thái nối tiếp (`Pending` -> `Paid` -> `Shipped`). Nếu quản lý trạng thái bằng biến điều khiển chuỗi kết hợp các lệnh điều kiện rẽ nhánh `if/else` hoặc `switch-case` lồng nhau, mã nguồn nghiệp vụ sẽ trở nên vô cùng phức tạp và dễ phát sinh lỗi logic khi mở rộng luồng trạng thái. Mẫu **State** đóng gói mỗi trạng thái của đơn hàng thành các lớp thực thể độc lập, chuyển giao trách nhiệm xử lý chuyển trạng thái cho chính lớp trạng thái hiện hành.
+*   **Thành phần tham gia (UML Participants)**:
+    *   `OrderContext`: Lớp ngữ cảnh lưu giữ đối tượng trạng thái hiện tại (`OrderState`) và điều phối chuyển trạng thái thông qua hàm `proceed()`.
+    *   `OrderState` (State Interface): Interface chung cho tất cả các Concrete State.
+    *   `PendingState`, `PaidState`, `ShippedState` (Concrete States): Triển khai logic chuyển trạng thái chi tiết của từng bước.
+*   **Mã nguồn và Chi tiết Cài đặt (Code Walkthrough)**:
+    ```python
+    class OrderState(ABC):
+        @abstractmethod
+        def next_step(self, context) -> str: pass
+        @abstractmethod
+        def get_status_name(self) -> str: pass
 
-class PaidState(OrderState):
-    def next_step(self, context) -> str:
-        context.set_state(ShippedState())
-        return "Paid -> Shipped"
+    class PendingState(OrderState):
+        def next_step(self, context) -> str:
+            context.set_state(PaidState()) # Chuyển dịch sang trạng thái Paid
+            return "Pending -> Paid"
+        def get_status_name(self) -> str: return "Pending"
 
-class OrderContext:
-    def __init__(self):
-        self.state = PendingState()
-    # Các hàm proceed(), set_state(), current_status()
-    ...
-```
-*   **Lợi ích**: Mã nguồn cực kỳ gọn gàng. Khi quy trình đơn hàng bổ sung thêm các trạng thái mới (như Trả hàng, Giao thất bại), ta chỉ cần viết thêm Class trạng thái mới và trỏ luồng dịch chuyển mà không cần chỉnh sửa các hàm logic nghiệp vụ hiện hữu.
+    class PaidState(OrderState):
+        def next_step(self, context) -> str:
+            context.set_state(ShippedState()) # Chuyển dịch sang trạng thái Shipped
+            return "Paid -> Shipped"
+        def get_status_name(self) -> str: return "Paid"
+
+    class ShippedState(OrderState):
+        def next_step(self, context) -> str:
+            return "Shipped (Trạng thái cuối)"
+        def get_status_name(self) -> str: return "Shipped"
+
+    class OrderContext:
+        def __init__(self):
+            self.state = PendingState() # Trạng thái bắt đầu mặc định
+        def set_state(self, state: OrderState):
+            self.state = state
+        def proceed(self) -> str:
+            return self.state.next_step(self)
+    ```
+    *Cơ chế hoạt động*: Khi Facade gọi `order_process.proceed()`, đối tượng `state` hiện tại tự quyết định logic chuyển tiếp. Ví dụ, nếu đang là `PendingState`, nó sẽ tự động kích hoạt `context.set_state(PaidState())`. Không hề xuất hiện một lệnh `if/else` trạng thái nào ở đây.
+*   **Đánh giá Ưu điểm & Nhược điểm (Pros & Cons)**:
+    *   *Ưu điểm*: Loại bỏ hoàn toàn Spaghetti code `if/else`, đóng gói chặt chẽ logic chuyển dịch trạng thái, tuân thủ nguyên lý thiết kế sạch.
+    *   *Nhược điểm*: Làm tăng số lượng lớp con trạng thái trong mã nguồn.
+*   **Mối liên hệ nguyên lý SOLID**:
+    *   Tuân thủ nguyên lý **Single Responsibility Principle (SRP)**: Mỗi class trạng thái chịu trách nhiệm duy nhất cho logic nghiệp vụ chuyển dịch trạng thái của chính nó.
+    *   Tuân thủ nguyên lý **Open/Closed Principle (OCP)**: Bổ sung thêm trạng thái đơn hàng mới chỉ cần viết thêm một Class trạng thái mới kế thừa từ `OrderState` mà hoàn toàn không ảnh hưởng đến code của các trạng thái hiện tại.
 
 ---
 
 ### 3.5 Iterator Pattern (`iterator.py`)
-*   **Mục đích**: Cho phép duyệt qua danh sách các đơn hàng và tìm kiếm đơn hàng mà không để lộ cấu trúc dữ liệu lưu trữ bên trong (ở đây là mảng `_orders`).
-*   **Mã nguồn**:
-```python
-class OrderCollection:
-    def __init__(self):
-        self._orders = []
 
-    def add_order(self, order_data: dict):
-        self._orders.append(order_data)
+*   **Phân loại**: Behavioral Design Pattern (Nhóm Hành vi).
+*   **Ý tưởng cốt lõi & Bài toán giải quyết (Intent & Motivation)**:
+    Dữ liệu danh sách đơn hàng được lấy lên từ database SQLite được lưu trữ dưới dạng mảng (list) trong lớp tập hợp. Nếu Controller truy cập trực tiếp mảng này, sự thay đổi cấu trúc dữ liệu lưu trữ nội bộ sau này (ví dụ chuyển từ list sang tree hoặc hash table để tối ưu tìm kiếm) sẽ làm hỏng mã nguồn ở tầng Controller. Mẫu **Iterator** cung cấp phương pháp duyệt tuần tự qua các phần tử của một đối tượng tập hợp mà không cần để lộ cấu trúc dữ liệu lưu trữ bên dưới của nó.
+*   **Thành phần tham gia (UML Participants)**:
+    *   `OrderCollection` (Aggregate): Chứa mảng danh sách đơn hàng và thực thi cơ chế tạo Iterator.
+    *   Python built-in protocol `__iter__` và `__next__` (Iterator): Duy trì chỉ số vị trí hiện tại của vòng lặp và điều hướng dữ liệu.
+*   **Mã nguồn và Chi tiết Cài đặt (Code Walkthrough)**:
+    ```python
+    class OrderCollection:
+        def __init__(self):
+            self._orders = [] # Cấu trúc dữ liệu nội bộ được giấu kín
 
-    def __iter__(self):
-        self._index = 0
-        return self
+        def add_order(self, order_data: dict):
+            self._orders.append(order_data)
 
-    def __next__(self):
-        if self._index < len(self._orders):
-            result = self._orders[self._index]
-            self._index += 1
-            return result
-        raise StopIteration
+        def __iter__(self):
+            self._index = 0 # Khởi tạo vị trí duyệt bắt đầu
+            return self
 
-    def find_order(self, order_id: int):
-        for order in self:
-            if order.get("id") == order_id:
-                return order
-        return None
-```
-*   **Lợi ích**: Khách hàng (Controller) có thể sử dụng vòng lặp `for...in` để duyệt danh sách đơn hàng bình thường. Nếu sau này cấu trúc dữ liệu lưu trữ thay đổi từ mảng sang cấu trúc Tree hoặc Hash, mã nguồn bên ngoài vẫn giữ nguyên không thay đổi.
+        def __next__(self):
+            # Tự động điều phối quá trình lặp và ném ngoại lệ dừng khi duyệt hết
+            if self._index < len(self._orders):
+                result = self._orders[self._index]
+                self._index += 1
+                return result
+            raise StopIteration
+
+        def find_order(self, order_id: int):
+            # Duyệt gián tiếp qua Iterator của chính mình
+            for order in self:
+                if order.get("id") == order_id:
+                    return order
+            return None
+    ```
+    *Cơ chế hoạt động*: Controller có thể duyệt danh sách đơn hàng bình thường qua cú pháp `for order in order_collection: ...`. Controller không hề biết danh sách đó được lưu bằng list, tuple hay tree, giúp cô lập hóa cấu trúc dữ liệu.
+*   **Đánh giá Ưu điểm & Nhược điểm (Pros & Cons)**:
+    *   *Ưu điểm*: Che giấu cấu trúc dữ liệu lưu trữ bên dưới, đơn giản hóa mã nguồn duyệt phần tử ở Client.
+    *   *Nhược điểm*: Duyệt Iterator có thể tốn tài nguyên bộ nhớ hơn so với việc truy cập trực tiếp theo index nếu dữ liệu có kích thước cực lớn.
+*   **Mối liên hệ nguyên lý SOLID**:
+    *   Tuân thủ nguyên lý **Single Responsibility Principle (SRP)**: Tách rời hoàn toàn trách nhiệm quản lý lưu trữ dữ liệu đơn hàng ra khỏi trách nhiệm duyệt qua các phần tử đơn hàng tuần tự.
 
 ---
 
