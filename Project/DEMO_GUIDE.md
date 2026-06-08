@@ -1,7 +1,7 @@
 # 🎯 CẨM NANG HƯỚNG DẪN DEMO DỰ ÁN CHI TIẾT (ULTIMATE LIVE DEMO GUIDE)
 ## HỆ THỐNG QUẢN LÝ ĐƠN HÀNG (OMS) - SOFTWARE ARCHITECTURE
 
-Tài liệu này là cẩm nang hướng dẫn thao tác thực tế (click-by-click) cùng kịch bản thuyết minh chi tiết từng giây, cách thiết lập màn hình và các mẹo đối chiếu mã nguồn trực tiếp dành cho nhóm sinh viên trong buổi bảo vệ trước Hội đồng chấm thi.
+Tài liệu này là cẩm nang hướng dẫn thao tác thực tế (click-by-click) cùng kịch bản thuyết minh chi tiết từng giây, cách thiết lập màn hình, các mẹo đối chiếu mã nguồn trực tiếp và tổng hợp các đoạn mã nguồn cốt lõi dành cho nhóm sinh viên trong buổi bảo vệ trước Hội đồng chấm thi.
 
 ---
 
@@ -61,7 +61,7 @@ flowchart TD
 *   **Thao tác**: Mở trình duyệt tại `http://localhost:8000`. Trỏ chuột vào góc phải thanh tiêu đề nơi có nhãn **`SQLite Connected (Singleton)`**.
 *   **Hiện tượng trên màn hình**: Nhãn trạng thái hiển thị màu xám/xanh dương dịu, báo hiệu hệ thống đã liên kết với file dữ liệu SQLite vật lý.
 *   **🎤 Lời thoại thuyết trình**:
-    > *"Kính thưa quý thầy cô trong Hội đồng. Đây là giao diện chính của ứng dụng quản lý đơn hàng. Ở góc phải thanh tiêu đề, thầy cô có thể thấy huy hiệu **'SQLite Connected (Singleton)'**. 
+    > *"Kính thưa quý thầy cô trong Hội đồng. Đây là giao diện chính của ứng dụng quản lý đơn hàng. Ở góc bên phải tiêu đề, thầy cô có thể thấy huy hiệu **'SQLite Connected (Singleton)'**. 
     > 
     > Để quản lý kết nối cơ sở dữ liệu SQLite một cách tối ưu, chúng em đã áp dụng **Singleton Pattern** tại lớp [DatabaseConnection](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/singleton.py#L6) của file `singleton.py`. Lớp này sử dụng kỹ thuật khóa đa luồng **Double-Checked Locking** để đảm bảo toàn bộ Web API chỉ dùng duy nhất một thực thể kết nối SQLite trong suốt vòng đời chạy, giúp loại bỏ nguy cơ nghẽn tài nguyên và lỗi khóa ghi đọc của SQLite."*
 
@@ -116,7 +116,7 @@ flowchart TD
 *   **🎤 Lời thoại thuyết trình**:
     > *"Bây giờ cụm dịch vụ C# Microservices đã hoạt động ổn định. Khi em thực hiện đăng nhập lại bằng tài khoản `khachhang_demo` vừa tạo, FastAPI đã đóng vai trò làm Proxy, gửi yêu cầu HTTP POST chứa thông tin đăng nhập trực tiếp tới cổng 5001 của **C# SSOService**. 
     > 
-    > Dịch vụ C# SSO không dùng tài khoản code cứng, mà đã kết nối trực tiếp vào tệp SQLite `orders.db` dùng chung để kiểm tra thông tin tài khoản thật do Python Web vừa ghi nhận ở Giai đoạn 1. SSO xác nhận thành công và cấp Token bảo mật tập trung."*
+    > Dịch vụ C# SSO không dùng tài khoản cứng, mà đã kết nối trực tiếp vào tệp SQLite `orders.db` dùng chung để kiểm tra thông tin tài khoản thật do Python Web vừa ghi nhận ở Giai đoạn 1. SSO xác nhận thành công và cấp Token bảo mật tập trung."*
 
 #### 📍 Bước 6: Lấy báo cáo thống kê chéo từ C# Report Service (Cổng 5003)
 *   **Thao tác**: Click chọn tab **Dashboard** trên Sidebar (Hoặc nhấp vào nút **Lấy báo cáo C#** ở thẻ Dashboard).
@@ -153,6 +153,8 @@ flowchart TD
     * Đơn hàng `106` đã đặt trước đó vẫn nằm ở cuối danh sách đơn hàng.
 *   **🎤 Lời thoại thuyết trình**:
     > *"Để chứng minh hệ thống đạt chuẩn bền vững dữ liệu (Persistence) và dữ liệu không chỉ được lưu tạm trên bộ nhớ đệm RAM, chúng em đã hạ hoàn toàn Container chạy Web Python xuống và khởi động lại. Khi truy cập lại trang Web, toàn bộ thông tin người dùng đăng ký mới và đơn hàng 106 trước đó vẫn tồn tại nguyên vẹn, chứng minh dữ liệu được ghi nhận bền vững xuống file SQLite vật lý trên ổ đĩa."*
+*   **Định vị file dữ liệu**:
+    *   Đường dẫn SQLite database trên máy host: [orders.db](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/orders.db)
 
 ---
 
@@ -167,18 +169,11 @@ Nếu thầy cô yêu cầu: *"Hãy mở Database lên cho tôi xem dữ liệu 
     *   Dẫn đến đường dẫn file SQLite chung của dự án:
         `D:\HSU\2533Semester 3(2025-2026)\Kiến trúc phần mềm\Kien_Truc_Phan_Mem_Test-main\Kien_Truc_Phan_Mem_Test-main\Project\src\web_mvc\orders.db`
     *   Chọn tab **Browse Data** ở trên cùng.
-    *   Tại mục **Table**, chọn bảng `users` $\rightarrow$ Chỉ cho thầy cô thấy tài khoản `khachhang_demo` vừa đăng ký.
-    *   Chọn bảng `orders` $\rightarrow$ Chỉ cho thầy cô thấy dòng đơn hàng `106` với chi tiết địa chỉ và mã vận đơn tương ứng.
-
-2.  **Cách 2: Sử dụng Extension Database Client của VS Code**:
-    *   Nhấp vào biểu tượng **Database Client** ở thanh Activity Bar bên trái VS Code (Nếu bạn đã cài extension thay thế thành công).
-    *   Nhấp chuột phải vào kết nối SQLite `orders.db` $\rightarrow$ Chọn **Open Table** cho bảng `orders`.
+    *   Table chọn bảng `users` hoặc `orders` để hiển thị dữ liệu thật cho thầy cô.
 
 ---
 
-## 🛡️ PHẦN 4: MẸO PHÒNG THỦ & TRẢ LỜI CÂU HỎI NHANH (DEFENSE TRICKS)
-
-Để tránh bị động khi bị thầy cô hỏi bất chợt, bạn nên chuẩn bị trước các tab mã nguồn trên VS Code theo sơ đồ sau:
+## 🛡️ PHẦN 4: MẸO PHÒNG THỦ TRÊN VS CODE (QUẢN LÝ TÁC VỤ NHANH)
 
 | Tên Mẫu Thiết Kế | Đường dẫn file cần mở sẵn | Dòng cần chỉ ra khi thầy cô hỏi |
 | :--- | :--- | :--- |
@@ -187,5 +182,272 @@ Nếu thầy cô yêu cầu: *"Hãy mở Database lên cho tôi xem dữ liệu 
 | **Facade** | [facade.py](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/facade.py) | Dòng 34-70: Hàm `place_order` gọi tuần tự check kho $\rightarrow$ thanh toán $\rightarrow$ giao vận. |
 | **State** | [state.py](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/state.py) | Lớp `OrderContext` chứa biến trạng thái hiện tại và gọi `next_step` để tự cập nhật trạng thái. |
 | **Iterator** | [iterator.py](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/web_mvc/app/patterns/iterator.py) | Cài đặt các hàm `__iter__` và `__next__` để duyệt qua mảng chứa các đơn hàng. |
-| **C# SSO Service** | [SSOService/Program.cs](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/microservices_csharp/SSOService/Program.cs) | Dòng 41-77: Nhận thông tin từ FastAPI và thực thi câu lệnh truy vấn SQLite để xác thực. |
-| **C# Report Service** | [ReportService/Program.cs](file:///d:/HSU/2533Semester%203(2025-2026)/Ki%E1%BA%BFn%20tr%C3%BAc%20ph%E1%BA%A7n%20m%E1%BB%81m/Kien_Truc_Phan_Mem_Test-main/Kien_Truc_Phan_Mem_Test-main/Project/src/microservices_csharp/ReportService/Program.cs) | Dòng 41-110: Hàm `summary` thực thi truy vấn tất cả đơn hàng, bóc tách và tính tổng doanh thu động. |
+
+---
+
+## 📂 PHẦN 5: TỔNG HỢP CÁC ĐOẠN CODE CỐT LÕI CỦA DỰ ÁN (CORE CODE SNIPPETS)
+
+Dưới đây là tổng hợp đầy đủ mã nguồn cốt lõi của dự án đã được tinh giản và bình luận chi tiết để bạn có thể xem nhanh, sao chép hoặc đưa cho Hội đồng phản biện xem trực tiếp khi cần:
+
+### 1. Singleton Pattern (`singleton.py`) - Quản lý Kết nối Database
+```python
+# app/patterns/singleton.py
+import sqlite3
+import threading
+
+class DatabaseConnection:
+    _instance = None
+    _lock = threading.Lock() # Khóa Lock dùng để đồng bộ luồng
+    _db_file = "orders.db"
+
+    def __new__(cls):
+        # Kỹ thuật Double-Checked Locking đảm bảo an toàn đa luồng hiệu năng cao
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super(DatabaseConnection, cls).__new__(cls)
+                    cls._instance._init_db() # Tạo bảng và nạp dữ liệu mẫu
+        return cls._instance
+
+    def query(self, sql: str, params: tuple = ()) -> list[dict]:
+        """Thực thi câu lệnh SELECT và tự động đóng kết nối sau khi chạy"""
+        conn = sqlite3.connect(self._db_file, check_same_thread=False)
+        conn.row_factory = sqlite3.Row # Cho phép truy cập cột bằng tên
+        cursor = conn.cursor()
+        try:
+            cursor.execute(sql, params)
+            return [dict(row) for row in cursor.fetchall()]
+        finally:
+            conn.close()
+
+    def execute(self, sql: str, params: tuple = ()) -> int:
+        """Thực thi INSERT/UPDATE/DELETE có transaction commit/rollback"""
+        conn = sqlite3.connect(self._db_file, check_same_thread=False)
+        cursor = conn.cursor()
+        try:
+            cursor.execute(sql, params)
+            conn.commit()
+            return cursor.lastrowid
+        except Exception:
+            conn.rollback()
+            return -1
+        finally:
+            conn.close()
+```
+
+### 2. Factory Method Pattern (`factory.py`) - Khởi tạo loại đơn hàng
+```python
+# app/patterns/factory.py
+from abc import ABC, abstractmethod
+
+# Product Interface
+class Order(ABC):
+    def __init__(self, product_id: int):
+        self.product_id = product_id
+
+    @abstractmethod
+    def get_shipping_cost(self) -> float: pass
+
+    @abstractmethod
+    def get_order_type(self) -> str: pass
+
+# Concrete Product 1
+class StandardOrder(Order):
+    def get_shipping_cost(self) -> float: return 2.5
+    def get_order_type(self) -> str: return "Standard"
+
+# Concrete Product 2
+class ExpressOrder(Order):
+    def get_shipping_cost(self) -> float: return 15.0
+    def get_order_type(self) -> str: return "Express"
+
+# Factory Class
+class OrderFactory:
+    @staticmethod
+    def create_order(product_id: int, order_type: str) -> Order:
+        if order_type.lower() == 'express':
+            return ExpressOrder(product_id)
+        elif order_type.lower() == 'standard':
+            return StandardOrder(product_id)
+        raise ValueError("Invalid order type")
+```
+
+### 3. Facade Pattern (`facade.py`) - Đóng gói chuỗi quy trình phức tạp
+```python
+# app/patterns/facade.py
+from .factory import OrderFactory
+from .state import OrderContext
+
+class OrderFacade:
+    def __init__(self):
+        self.inventory = InventorySystem() # Subsystem 1: Kho hàng
+        self.payment = PaymentSystem()     # Subsystem 2: Thanh toán
+        self.shipping = ShippingSystem()   # Subsystem 3: Giao hàng
+
+    def place_order(self, product_id: int, order_type: str, address: str) -> dict:
+        # 1. Factory tạo đơn hàng
+        order = OrderFactory.create_order(product_id, order_type)
+        
+        # 2. Khởi tạo ngữ cảnh trạng thái State (Pending)
+        order_process = OrderContext()
+
+        # 3. Kiểm kho
+        self.inventory.check_stock(product_id)
+        
+        # 4. Thanh toán -> Chuyển trạng thái sang Paid
+        self.payment.process_payment(order.get_shipping_cost())
+        order_process.proceed() 
+
+        # 5. Giao nhận vận đơn -> Chuyển trạng thái sang Shipped
+        tracking_code = self.shipping.arrange_shipping(product_id, address)
+        order_process.proceed() 
+
+        return {
+            "status": "Success",
+            "order_type": order.get_order_type(),
+            "final_state": order_process.current_status(),
+            "tracking_code": tracking_code
+        }
+```
+
+### 4. State Pattern (`state.py`) - Máy trạng thái quản lý đơn hàng
+```python
+# app/patterns/state.py
+from abc import ABC, abstractmethod
+
+class OrderState(ABC):
+    @abstractmethod
+    def next_step(self, context) -> str: pass
+    @abstractmethod
+    def get_status_name(self) -> str: pass
+
+class PendingState(OrderState):
+    def next_step(self, context) -> str:
+        context.set_state(PaidState()) # Chuyển sang Paid
+        return "Chờ xử lý -> Đã thanh toán."
+    def get_status_name(self) -> str: return "Pending"
+
+class PaidState(OrderState):
+    def next_step(self, context) -> str:
+        context.set_state(ShippedState()) # Chuyển sang Shipped
+        return "Đã thanh toán -> Đang giao hàng."
+    def get_status_name(self) -> str: return "Paid"
+
+class ShippedState(OrderState):
+    def next_step(self, context) -> str:
+        return "Đơn hàng đã được giao."
+    def get_status_name(self) -> str: return "Shipped"
+
+class OrderContext:
+    def __init__(self):
+        self.state = PendingState() # Trạng thái mặc định
+    def set_state(self, state: OrderState):
+        self.state = state
+    def proceed(self) -> str:
+        return self.state.next_step(self)
+    def current_status(self) -> str:
+        return self.state.get_status_name()
+```
+
+### 5. Iterator Pattern (`iterator.py`) - Bộ duyệt đơn hàng che giấu mảng lưu trữ
+```python
+# app/patterns/iterator.py
+
+class OrderCollection:
+    def __init__(self):
+        self._orders = [] # Cấu trúc dữ liệu mảng nội bộ
+
+    def add_order(self, order_data: dict):
+        self._orders.append(order_data)
+
+    def __iter__(self):
+        self._index = 0
+        return self
+
+    def __next__(self):
+        if self._index < len(self._orders):
+            result = self._orders[self._index]
+            self._index += 1
+            return result
+        raise StopIteration # Dừng vòng lặp
+
+    def find_order(self, order_id: int):
+        # Duyệt bằng cơ chế Iterator tuần tự (ẩn)
+        for order in self:
+            if order.get("id") == order_id:
+                return order
+        return None
+```
+
+### 6. Controller định tuyến với cơ chế Fallback (`api_router.py`)
+```python
+# app/controllers/api_router.py
+from fastapi import APIRouter
+import urllib.request
+import json
+
+router = APIRouter()
+
+@router.get("/orders/search/{order_id}")
+def search_order(order_id: int):
+    # Bước 1: Giao tiếp chéo gọi C# Search Microservice (cổng 5002)
+    search_url = f"http://host.docker.internal:5002/api/search/orders/{order_id}"
+    try:
+        req = urllib.request.Request(search_url, method="GET")
+        with urllib.request.urlopen(req, timeout=2.0) as response:
+            res_json = json.loads(response.read().decode("utf-8"))
+            res_json["search_source"] = "C# Search Microservice (:5002)"
+            return res_json
+    except Exception:
+        pass # Nếu sập kết nối, nhảy tiếp xuống cơ chế Fallback cục bộ bên dưới
+
+    # Bước 2 (Fallback): Thực hiện tìm kiếm thông qua SQLite + Iterator Pattern
+    db = DatabaseConnection()
+    orders_raw = db.query("SELECT * FROM orders")
+    
+    order_db = OrderCollection()
+    for o in orders_raw:
+        order_db.add_order(o)
+        
+    order = order_db.find_order(order_id)
+    if order:
+        order["search_source"] = "SQLite Local (Iterator Pattern Fallback)"
+        return order
+    return {"error": "Không tìm thấy đơn hàng."}
+```
+
+### 7. C# SSO Service (`SSOService/Program.cs`) - Minimal API kết nối SQLite
+```csharp
+// Program.cs của SSOService (Cổng 5001)
+using Microsoft.Data.Sqlite;
+
+var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:5001"); // Lắng nghe để nhận request từ Docker Container
+var app = builder.Build();
+
+app.MapPost("/api/sso/login", (LoginRequest request) => {
+    var connectionString = "Data Source=orders.db"; // Có hàm GetDatabaseConnectionString tự động resolve path
+    using var connection = new SqliteConnection(connectionString);
+    connection.Open();
+    
+    // Câu lệnh truy vấn SQL Parameterization an toàn chống SQL Injection
+    var query = "SELECT id, username, email FROM users WHERE username = @u AND password = @p";
+    using var command = new SqliteCommand(query, connection);
+    command.Parameters.AddWithValue("@u", request.Username);
+    command.Parameters.AddWithValue("@p", request.Password);
+
+    using var reader = command.ExecuteReader();
+    if (reader.Read())
+    {
+        string token = $"sso_token_secure_{reader.GetString(1)}_{Guid.NewGuid()}";
+        return Results.Ok(new { 
+            token = token,
+            user = new { username = reader.GetString(1), email = reader.GetString(2) }
+        });
+    }
+    return Results.BadRequest(new { error = "Sai tài khoản hoặc mật khẩu!" });
+});
+
+app.Run();
+public record LoginRequest(string Username, string Password);
+```
