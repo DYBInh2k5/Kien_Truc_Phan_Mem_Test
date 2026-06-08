@@ -50,10 +50,10 @@ graph TD
     B2 --> B3[3. Đặt đơn hàng mới - Facade/Factory/State]
     B3 --> B4[4. Tìm kiếm ID 106 - Iterator Fallback]
     
-    B4 --> C[PHẦN 2: Demo Online - Liên thông C# Microservices]
-    C --> C1[5. Đăng nhập SSO C# - verify cổng 5001]
-    C1 --> C2[6. Xem Dashboard Doanh thu - proxy cổng 5003]
-    C2 --> C3[7. Tìm đơn hàng 101/102 - proxy cổng 5002]
+    B4 --> C[PHẦN 2: Demo Online - Liên thông C# Microservices thực tế]
+    C --> C1[5. Đăng nhập SSO C# - Xác thực tài khoản thật cổng 5001]
+    C1 --> C2[6. Báo cáo thống kê động - C# Report tính toán cổng 5003]
+    C2 --> C3[7. Tìm đơn hàng mới tạo - C# Search quét SQLite cổng 5002]
     
     C3 --> D[PHẦN 3: Minh chứng bền vững Dữ liệu]
     D --> D1[8. Tắt/Bật Docker Web - Dữ liệu SQLite giữ nguyên]
@@ -103,7 +103,7 @@ graph TD
        * *Phương thức vận chuyển*: Chọn **Giao hàng hỏa tốc (Express)** (Hệ thống tính phí ship $15.0).
        * *Địa chỉ*: Nhập `99 Vo Van Tan, Q3`.
     3. Nhấn nút **Tiến hành đặt hàng (Facade Process)**.
-*   **Kết quả màn hình**: Hộp thoại Alert màu xanh lá xuất hiện thông báo: `Đặt hàng thành công! Mã đơn: 106. Mã vận đơn (Facade): TRACK_EXPRESS_...`
+*   **Kết quả màn hình**: Hộp thoại Alert màu xanh lá xuất hiện thông báo: `Đặt hàng thành công! Mã đơn: 106. Mã vận đơn (Facade): TRACK_EXPRESS_...` (Lưu ý nhớ mã đơn này, ví dụ là `106`).
 *   **Lời thoại thuyết trình**:
     > *"Khi em click nút Đặt hàng, một quy trình nghiệp vụ phức tạp sẽ được kích hoạt thông qua **Facade Pattern**. Lớp Facade này làm trung gia điều phối 3 hệ thống con: Kiểm kho (Inventory), Thanh toán (Payment) và Vận chuyển (Shipping). 
     > 
@@ -125,37 +125,39 @@ graph TD
 
 ---
 
-### 🌐 GIAI ĐOẠN 2: TRÌNH DIỄN HỆ THỐNG ONLINE (LIÊN THÔNG C# MICROSERVICES)
-*(Giai đoạn này chứng minh khả năng giao tiếp phân tán: Khi cụm C# được khởi chạy, Web Component sẽ tự động chuyển sang cấu trúc tích hợp chéo và phân phối tải nghiệp vụ).*
+### 🌐 GIAI ĐOẠN 2: TRÌNH DIỄN HỆ THỐNG ONLINE (LIÊN THÔNG C# MICROSERVICES THỰC TẾ)
+*(Giai đoạn này chứng minh khả năng giao tiếp phân tán và đồng bộ dữ liệu thời gian thực: Khi cụm C# được khởi chạy, Web Component sẽ tự động chuyển sang cấu trúc tích hợp chéo và phân phối tải nghiệp vụ).*
 
-#### 📍 Bước 6: Đăng nhập SSO bằng C# Microservice
+#### 📍 Bước 6: Đăng nhập SSO bằng C# Microservice (Đăng nhập tài khoản thật)
 *   **Thao tác**:
     1. Nhấn nút **Đăng xuất (Logout)** trên Sidebar để quay lại màn hình Login.
-    2. Nhập tài khoản SSO mặc định: Tên tài khoản: `admin` / Mật khẩu: `123`.
+    2. Sử dụng tài khoản `customer_test` vừa tạo ở Bước 2 với mật khẩu `123` (hoặc tài khoản `bob_johnson` / `123` có sẵn trong database).
     3. Nhấn **Đăng Nhập**.
 *   **Kết quả màn hình**: 
-    * Sidebar cập nhật thông tin tài khoản `admin` (quyền Administrator).
+    * Sidebar cập nhật thông tin tài khoản thành công.
     * Dòng trạng thái đổi thành: **`Xác thực: C# SSO Microservice (:5001)`** với màu xanh lá nổi bật.
 *   **Lời thoại thuyết trình**:
-    > *"Bây giờ cụm C# Microservices đã được bật, khi em đăng nhập bằng tài khoản admin, FastAPI sẽ đóng vai trò Proxy gửi yêu cầu xác thực trực tiếp sang **C# SSO Service** ở cổng 5001. Hệ thống xác thực thành công và trả về token xác thực tập trung. Sidebar hiển thị rõ nguồn xác thực từ C# SSO."*
-*   **Mục tiêu chứng minh**: Luồng gọi chéo HTTP API giữa Python và C#.
+    > *"Bây giờ cụm C# Microservices đã được bật, khi em đăng nhập bằng tài khoản `customer_test` mới tạo, FastAPI sẽ đóng vai trò Proxy gửi yêu cầu xác thực trực tiếp sang **C# SSO Service** ở cổng 5001. 
+    > 
+    > Dịch vụ C# SSO không dùng tài khoản code cứng, mà đã kết nối trực tiếp vào file SQLite `orders.db` dùng chung để kiểm tra thông tin tài khoản thật. Hệ thống xác thực thành công và trả về token xác thực tập trung. Sidebar hiển thị rõ nguồn xác thực từ C# SSO."*
+*   **Mục tiêu chứng minh**: Luồng gọi chéo HTTP API giữa Python và C# và khả năng đọc chung database SQLite để xác thực tài khoản thật.
 
-#### 📍 Bước 7: Xem số liệu thống kê thời gian thực từ C# Report Microservice
+#### 📍 Bước 7: Xem số liệu thống kê thời gian thực từ C# Report Microservice (Báo cáo động)
 *   **Thao tác**: Click chọn tab **Dashboard** (Hoặc nhấp vào nút **Lấy báo cáo C#** ở khu vực thống kê).
 *   **Kết quả màn hình**:
-    * Thống kê Tổng đơn hàng hiển thị: `152`
-    * Tổng doanh thu hiển thị: `$35,420.00`
+    * Thống kê Tổng đơn hàng hiển thị số lượng đơn hàng thực tế trong Database SQLite (ví dụ: `6` hoặc `10` đơn hàng).
+    * Tổng doanh thu hiển thị số tiền được tính toán động (giá các sản phẩm cộng với phí vận chuyển).
     * Dòng nguồn dữ liệu Dashboard hiển thị: **`C# Report Microservice (:5003)`**.
 *   **Lời thoại thuyết trình**:
-    > *"Ở màn hình Dashboard, dữ liệu báo cáo tài chính được kết nối trực tiếp với **C# Report Service** cổng 5003. Dữ liệu tổng số 152 đơn hàng và doanh thu hơn 35 ngàn đô được tổng hợp tự động từ microservice C# và phản hồi về Web chính."*
+    > *"Ở màn hình Dashboard, dữ liệu báo cáo tài chính được kết nối trực tiếp với **C# Report Service** cổng 5003. Dịch vụ C# sẽ thực hiện truy vấn động bảng `orders` từ SQLite, bóc tách phương thức vận chuyển và sản phẩm để tính toán ra tổng số đơn và doanh thu thực tế. Khi chúng em đặt thêm đơn hàng, số liệu này sẽ tăng lên tương ứng thay vì dùng dữ liệu giả lập."*
 
-#### 📍 Bước 8: Tra cứu đơn hàng nâng cao qua C# Search Microservice
+#### 📍 Bước 8: Tra cứu đơn hàng thật qua C# Search Microservice
 *   **Thao tác**:
     1. Click tab **Đặt hàng & Tra cứu**.
-    2. Tại ô tra cứu đơn hàng, nhập ID: `101` hoặc `102` (Đây là dữ liệu mẫu nằm trong C# Search Service). Nhấn **Tìm**.
-*   **Kết quả màn hình**: Khung kết quả tra cứu hiển thị thông tin sản phẩm (ví dụ: `Laptop XYZ (Bản nâng cấp C# Search)`) kèm dòng nhãn: **`Nguồn tìm kiếm: C# Search Microservice (:5002)`** màu xanh lá cây.
+    2. Tại ô tra cứu đơn hàng, nhập ID đơn hàng vừa tạo ở Bước 4 (ví dụ: `106`). Nhấn **Tìm**.
+*   **Kết quả màn hình**: Khung kết quả tra cứu hiển thị thông tin sản phẩm kèm dòng nhãn: **`Nguồn tìm kiếm: C# Search Microservice (:5002)`** màu xanh lá cây và dòng chi tiết chứa chữ `(Đã xác minh qua C# Search)`.
 *   **Lời thoại thuyết trình**:
-    > *"Đặc biệt, khi chúng em tra cứu các đơn hàng đặc thù như đơn hàng số 101, Web Component chính của Python sẽ thực hiện Proxy gọi trực tiếp tới **C# Search Microservice** ở cổng 5002. Kết quả trả về chứa thông tin chi tiết được nâng cấp của C# và giao diện hiển thị rõ nguồn tìm kiếm từ C# Search Microservice."*
+    > *"Khi em tra cứu đơn hàng vừa đặt, FastAPI sẽ chuyển tiếp yêu cầu đến **C# Search Microservice** ở cổng 5002. C# Search Service quét dữ liệu trong SQLite và tìm thấy đơn hàng thật, trả về kết quả kèm chuỗi chữ xác nhận. Điều này chứng minh sự liên thông dữ liệu 100% giữa cụm microservice C# và database của ứng dụng chính."*
 
 ---
 
@@ -189,4 +191,4 @@ graph TD
 1.  **Chủ động nêu tên các Pattern**: Khi thao tác đến bước nào, hãy nhấn mạnh ngay tên Pattern áp dụng ở bước đó (ví dụ: *"Đây là Singleton"*, *"Chỗ này chạy Facade"*). Thầy cô rất thích sinh viên định vị được Pattern trong code.
 2.  **Mở sẵn mã nguồn**: Mở sẵn phần code của các file pattern: `singleton.py`, `facade.py`, `state.py`, `factory.py`, `iterator.py` trên VS Code. Nếu thầy cô hỏi: *"Code Singleton của em nằm ở đâu?"*, hãy Alt-Tab chuyển ngay sang VS Code và chỉ vào đoạn code `_lock` và `Double-Checked Locking`.
 3.  **Tự tin giải thích Fallback**: Nhấn mạnh rằng hệ thống được thiết kế theo tư duy **Microservices phân tán** (Loose Coupling), các dịch vụ không làm sập lẫn nhau. Nếu dịch vụ C# chết, khách hàng vẫn đặt hàng và đăng ký bình thường qua SQLite nội bộ của Python Web.
-4.  **Chỉ ra đường dẫn Slide**: Đừng quên giới thiệu đường link Slide thuyết trình của nhóm đã được tạo trên Gamma App tại: [Gamma OMS Presentation](https://gamma.app/docs/HE-THONG-QUAN-LY-ON-HANG-OMS-fafqe6v198xhdqx) nằm ngay trong file `PRESENTATION.md` của dự án.
+4.  **Giải thích đồng bộ dữ liệu thời gian thực**: Trình bày rõ ràng rằng cụm C# Microservices được viết bằng .NET Core sử dụng thư viện `Microsoft.Data.Sqlite` để truy cập trực tiếp và chia sẻ file database `orders.db` với Python FastAPI, giúp loại bỏ hoàn toàn việc sử dụng dữ liệu giả lập và biến đây thành một hệ thống phân tán thực thụ.
